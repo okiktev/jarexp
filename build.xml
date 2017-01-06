@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Jar Explorer">
+	<description>
+		Builds Jar Explorer application.
+	</description>
+
+
+	<property file="${basedir}/build.properties" />
+
+
+	<target name="clean">
+		<echo message="Cleaning build directory" />
+
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}" />
+		<antcall target="generate-build-num" />
+
+	</target>
+
+
+	<target name="compile" depends="clean">
+		<echo message="Compiling sources into ${classes.dir}" />
+
+		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${build.dir}/src" />
+
+		<loadfile srcfile="${build.num.file}" property="build">
+			<filterchain>
+				<tokenfilter>
+					<filetokenizer />
+					<replacestring from=" " to="" />
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
+		<property name="full.version" value="${version}.${build}" />
+
+		<echo message="The product version is: ${full.version}" />
+
+		<copy todir="${build.dir}/src">
+			<fileset dir="${src.dir}" />
+			<filterset>
+				<filter token="VERSION" value="${full.version}" />
+				<filter token="COPYRIGHT" value="${copyright}" />
+			</filterset>
+		</copy>
+
+		<javac srcdir="${build.dir}/src" debug="${debug}" debuglevel="${debug.level}"
+			destdir="${classes.dir}" includeantruntime="false" >
+			<classpath>
+				<filelist>
+					<file name="${dependency1}"/>
+					<file name="${dependency2}"/>
+				</filelist>
+			</classpath>
+		</javac>
+
+	</target>
+
+
+	<target name="assembly" depends="compile">
+		<echo message="Assembling files into ${jar.dir}" />
+
+		<mkdir dir="${jar.dir}" />
+		<copy todir="${jar.dir}">
+			<fileset dir="${classes.dir}" />
+		</copy>
+		
+		<unjar src="${dependency1}" dest="${jar.dir}" />
+		<delete dir="${jar.dir}/META-INF" />
+		<unjar src="${dependency2}" dest="${jar.dir}" />
+		<delete dir="${jar.dir}/META-INF" />
+
+		<copy todir="${jar.dir}">
+			<fileset dir="${resources.dir}" excludes="**/license.txt" />
+		</copy>
+		<copy todir="${jar.dir}">
+			<fileset dir="${resources.dir}" includes="**/license.txt" />
+			<filterset>
+				<filter token="COPYRIGHT" value="${copyright}" />
+			</filterset>
+		</copy>
+
+	</target>
+
+
+	<target name="generate-build-num">
+		<echo message="Generating new build number" />
+
+		<exec executable="cmd" dir="${build.num.dir}" failonerror="true">
+			<arg value="/c" />
+			<arg value="gen_build_num.bat" />
+		</exec>
+
+	</target>
+
+
+	<target name="jar" depends="assembly">
+		<echo message="Making jar file into ${artifacts.dir}" />
+
+		<mkdir dir="${artifacts.dir}" />
+
+		<loadfile srcfile="${build.num.file}" property="build">
+			<filterchain>
+				<tokenfilter>
+					<filetokenizer />
+					<replacestring from=" " to="" />
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
+		<property name="full.version" value="${version}.${build}" />
+
+		<jar destfile="${artifacts.dir}/jar-explorer-${full.version}.jar">
+			<manifest>
+				<attribute name="Built-By" value="delfin" />
+				<attribute name="Main-Class" value="com.delfin.jarexp.Main" />
+			</manifest>
+
+			<fileset dir="${jar.dir}" />
+		</jar>
+	</target>
+
+
+</project>
+
+
+
