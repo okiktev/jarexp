@@ -1,3 +1,10 @@
+# Eclipse settings artifacts
+.classpath
+.project
+.settings/
+
+
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
