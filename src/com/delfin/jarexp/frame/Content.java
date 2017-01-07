@@ -12,11 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -36,7 +33,6 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -62,15 +58,15 @@ public class Content extends JPanel {
 
 		@Override
 		public void treeExpanded(TreeExpansionEvent event) {
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
+			JarNode node = (JarNode) event.getPath().getLastPathComponent();
 			if (node == null) {
 				return;
 			}
 			boolean isNeedToFill = false;
 			for (Enumeration<?> childred = node.children(); childred.hasMoreElements();) {
-				DefaultMutableTreeNode child = (DefaultMutableTreeNode) childred.nextElement();
-				String path = ((FileInfo) child.getUserObject()).path;
-				System.out.println(path);
+				JarNode child = (JarNode) childred.nextElement();
+				String path = child.path;
+				//System.out.println(path);
 				if (Settings.NAME_PLACEHOLDER.equals(path)) {
 					isNeedToFill = true;
 					node.removeAllChildren();
@@ -83,9 +79,9 @@ public class Content extends JPanel {
 					@Override
 					protected Void doInBackground() throws Exception {
 						statusBar.enableProgress("Loading...");;
-						FileInfo info = (FileInfo)node.getUserObject();
-						File dst = new File(Resources.createTmpDir(), info.name);
-						Zip.unzipFrom(info.path, info.parentArc, dst);
+						//FileInfo info = (FileInfo)node.getUserObject();
+						File dst = new File(Resources.createTmpDir(), node.name);
+						Zip.unzipFrom(node.path, node.archive, dst);
 						try {
 							jarTree.addArchive(dst, node);
 						} catch (IOException e) {
@@ -115,18 +111,17 @@ public class Content extends JPanel {
 			if (jarTree.isDragging()) {
 				return;
 			}
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) jarTree.getLastSelectedPathComponent();
+			JarNode node = (JarNode) jarTree.getLastSelectedPathComponent();
 			if (node == null || !node.isLeaf()) {
 				return;
 			}
 
-			FileInfo info = (FileInfo) node.getUserObject();
-			File file = new File(info.parentArc.getParent(), info.path);
-			if (info.isDir) {
+			File file = new File(node.archive.getParent(), node.path);
+			if (node.isDirectory) {
 				return;
 			}
 			
-			statusBar.setPath(info.path);
+			statusBar.setPath(node.path);
 			new SwingWorker<Void, Void>() {
 				@Override
 				protected Void doInBackground() throws Exception {
@@ -137,9 +132,9 @@ public class Content extends JPanel {
 					
 					statusBar.enableProgress("Loading...");
 					
-					Zip.unzipFrom(info.path, info.parentArc, file);
+					Zip.unzipFrom(node.path, node.archive, file);
 					String content = null;
-					String lowPath = info.path.toLowerCase();
+					String lowPath = node.path.toLowerCase();
 					statusBar.setCompiledVersion("");
 					if (lowPath.endsWith(".class")) {
 						
@@ -259,32 +254,32 @@ public class Content extends JPanel {
 		// Create and set up the window.
 		frame = new JFrame("Jar Explorer " + Settings.getInstance().getVersion());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frame.addWindowListener(new WindowAdapter() {
-//			@Override
-//			public void windowClosing(WindowEvent windowEvent) {
-//				try {
-//					delete(Settings.getInstance().getTmpDir());
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//
-//			void delete(File f) throws IOException {
-//				if (f.isDirectory()) {
-//					for (File c : f.listFiles()) {
-//						try {
-//							delete(c);
-//						} catch (Exception e) {
-//							
-//						}
-//					}
-//				}
-//				if (!f.delete()) {
-//					//throw new FileNotFoundException("Failed to delete file: " + f);
-//				}
-//			}
-//		});
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent windowEvent) {
+				try {
+					delete(Settings.getInstance().getTmpDir());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			void delete(File f) throws IOException {
+				if (f.isDirectory()) {
+					for (File c : f.listFiles()) {
+						try {
+							delete(c);
+						} catch (Exception e) {
+							
+						}
+					}
+				}
+				if (!f.delete()) {
+					//throw new FileNotFoundException("Failed to delete file: " + f);
+				}
+			}
+		});
 
 		frame.setJMenuBar(new Menu(new ActionListener() {
 			@Override
