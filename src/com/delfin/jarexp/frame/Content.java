@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
@@ -14,6 +15,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -22,10 +25,12 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingWorker;
+import javax.swing.TransferHandler;
 import javax.swing.border.Border;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
@@ -78,8 +83,7 @@ public class Content extends JPanel {
 				new SwingWorker<Void, Void>() {
 					@Override
 					protected Void doInBackground() throws Exception {
-						statusBar.enableProgress("Loading...");;
-						//FileInfo info = (FileInfo)node.getUserObject();
+						statusBar.enableProgress("Loading...");
 						File dst = new File(Resources.createTmpDir(), node.name);
 						Zip.unzipFrom(node.path, node.archive, dst);
 						try {
@@ -230,6 +234,115 @@ public class Content extends JPanel {
 		}
 
 	};
+	
+	private static TransferHandler treeTransferHandler = new TransferHandler() {
+
+		private static final long serialVersionUID = -3545320033106894232L;
+
+		@Override
+		public boolean importData(JComponent comp, Transferable t) {
+			if (!(comp instanceof JarTree)) {
+				return false;
+			}
+			if (!t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+				return false;
+			}
+
+			Object obj = ((JarTree) comp).getLastSelectedPathComponent();
+			final JarNode node = obj == null ? jarTree.getRoot() : (JarNode) obj;
+
+			try {
+				@SuppressWarnings("unchecked")
+				List<File> droppedFiles = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+				int reply = JOptionPane.showConfirmDialog(frame,
+				        "Do you want to add files " + droppedFiles + " into " + node.name, "Adding files confirmation",
+				        JOptionPane.YES_NO_OPTION);
+				if (reply == JOptionPane.YES_OPTION) {
+					new SwingWorker<Void, Void>() {
+						@Override
+						protected Void doInBackground() throws Exception {
+							statusBar.enableProgress("Packing...");
+							packIntoJar(node, droppedFiles);
+							statusBar.disableProgress();
+							return null;
+						}
+					}.execute();
+					return true;
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				jarTree.setDragging(false);
+			}
+
+			return false;
+		}
+
+		private void packIntoJar(JarNode node, List<File> droppedFiles) throws IOException {
+			//System.out.println(node);
+			
+			List<JarNode> path = new ArrayList<JarNode>();
+			JarNode n = node;
+			do {
+				path.add(n);
+				n = (JarNode) n.getParent();
+			} while (n != null);
+
+			List<File> files = new ArrayList<File>(droppedFiles.size());
+			for (File f : droppedFiles) {
+				files.add(f);
+			}
+			JarNode i = path.get(0);
+			JarNode prevInfo = path.get(path.size() - 1);
+			for (JarNode info : path) {
+				if (JarTree.isArchive(info.name)) {
+					//System.out.println("Adding " + i.path + " | " + prevInfo.archive + " | " + files);
+					Zip.add(i.path, prevInfo.archive, files);
+					//System.out.println("Added  " + i.path + " | " + prevInfo.archive + " | " + files);
+					files.clear();
+					files.add(prevInfo.archive);
+					i = info;
+				}
+				prevInfo = info;
+			}
+
+			Zip.copy(prevInfo.archive, new File(path.get(path.size() - 1).name));
+
+			placeIntoTree(node, droppedFiles);
+			jarTree.update(node);
+		}
+
+		private void placeIntoTree(JarNode node, List<File> files) {
+			for (File f : files) {
+				String path = node.path + f.getName();
+				boolean isDir = f.isDirectory();
+				if (isDir) {
+					path += "/";
+				}
+				JarNode child = new JarNode(f.getName(), path, node.archive, isDir);
+				node.add(child);
+				if (isDir) {
+					placeIntoTree(child, Arrays.asList(f.listFiles()));
+				}
+			}
+		}
+
+		@Override
+		public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
+			jarTree.setDragging(true);
+			if (!(comp instanceof JarTree)) {
+				return false;
+			}
+			for (DataFlavor data : transferFlavors) {
+				if (!DataFlavor.javaFileListFlavor.equals(data)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+	};
 
 	private static JFrame frame;
 	private static JarTree jarTree;
@@ -359,7 +472,7 @@ public class Content extends JPanel {
 				pane.remove(treeView);
 				
 				try {
-					jarTree = new JarTree(f, treeSelectionListener, treeExpansionListener);
+					jarTree = new JarTree(f, treeSelectionListener, treeExpansionListener, treeTransferHandler);
 					jarTree.setBorder(emptyBorder);
 					treeView = new JScrollPane(jarTree);
 					((JComponent)treeView).setBorder(emptyBorder);
