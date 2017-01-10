@@ -1,13 +1,15 @@
 package com.delfin.jarexp.frame;
 
 import java.awt.Component;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 
 import javax.swing.JTree;
-import javax.swing.TransferHandler;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -30,6 +32,7 @@ class JarTree extends JTree {
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
 		        boolean leaf, int row, boolean hasFocus) {
 			super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+
 			JarNode node = (JarNode) value;
 			if (!leaf && !isArchive(node.name)) {
 				return this;
@@ -48,8 +51,10 @@ class JarTree extends JTree {
 
 	private boolean isDragging;
 
-	JarTree(File file, TreeSelectionListener treeSelectionListener, TreeExpansionListener treeExpansionListener, TransferHandler treeTransferHandler)
-	        throws IOException {
+	private boolean isPacking;
+
+	JarTree(File file, TreeSelectionListener treeSelectionListener, TreeExpansionListener treeExpansionListener,
+	        DropTargetListener treeDropTargetListener) throws IOException {
 		if (file == null) {
 			root = new JarNode();
 			return;
@@ -66,7 +71,8 @@ class JarTree extends JTree {
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		addTreeSelectionListener(treeSelectionListener);
 		addTreeExpansionListener(treeExpansionListener);
-		setTransferHandler(treeTransferHandler);
+		setDropTarget(new DropTarget(this, DnDConstants.ACTION_COPY, treeDropTargetListener));
+
 		setCellRenderer(new JarTreeCellRenderer());
 		setModel(treeModel = new DefaultTreeModel(root, false));
 
@@ -106,7 +112,7 @@ class JarTree extends JTree {
 		String path = entry.getName();
 		String[] files = path.split("/");
 		String name = null;
-		for (int i = 0; i < files.length ; ++i) {
+		for (int i = 0; i < files.length; ++i) {
 			boolean isExist = false;
 			for (Enumeration<?> children = node.children(); children.hasMoreElements();) {
 				JarNode child = (JarNode) children.nextElement();
@@ -134,7 +140,7 @@ class JarTree extends JTree {
 			node.add(child);
 		}
 	}
-	
+
 	private static String calcPath(String[] names, int i) {
 		StringBuilder out = new StringBuilder();
 		for (int j = 0; j <= i; ++j) {
@@ -142,4 +148,13 @@ class JarTree extends JTree {
 		}
 		return out.toString();
 	}
+
+	void setPacking(boolean isPacking) {
+		this.isPacking = isPacking;
+	}
+
+	boolean isPacking() {
+		return isPacking;
+	}
+
 }
