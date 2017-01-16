@@ -17,7 +17,6 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 public class Zip {
 
@@ -49,6 +48,8 @@ public class Zip {
 	
 	 public static void unzipFrom(String path, File archive, File dst) {
 		 makeParentDirs(dst);
+		 
+		 //System.out.println("unzipping " + path + " from " + archive + " into " + dst);
 		 
 	     try {
 
@@ -121,7 +122,68 @@ public class Zip {
 		  dstStream.close();
 	}
 
-
+	
+	
+	public static void delete(String path, File dst) throws IOException {
+		
+		System.out.println("deleted " + path + " from " + dst);
+		
+	    File tmpJarFile = File.createTempFile("tempJar", ".tmp");
+	    JarFile jarFile = new JarFile(dst);
+	    boolean jarUpdated = false;
+	 
+	    try {
+	        JarOutputStream tempJarOutputStream = new JarOutputStream(new FileOutputStream(tmpJarFile));
+	 
+	        try {
+	            //Copy original jar file to the temporary one.
+	            Enumeration<?> jarEntries = jarFile.entries();
+	            while(jarEntries.hasMoreElements()) {
+	                JarEntry entry = (JarEntry) jarEntries.nextElement();
+	                entry.setCompressedSize(-1);
+	                if (entry.getName().startsWith(path)) { 
+	                	continue;
+	                }
+	                InputStream entryInputStream = jarFile.getInputStream(entry);
+	                tempJarOutputStream.putNextEntry(entry);
+	                byte[] buffer = new byte[1024];
+	                int bytesRead = 0;
+	                while ((bytesRead = entryInputStream.read(buffer)) != -1) {
+	                    tempJarOutputStream.write(buffer, 0, bytesRead);
+	                }
+	            }
+	 
+	            jarUpdated = true;
+	        }
+	        catch(Exception ex) {
+	            ex.printStackTrace();
+	            tempJarOutputStream.putNextEntry(new JarEntry("stub"));
+	        }
+	        finally {
+	            tempJarOutputStream.close();
+	        }
+	 
+	    }
+	    finally {
+	        jarFile.close();
+	        //System.out.println(srcJarFile.getAbsolutePath() + " closed.");
+	 
+	        if (!jarUpdated) {
+	            tmpJarFile.delete();
+	        }
+	    }
+	 
+	    if (jarUpdated) {
+	    	dst.delete();
+	        tmpJarFile.renameTo(dst);
+	        //System.out.println(srcJarFile.getAbsolutePath() + " updated.");
+	    }
+		
+		
+		
+	}
+	
+	
 	public static void add(String path, File dst, List<File> files) throws IOException {
 		
 	    File tmpJarFile = File.createTempFile("tempJar", ".tmp");
@@ -138,42 +200,11 @@ public class Zip {
 	            	File file = files.get(i);
 	            	addFileIntoJar(path, tempJarOutputStream, file, adds);
 	            	
-//	                File file = files.get(i);
-//	                if (!file.isDirectory()) {
-//		                FileInputStream fis = new FileInputStream(file);
-//		                try {
-//		                    byte[] buffer = new byte[1024];
-//		                    int bytesRead = 0;
-//		                    String entryName = path + file.getName();
-//		                    JarEntry entry = new JarEntry(entryName);
-//		                    tempJarOutputStream.putNextEntry(entry);
-//		                    while((bytesRead = fis.read(buffer)) != -1) {
-//		                        tempJarOutputStream.write(buffer, 0, bytesRead);
-//		                        
-//		                    }
-//		                    adds.add(entryName);
-//		                    System.out.println(entry.getName() + " was added into " + dst);
-//		                }
-//		                finally {
-//		                    fis.close();
-//		                }
-//	                } else {
-//	                	addDirIntoJar(tempJarOutputStream, file, adds);
-//	                	
-//	                	
-//	                    String entryName = path + file.getName() + "/";
-//	                    JarEntry entry = new JarEntry(entryName);
-//	                    tempJarOutputStream.putNextEntry(entry);
-//	                    add
-//	                    
-//	                    adds.add(entryName);
-//	                    System.out.println(entry.getName() + " was added into " + dst);
-//	                }
 	                
 	            }
 	 
 	            //Copy original jar file to the temporary one.
-	            Enumeration jarEntries = jarFile.entries();
+	            Enumeration<?> jarEntries = jarFile.entries();
 	            while(jarEntries.hasMoreElements()) {
 	                JarEntry entry = (JarEntry) jarEntries.nextElement();
 	                entry.setCompressedSize(-1);
@@ -217,69 +248,6 @@ public class Zip {
 		
 		
 		
-		
-////		File[] fils = new File[files.size()];
-////		for (int i = 0; i < files.size(); ++i) {
-////			new File(files.get(i));
-////			// fils[i] = new File(files.get(i));
-////		}
-//	       // get a temp file
-//	    File tempFile = File.createTempFile(dst.getName(), "jarexp");
-//	        // delete it, otherwise you cannot rename your existing zip to it.
-//	    tempFile.delete();
-//
-//	    copy(dst, tempFile);
-//	    
-////	    boolean renameOk=dst.renameTo(tempFile);
-////	    if (!renameOk)
-////	    {
-////	        throw new RuntimeException("could not rename the file "+dst.getAbsolutePath()+" to "+tempFile.getAbsolutePath());
-////	    }
-//	    byte[] buf = new byte[1024];
-//
-//	    ZipInputStream zin = new ZipInputStream(new FileInputStream(tempFile));
-//	    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(dst));
-//
-//	    ZipEntry entry = zin.getNextEntry();
-//	    while (entry != null) {
-//	        String name = entry.getName();
-//	        boolean notInFiles = true;
-//	        for (File f : files) {
-//	            if (f.getName().equals(name)) {
-//	                notInFiles = false;
-//	                break;
-//	            }
-//	        }
-//	        if (notInFiles) {
-//	            // Add ZIP entry to output stream.
-//	            out.putNextEntry(new ZipEntry(name));
-//	            // Transfer bytes from the ZIP file to the output file
-//	            int len;
-//	            while ((len = zin.read(buf)) > 0) {
-//	                out.write(buf, 0, len);
-//	            }
-//	        }
-//	        entry = zin.getNextEntry();
-//	    }
-//	    // Close the streams        
-//	    zin.close();
-//	    // Compress the files
-//	    for (int i = 0; i < files.size(); i++) {
-//	        InputStream in = new FileInputStream(files.get(i));
-//	        // Add ZIP entry to output stream.
-//	        out.putNextEntry(new ZipEntry(files.get(i).getName()));
-//	        // Transfer bytes from the file to the ZIP file
-//	        int len;
-//	        while ((len = in.read(buf)) > 0) {
-//	            out.write(buf, 0, len);
-//	        }
-//	        // Complete the entry
-//	        out.closeEntry();
-//	        in.close();
-//	    }
-//	    // Complete the ZIP file
-//	    out.close();
-//	    tempFile.delete();
 	}
 
 	private static void addFileIntoJar(String path, JarOutputStream outStream, File file, List<String> adds) throws IOException {

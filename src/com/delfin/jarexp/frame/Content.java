@@ -5,23 +5,16 @@ package com.delfin.jarexp.frame;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
@@ -31,7 +24,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -43,7 +35,6 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.tree.TreePath;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -78,16 +69,13 @@ public class Content extends JPanel {
 			boolean isNeedToFill = false;
 			for (Enumeration<?> childred = node.children(); childred.hasMoreElements();) {
 				JarNode child = (JarNode) childred.nextElement();
-				String path = child.path;
-				//System.out.println(path);
-				if (Settings.NAME_PLACEHOLDER.equals(path)) {
+				if (Settings.NAME_PLACEHOLDER.equals(child.path)) {
 					isNeedToFill = true;
 					node.removeAllChildren();
 					break;
 				}
 			}
 			if (isNeedToFill) {
-				
 				new SwingWorker<Void, Void>() {
 					@Override
 					protected Void doInBackground() throws Exception {
@@ -112,10 +100,9 @@ public class Content extends JPanel {
 		public void treeCollapsed(TreeExpansionEvent event) {
 			// nothing to do
 		}
-		
+
 	};
-	
-	
+
 	private static TreeSelectionListener treeSelectionListener = new TreeSelectionListener() {
 
 		@Override
@@ -208,6 +195,8 @@ public class Content extends JPanel {
 						    	  syntax = SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH;
 						      } else if (lowPath.endsWith(".sh")) {
 						    	  syntax = SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL;
+						      } else if (lowPath.endsWith(".java")) {
+						    	  syntax = SyntaxConstants.SYNTAX_STYLE_JAVA;
 						      }
 						      
 						      textArea.setSyntaxEditingStyle(syntax);
@@ -215,6 +204,9 @@ public class Content extends JPanel {
 						      textArea.setCodeFoldingEnabled(true);
 						      textArea.setText(content);
 						      textArea.setEditable(false);
+						         Theme theme = Theme.load(getClass().getResourceAsStream(
+						                 "/org/fife/ui/rsyntaxtextarea/themes/eclipse.xml"));
+						           theme.apply(textArea);
 							
 						      Dimension size = contentView.getPreferredSize();
 						      
@@ -244,168 +236,6 @@ public class Content extends JPanel {
 
 	};
 	
-	private static DropTargetListener treeDropTargetListener = new DropTargetListener() {
-
-		@Override
-		public void dragEnter(DropTargetDragEvent dtde) {
-			jarTree.setDragging(true);
-			JarNode node = getNode(dtde);
-			if (node.isLeaf()) {
-				dtde.rejectDrag();
-			} else {
-				dtde.acceptDrag(dtde.getDropAction());
-			}
-		}
-
-		@Override
-		public void dragOver(DropTargetDragEvent dtde) {
-			JarNode node = getNode(dtde);
-			if (node.isLeaf() || jarTree.isPacking()) {
-				dtde.rejectDrag();
-			} else {
-				jarTree.setSelectionPath(new TreePath(node.getPath()));
-				dtde.acceptDrag(dtde.getDropAction());
-			}
-		}
-
-		@Override
-		public void dropActionChanged(DropTargetDragEvent dtde) {
-		}
-
-		@Override
-		public void dragExit(DropTargetEvent dte) {
-			jarTree.setDragging(false);
-		}
-
-		@Override
-		public void drop(DropTargetDropEvent dtde) {
-			if (jarTree.isPacking()) {
-				dtde.rejectDrop();
-				return;
-			}
-			
-			JarNode node = getNode(dtde);
-			try {
-				final List<File> droppedFiles = new ArrayList<File>();
-				Transferable tr = dtde.getTransferable();
-				DataFlavor[] flavors = tr.getTransferDataFlavors();
-				if (flavors.length > 1) {
-					log.warning("There are " + flavors.length + " flavors found");
-				}
-				
-				for (int i = 0; i < flavors.length; i++) {
-					if (tr.isDataFlavorSupported(flavors[i])) {
-						dtde.acceptDrop(dtde.getDropAction());
-						Object obj = tr.getTransferData(flavors[i]);
-						if (obj instanceof List<?>) {
-							droppedFiles.clear();
-							for (Object o : (List<?>)obj) {
-								if (!(o instanceof File)) {
-									continue;
-								}
-								droppedFiles.add((File)o);
-							}
-						}
-					}
-				}
-				if (droppedFiles.isEmpty()) {
-					JOptionPane.showConfirmDialog(frame,
-					        "There is wrong dopped data format. Expected only files list.", 
-					        "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-					dtde.dropComplete(true);
-					return;
-				}
-				int reply = JOptionPane.showConfirmDialog(frame,
-				        "Do you want to add files " + droppedFiles + " into " + node.name, "Adding files confirmation",
-				        JOptionPane.YES_NO_OPTION);
-				if (reply == JOptionPane.YES_OPTION) {
-					new SwingWorker<Void, Void>() {
-						@Override
-						protected Void doInBackground() throws Exception {
-							statusBar.enableProgress("Packing...");
-							jarTree.setPacking(true);
-							packIntoJar(node, droppedFiles);
-							statusBar.disableProgress();
-							jarTree.setDragging(false);
-							jarTree.setPacking(false);
-							dtde.dropComplete(true);
-							return null;
-						}
-					}.execute();
-				}
-			} catch (Exception e) {
-				throw new JarexpException("An error occurred while adding data into jar", e);
-			} finally {
-				jarTree.setDragging(false);
-			}
-		}
-
-		private void packIntoJar(JarNode node, List<File> droppedFiles) throws IOException {
-			// System.out.println(node);
-
-			List<JarNode> path = new ArrayList<JarNode>();
-			JarNode n = node;
-			do {
-				path.add(n);
-				n = (JarNode) n.getParent();
-			} while (n != null);
-
-			List<File> files = new ArrayList<File>(droppedFiles.size());
-			for (File f : droppedFiles) {
-				files.add(f);
-			}
-			JarNode i = path.get(0);
-			JarNode prevInfo = path.get(path.size() - 1);
-			for (JarNode info : path) {
-				if (JarTree.isArchive(info.name)) {
-					// System.out.println("Adding " + i.path + " | " +
-					// prevInfo.archive + " | " + files);
-					Zip.add(i.path, prevInfo.archive, files);
-					// System.out.println("Added " + i.path + " | " +
-					// prevInfo.archive + " | " + files);
-					files.clear();
-					files.add(prevInfo.archive);
-					i = info;
-				}
-				prevInfo = info;
-			}
-
-			Zip.copy(prevInfo.archive, new File(path.get(path.size() - 1).name));
-
-			placeIntoTree(node, droppedFiles);
-			jarTree.update(node);
-		}
-
-		private void placeIntoTree(JarNode node, List<File> files) {
-			for (File f : files) {
-				String path = node.path + f.getName();
-				boolean isDir = f.isDirectory();
-				if (isDir) {
-					path += "/";
-				}
-				JarNode child = new JarNode(f.getName(), path, node.archive, isDir);
-				node.add(child);
-				if (isDir) {
-					placeIntoTree(child, Arrays.asList(f.listFiles()));
-				}
-			}
-		}
-		
-
-		private JarNode getNode(DropTargetDragEvent dtde) {
-			return getNodeByLocation(dtde.getLocation());
-		}
-		
-		private JarNode getNode(DropTargetDropEvent dtde) {
-			return getNodeByLocation(dtde.getLocation());
-		}
-		
-		private JarNode getNodeByLocation(Point point) {
-			TreePath parentPath = jarTree.getClosestPathForLocation(point.x, point.y);
-			return (JarNode) parentPath.getLastPathComponent();
-		}
-
-	};
 
 	private static JFrame frame;
 	private static JarTree jarTree;
@@ -520,13 +350,12 @@ public class Content extends JPanel {
 	}
 	
 	protected static void loadJarFile(File f) {
-//		System.out.println("dasds");
-//		
+		log.fine("Loading file " + f);
+
 		new SwingWorker<Void, Void>() {
 
 			@Override
 			protected Void doInBackground() throws Exception {
-				System.out.println("loaded file " + f);
 				statusBar.enableProgress("Loading...");
 				
 				JSplitPane pane = getSplitPane();
@@ -535,11 +364,14 @@ public class Content extends JPanel {
 				pane.remove(treeView);
 				
 				try {
-					jarTree = new JarTree(f, treeSelectionListener, treeExpansionListener, treeDropTargetListener);
+					jarTree = new JarTree(treeSelectionListener
+							, treeExpansionListener, 
+							new JarTreeDropTargetListener(jarTree, statusBar, frame),
+							new JarTreeDeleteNodeListener(jarTree, statusBar));
+					jarTree.load(f);
 					jarTree.setBorder(emptyBorder);
 					treeView = new JScrollPane(jarTree);
 					((JComponent)treeView).setBorder(emptyBorder);
-					System.out.println("$$$$$$$$$$$$");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

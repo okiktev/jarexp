@@ -4,20 +4,27 @@ import java.awt.Component;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.utils.Jar;
 import com.delfin.jarexp.utils.Zip;
@@ -33,28 +40,92 @@ class JarTree extends JTree {
 		        boolean leaf, int row, boolean hasFocus) {
 			super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 
-			JarNode node = (JarNode) value;
-			if (!leaf && !isArchive(node.name)) {
-				return this;
+			if (value instanceof JarNode) {
+				JarNode node = (JarNode) value;
+				if (!leaf && !isArchive(node.name)) {
+					return this;
+				}
+				setIcon(node.isDirectory ? Resources.getIconForDir() : Resources.getIconFor(node.name));
 			}
-			setIcon(node.isDirectory ? Resources.getIconForDir() : Resources.getIconFor(node.name));
+			
 			return this;
 		}
 
 	}
 
+	private class JarTreeMouseListener implements MouseListener {
+
+		private final ActionListener deleteActionListener;
+
+		private JarTreeMouseListener(ActionListener deleteActionListener) {
+			this.deleteActionListener = deleteActionListener;
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (SwingUtilities.isRightMouseButton(e)) {
+				TreePath path = getPathForLocation(e.getX(), e.getY());
+				if (path == null) {
+					return;
+				}
+				setSelectionPath(path);
+				JPopupMenu popupMenu = new JPopupMenu();
+				JarNodeMenuItem deleteNode = new JarNodeMenuItem("Delete", path);
+				deleteNode.setIcon(Resources.getInstance().getDelIcon());
+				deleteNode.addActionListener(deleteActionListener);
+				popupMenu.add(deleteNode);
+				popupMenu.show(JarTree.this, e.getX(), e.getY());
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}
+
+	}
+	
+	static class ArchiveLoader {
+		protected void load(JarNode node) {
+			node.add(new JarNode("", Settings.NAME_PLACEHOLDER, null, false));
+		}
+	}
+
+	static ArchiveLoader archiveLoader = new ArchiveLoader();
+	
 	private static final long serialVersionUID = 8627151048727365096L;
 
-	private final JarNode root;
+	private JarNode root;
 
-	private DefaultTreeModel treeModel;
+	private DefaultTreeModel model;
 
 	private boolean isDragging;
 
 	private boolean isPacking;
 
-	JarTree(File file, TreeSelectionListener treeSelectionListener, TreeExpansionListener treeExpansionListener,
-	        DropTargetListener treeDropTargetListener) throws IOException {
+	JarTree(TreeSelectionListener treeSelectionListener, TreeExpansionListener treeExpansionListener,
+	        DropTargetListener treeDropTargetListener, ActionListener deleteActionListener) {
+
+		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		addTreeSelectionListener(treeSelectionListener);
+		addTreeExpansionListener(treeExpansionListener);
+		setDropTarget(new DropTarget(this, DnDConstants.ACTION_COPY, treeDropTargetListener));
+		addMouseListener(new JarTreeMouseListener(deleteActionListener));
+		setCellRenderer(new JarTreeCellRenderer());
+	}
+
+	void load(File file) throws IOException {
 		if (file == null) {
 			root = new JarNode();
 			return;
@@ -68,18 +139,11 @@ class JarTree extends JTree {
 				addIntoNode(entry, root, dst);
 			}
 		}.bypass();
-		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		addTreeSelectionListener(treeSelectionListener);
-		addTreeExpansionListener(treeExpansionListener);
-		setDropTarget(new DropTarget(this, DnDConstants.ACTION_COPY, treeDropTargetListener));
-
-		setCellRenderer(new JarTreeCellRenderer());
-		setModel(treeModel = new DefaultTreeModel(root, false));
-
+		setModel(model = new DefaultTreeModel(root, false));
 	}
 
-	void update(DefaultMutableTreeNode node) {
-		treeModel.reload(node);
+	void update(TreeNode node) {
+		model.reload(node);
 	}
 
 	JarNode getRoot() {
@@ -135,7 +199,8 @@ class JarTree extends JTree {
 		if (name != null) {
 			JarNode child = new JarNode(name, path, archive, entry.isDirectory());
 			if (isArchive(child.name)) {
-				child.add(new JarNode("", Settings.NAME_PLACEHOLDER, null, false));
+				archiveLoader.load(child);
+				// child.add(new JarNode("", Settings.NAME_PLACEHOLDER, null, false));
 			}
 			node.add(child);
 		}
@@ -155,6 +220,10 @@ class JarTree extends JTree {
 
 	boolean isPacking() {
 		return isPacking;
+	}
+
+	void remove(JarNode node) {
+		model.removeNodeFromParent(node);
 	}
 
 }

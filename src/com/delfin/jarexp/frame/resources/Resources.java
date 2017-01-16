@@ -47,6 +47,8 @@ public class Resources {
 
 	private Icon infoIcon;
 	
+	private Icon delIcon;
+	
 	private Image infoImage;
 
 	private String licenseText;
@@ -113,7 +115,18 @@ public class Resources {
 			throw new ResourcesException("Unable to load info menu icon from class path", e);
 		}
 	}
-
+	
+	public Icon getDelIcon() throws ResourcesException {
+		if (delIcon != null) {
+			return delIcon;
+		}
+		try {
+			return delIcon = new ImageIcon(loadImage("del.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load delete menu icon from class path", e);
+		}
+	}
+	
 	public Image getDragImage() throws ResourcesException {
 		if (dragImage != null) {
 			return dragImage;

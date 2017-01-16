@@ -1,12 +1,31 @@
 package com.delfin.jarexp.frame;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JMenuItem;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
+
+import com.delfin.jarexp.JarexpException;
 
 class JarNode extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = -2854697452587898049L;
+
+	static class JarNodeMenuItem extends JMenuItem {
+
+		private static final long serialVersionUID = 8153268977886693800L;
+
+		TreePath path;
+
+		JarNodeMenuItem(String text, TreePath path) {
+			super(text);
+			this.path = path;
+		}
+
+	}
 
 	String name;
 
@@ -24,12 +43,40 @@ class JarNode extends DefaultMutableTreeNode {
 	}
 
 	public JarNode() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	File getCurrentArchive() {
+		if (getChildCount() <= 0) {
+			throw new JarexpException("Unexpected content of jar file " + this.path);
+		}
+		return ((JarNode) getChildAt(0)).archive;
+	}
+
+	List<JarNode> getPathList() {
+		List<JarNode> path = new ArrayList<JarNode>();
+		JarNode node = this;
+		do {
+			path.add(node);
+			node = (JarNode) node.getParent();
+		} while (node != null);
+		return path;
+	}
+
+	List<JarNode> grabParentArchives() {
+		List<JarNode> res = new ArrayList<JarNode>();
+		JarNode node = this;
+		while (node != null) {
+			if (JarTree.isArchive(node.name)) {
+				res.add(node);
+			}
+			node = (JarNode) node.getParent();
+		}
+		return res;
 	}
 
 }

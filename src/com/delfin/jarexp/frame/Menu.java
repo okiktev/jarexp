@@ -16,7 +16,7 @@ import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
 class Menu extends JMenuBar {
 
 	private static final long serialVersionUID = 6283256126265026307L;
-
+	
 	Menu(ActionListener openListener, ActionListener aboutListener) throws ResourcesException {
 
 		JMenuItem menuItem;
