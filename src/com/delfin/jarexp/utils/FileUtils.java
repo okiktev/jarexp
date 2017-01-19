@@ -4,67 +4,46 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.delfin.jarexp.JarexpException;
 
 public class FileUtils {
 
-	public static String toString(File file) {
-		
-		StringBuilder out = new StringBuilder();
+	private static final Logger log = Logger.getLogger(FileUtils.class.getCanonicalName());
+
+	public static String toString(File file) throws IOException {
+		return read(new FileInputStream(file));
+	}
+
+	public static String toString(URL url) throws IOException {
+		return read(url.openStream());
+	}
+
+	private static String read(InputStream stream) {
+		BufferedReader reader = null;
 		try {
-
-			BufferedReader in = new BufferedReader(
-			   new InputStreamReader(
-	                      new FileInputStream(file), "UTF8"));
-
-			String line;
-
-			while ((line = in.readLine()) != null) {
-			    out.append(line).append('\n');
+			reader = new BufferedReader(new InputStreamReader(stream, "UTF8"));
+			StringBuilder out = new StringBuilder();
+			for (String line; (line = reader.readLine()) != null;) {
+				out.append(line).append('\n');
 			}
-
-	                in.close();
-	                
-		    }
-		    catch (UnsupportedEncodingException e)
-		    {
-				System.out.println(e.getMessage());
-		    }
-		    catch (IOException e)
-		    {
-				System.out.println(e.getMessage());
-		    }
-		    catch (Exception e)
-		    {
-				System.out.println(e.getMessage());
-		    }
-		
-		
-		return out.toString();
-		
-		
-//		String content = null;
-//		FileReader reader = null;
-//		try {
-//			reader = new FileReader(file);
-//			char[] chars = new char[(int) file.length()];
-//			reader.read(chars);
-//			content = new String(chars);
-//			reader.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} finally {
-//			if (reader != null) {
-//				try {
-//					reader.close();
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//		return content;
+			return out.toString();
+		} catch (Exception e) {
+			throw new JarexpException("An error occurred while reading file", e);
+		} finally {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					log.log(Level.WARNING, "Unable to close reader of file", e);
+				}
+			}
+		}
 	}
 
 }

@@ -1,12 +1,13 @@
 package com.delfin.jarexp.utils;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler;
 
 public class Compiler {
 
-	public static String decompile(File classFile) {
+	public static String decompile(File classFile) throws IOException {
 		File dir = classFile.getParentFile();
 
 		String[] args = new String[] { "-dgs=1", classFile.getAbsolutePath(), dir.getAbsolutePath() };
@@ -17,18 +18,6 @@ public class Compiler {
 
 		
 		return FileUtils.toString(dec);
-		
-//		FileContent cnt = null;
-//		try {
-//			cnt = new FileContent(dec);
-//			return new String(cnt.getData());
-//		} catch (IOException e) {
-//			throw new JarexpException("Coudn't read file " + dec, e);
-//		} finally {
-//			if (cnt != null) {
-//				cnt.close();
-//			}
-//		}
 	}
 
 }

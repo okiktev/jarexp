@@ -16,8 +16,9 @@ import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileSystemView;
 import javax.xml.bind.DatatypeConverter;
 
+import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
-import com.delfin.jarexp.utils.FileContent;
+import com.delfin.jarexp.utils.FileUtils;
 
 public class Resources {
 
@@ -46,7 +47,7 @@ public class Resources {
 	private Icon exitIcon;
 
 	private Icon infoIcon;
-	
+
 	private Icon delIcon;
 
 	private Icon addIcon;
@@ -58,9 +59,9 @@ public class Resources {
 	private String noticeText;
 
 	private String syntaxText;
-	
+
 	private static Map<String, Icon> icons = new HashMap<String, Icon>();
-	
+
 	private static File TMP_DIR = Settings.getInstance().getTmpDir();
 
 	private Resources() {
@@ -117,7 +118,7 @@ public class Resources {
 			throw new ResourcesException("Unable to load info menu icon from class path", e);
 		}
 	}
-	
+
 	public Icon getDelIcon() throws ResourcesException {
 		if (delIcon != null) {
 			return delIcon;
@@ -155,18 +156,12 @@ public class Resources {
 		if (licenseText != null) {
 			return licenseText;
 		}
-		FileContent cnt = null;
 		try {
-			cnt = new FileContent(getLoader().getResource("LICENSE"));
-			return licenseText = new String(cnt.getData());
+			return licenseText = FileUtils.toString(getLoader().getResource("LICENSE"));
 		} catch (IOException e) {
 			String msg = "Error while loading license";
 			log.log(Level.SEVERE, msg, e);
 			return msg;
-		} finally {
-			if (cnt != null) {
-				cnt.close();
-			}
 		}
 	}
 
@@ -174,19 +169,81 @@ public class Resources {
 		if (noticeText != null) {
 			return noticeText;
 		}
-		FileContent cnt = null;
 		try {
-			cnt = new FileContent(getLoader().getResource("NOTICE"));
-			return noticeText = new String(cnt.getData());
+			return noticeText = FileUtils.toString(getLoader().getResource("NOTICE"));
 		} catch (IOException e) {
 			String msg = "Error while loading notice";
 			log.log(Level.SEVERE, msg, e);
 			return msg;
-		} finally {
-			if (cnt != null) {
-				cnt.close();
-			}
 		}
+	}
+
+	public String getSyntaxTextLicense() {
+		if (syntaxText != null) {
+			return syntaxText;
+		}
+		try {
+			return syntaxText = FileUtils.toString(getLoader().getResource("syntax.txt"));
+		} catch (IOException e) {
+			String msg = "Error while loading syntax text license";
+			log.log(Level.SEVERE, msg, e);
+			return msg;
+		}
+	}
+
+	public static File createTmpDir() {
+		File dir = new File(TMP_DIR, Long.toString(System.currentTimeMillis()));
+		dir.mkdirs();
+		// dir.deleteOnExit();
+		return dir;
+	}
+
+	public static Icon getIconFor(String name) {
+		String ext = getExtension(name);
+		Icon res = icons.get(ext);
+		if (res != null) {
+			return res;
+		}
+		File file = new File(TMP_DIR, "jarexp" + (ext.isEmpty() ? "" : "." + ext));
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			throw new JarexpException("Couldn't create new file " + file, e);
+		}
+		file.deleteOnExit();
+		Icon icon = FileSystemView.getFileSystemView().getSystemIcon(file);
+		icons.put(ext, icon);
+		return icon;
+	}
+
+	public static Icon getIconForDir() {
+		Icon res = icons.get(null);
+		if (res != null) {
+			return res;
+		}
+
+		Icon icon = FileSystemView.getFileSystemView().getSystemIcon(TMP_DIR);
+		icons.put(null, icon);
+		return icon;
+	}
+
+	public Image getInfoImage() {
+		if (infoImage != null) {
+			return infoImage;
+		}
+		try {
+			return infoImage = loadImage("info.png");
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load info image from class path", e);
+		}
+	}
+
+	private static String getExtension(String name) {
+		int i = name.lastIndexOf('.');
+		if (i == -1) {
+			return "";
+		}
+		return name.substring(i + 1).toLowerCase();
 	}
 
 	private static Image loadImage(String fileName) throws IOException {
@@ -213,104 +270,29 @@ public class Resources {
 	}
 
 	public static void main(String[] args) throws Exception {
-//		InputStream is = Resources.class.getClassLoader().getResourceAsStream("img/icon.png");
-//
-//		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-//
-//		int nRead;
-//		byte[] data = new byte[8000];
-//
-//		while ((nRead = is.read(data, 0, data.length)) != -1) {
-//			buffer.write(data, 0, nRead);
-//		}
-//
-//		buffer.flush();
-//
-//		String s = DatatypeConverter.printBase64Binary(buffer.toByteArray());
-//
-//		System.out.println(s);
-//
-//		// String s = DatatypeConverter.parseBase64Binary(new
-//		// String(buffer.toByteArray()));
-		
-		
+		// InputStream is =
+		// Resources.class.getClassLoader().getResourceAsStream("img/icon.png");
+		//
+		// ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		//
+		// int nRead;
+		// byte[] data = new byte[8000];
+		//
+		// while ((nRead = is.read(data, 0, data.length)) != -1) {
+		// buffer.write(data, 0, nRead);
+		// }
+		//
+		// buffer.flush();
+		//
+		// String s = DatatypeConverter.printBase64Binary(buffer.toByteArray());
+		//
+		// System.out.println(s);
+		//
+		// // String s = DatatypeConverter.parseBase64Binary(new
+		// // String(buffer.toByteArray()));
+
 		System.out.println(getExtension("dfafas.exe"));
 
-	}
-	
-	public static File createTmpDir() {
-		File dir = new File(TMP_DIR, Long.toString(System.currentTimeMillis()));
-		dir.mkdirs();
-		//dir.deleteOnExit();
-		return dir;
-	}
-
-	public static Icon getIconFor(String name) {
-		String ext = getExtension(name);
-		Icon res = icons.get(ext);
-		if (res != null) {
-			return res;
-		}
-		File file = new File(TMP_DIR, "jarexp" + (ext.isEmpty() ? "" : "." + ext));
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		file.deleteOnExit();
-		Icon icon = FileSystemView.getFileSystemView().getSystemIcon(file);
-		icons.put(ext, icon);
-		return icon;
-	}
-
-	public static Icon getIconForDir() {
-		Icon res = icons.get(null);
-		if (res != null) {
-			return res;
-		}
-		
-		Icon icon = FileSystemView.getFileSystemView().getSystemIcon(TMP_DIR);
-		icons.put(null, icon);
-		return icon;
-	}
-	
-	private static String getExtension(String name) {
-		int i = name.lastIndexOf('.');
-		if (i == -1) {
-			return "";
-		}
-		return name.substring(i + 1).toLowerCase();
-	}
-
-	public String getSyntaxTextLicense() {
-		if (syntaxText != null) {
-			return syntaxText;
-		}
-		FileContent cnt = null;
-		try {
-			cnt = new FileContent(getLoader().getResource("syntax.txt"));
-			return syntaxText = new String(cnt.getData());
-		} catch (IOException e) {
-			String msg = "Error while loading syntax text license";
-			log.log(Level.SEVERE, msg, e);
-			return msg;
-		} finally {
-			if (cnt != null) {
-				cnt.close();
-			}
-		}
-	}
-
-	public Image getInfoImage() {
-		if (infoImage != null) {
-			return infoImage;
-		}
-		try {
-			return infoImage = loadImage("info.png");
-		} catch (IOException e) {
-			throw new ResourcesException("Unable to load info image from class path", e);
-		}
 	}
 
 }
