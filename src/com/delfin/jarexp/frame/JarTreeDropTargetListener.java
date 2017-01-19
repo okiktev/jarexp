@@ -10,7 +10,6 @@ import java.awt.dnd.DropTargetListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -20,7 +19,6 @@ import javax.swing.SwingWorker;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.JarexpException;
-import com.delfin.jarexp.utils.Zip;
 
 class JarTreeDropTargetListener implements DropTargetListener {
 	
@@ -144,103 +142,13 @@ class JarTreeDropTargetListener implements DropTargetListener {
 		for (File f : droppedFiles) {
 			files.add(f);
 		}
-		List<JarNode> path = node.getPathList();
-		JarNode currNode = path.get(0);
-		String p = currNode.path.endsWith(currNode.name) ? "" : currNode.path;
-		File archive = p.isEmpty() ? currNode.getCurrentArchive() : currNode.archive;
-		System.out.println("Adding " + p + " | " + archive + " | " + files);
-		Zip.add(p, archive, files);
-		
-		//Zip.delete(currNode.path, currNode.archive);
-		//JarNode prevNode = path.get(path.size() - 1);
-
+		Jar.pack(node, files);
 		files.clear();
-		files.add(archive);
-
-		List<JarNode> archives = node.grabParentArchives();
-		System.out.println(archives);
-//		do {
-//			if (JarTree.isArchive(currNode.name)) {
-//				p = currNode.path;
-//				break;
-//			}
-//			currNode = (JarNode) currNode.getParent();
-//		} while(currNode != null);
-		p = archives.get(0).path;
-		//currNode = archives.get(0);
-		for (int i = 1; i < archives.size(); ++i) {
-			JarNode arc = archives.get(i);
-			//p = arc.path.endsWith(arc.name) ? "" : arc.path;
-			//archive = p.isEmpty() ? arc.getCurrentArchive() : arc.archive;
-			
-			System.out.println("Adding " + p + " | " + arc.getCurrentArchive() + " | " + files);
-			Zip.add(p, arc.getCurrentArchive(), files);
-			// System.out.println("Added " + currNode.path + " | " + arc.getCurrentArchive() + " | " + files);
-			files.clear();
-			files.add(arc.getCurrentArchive());
-			p = arc.path;
+		for (File f : droppedFiles) {
+			files.add(f);
 		}
-		System.out.println("Copying " + path.get(path.size() - 1).archive + " into " + new File(path.get(path.size() - 1).name));
-		Zip.copy(path.get(path.size() - 1).archive, new File(path.get(path.size() - 1).name));
-		
-		
-		
-		
-		
-//		// System.out.println(node);
-//
-//		List<JarNode> path = new ArrayList<JarNode>();
-//		JarNode n = node;
-//		do {
-//			path.add(n);
-//			n = (JarNode) n.getParent();
-//		} while (n != null);
-//
-//		List<File> files = new ArrayList<File>(droppedFiles.size());
-//		for (File f : droppedFiles) {
-//			files.add(f);
-//		}
-//		
-//		JarNode i = path.get(0);
-//		JarNode prevInfo = path.get(path.size() - 1);
-//		for (JarNode info : path) {
-//			if (JarTree.isArchive(info.name)) {
-//				// String p = i.path.endsWith(i.name) ? "" : i.path;
-//				String p = cutName(i.path);
-//				// File archive = p.isEmpty() ? info.getCurrentArchive() : prevInfo.archive;
-//				File archive = info.getCurrentArchive();
-//				System.out.println("Adding " + p + " | " + archive + " | " + files);
-//				Zip.add(p, archive, files);
-//				System.out.println("Added " + p + " | " + archive + " | " + files);
-//				files.clear();
-//				files.add(archive);
-//				i = info;
-//			}
-//			prevInfo = info;
-//		}
-
-		// Zip.copy(prevInfo.archive, new File(path.get(path.size() - 1).name));
-
-		placeIntoTree(node, droppedFiles);
+		JarTree.put(node, files);
 	}
-
-	private void placeIntoTree(JarNode node, List<File> files) {
-		for (File f : files) {
-			boolean isArchive = JarTree.isArchive(node.path);
-			String path = (isArchive ? "" : node.path) + f.getName();
-			boolean isDir = f.isDirectory();
-			if (isDir) {
-				path += "/";
-			}
-			File archive = isArchive ? node.getCurrentArchive() : node.archive;
-			JarNode child = new JarNode(f.getName(), path, archive, isDir);
-			node.add(child);
-			if (isDir) {
-				placeIntoTree(child, Arrays.asList(f.listFiles()));
-			}
-		}
-	}
-	
 
 	private JarNode getNode(DropTargetDragEvent dtde) {
 		return getNodeByLocation(dtde.getLocation());

@@ -145,7 +145,8 @@ public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 	}
 
 	private List<JarNode> loadBefore() throws IOException {
-		jarTree = new JarTree(null, null, null, listener);
+		jarTree = new JarTree(null, null, null, null);
+		jarTree.addMouseListener(jarTree.new JarTreeMouseListener(listener, null));
 
 		clearTmp();
 		// copy file into temp

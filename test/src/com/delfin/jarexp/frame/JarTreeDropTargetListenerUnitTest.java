@@ -1,5 +1,7 @@
 package com.delfin.jarexp.frame;
 
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -233,7 +235,8 @@ public class JarTreeDropTargetListenerUnitTest extends BaseUnitTest {
 	}
 
 	private List<JarNode> loadBefore() throws IOException {
-		jarTree = new JarTree(null, null, listener, null);
+		jarTree = new JarTree(null, null, null, null);
+		jarTree.setDropTarget(new DropTarget(jarTree, DnDConstants.ACTION_COPY, listener));
 
 		clearTmp();
 		// copy file into temp

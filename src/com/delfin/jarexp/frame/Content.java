@@ -365,9 +365,7 @@ public class Content extends JPanel {
 				
 				try {
 					jarTree = new JarTree(treeSelectionListener
-							, treeExpansionListener, 
-							new JarTreeDropTargetListener(jarTree, statusBar, frame),
-							new JarTreeDeleteNodeListener(jarTree, statusBar));
+							, treeExpansionListener, statusBar, frame);
 					jarTree.load(f);
 					jarTree.setBorder(emptyBorder);
 					treeView = new JScrollPane(jarTree);
