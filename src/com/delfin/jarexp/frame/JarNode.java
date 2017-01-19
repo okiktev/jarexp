@@ -71,12 +71,17 @@ class JarNode extends DefaultMutableTreeNode {
 		List<JarNode> res = new ArrayList<JarNode>();
 		JarNode node = this;
 		while (node != null) {
-			if (JarTree.isArchive(node.name)) {
+			if (node.isArchive()) {
 				res.add(node);
 			}
 			node = (JarNode) node.getParent();
 		}
 		return res;
+	}
+
+	boolean isArchive() {
+		String lowName = name.toLowerCase();
+		return lowName.endsWith(".jar") || lowName.endsWith(".war") || lowName.endsWith(".ear");
 	}
 
 }

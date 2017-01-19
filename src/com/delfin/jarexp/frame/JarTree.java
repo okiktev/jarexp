@@ -43,7 +43,7 @@ class JarTree extends JTree {
 
 			if (value instanceof JarNode) {
 				JarNode node = (JarNode) value;
-				if (!leaf && !isArchive(node.name)) {
+				if (!leaf && !node.isArchive()) {
 					return this;
 				}
 				setIcon(node.isDirectory ? Resources.getIconForDir() : Resources.getIconFor(node.name));
@@ -161,7 +161,7 @@ class JarTree extends JTree {
 	
 	static void put(JarNode node, List<File> files) {
 		for (File f : files) {
-			boolean isArchive = JarTree.isArchive(node.path);
+			boolean isArchive = node.isArchive();
 			String path = (isArchive ? "" : node.path) + f.getName();
 			boolean isDir = f.isDirectory();
 			if (isDir) {
@@ -169,16 +169,14 @@ class JarTree extends JTree {
 			}
 			File archive = isArchive ? node.getCurrentArchive() : node.archive;
 			JarNode child = new JarNode(f.getName(), path, archive, isDir);
+			if (child.isArchive()) {
+				archiveLoader.load(child);
+			}
 			node.add(child);
 			if (isDir) {
 				put(child, Arrays.asList(f.listFiles()));
 			}
 		}
-	}
-
-	static boolean isArchive(String name) {
-		String lowName = name.toLowerCase();
-		return lowName.endsWith(".jar") || lowName.endsWith(".war") || lowName.endsWith(".ear");
 	}
 
 	void addArchive(File jar, JarNode node) throws IOException {
@@ -224,9 +222,8 @@ class JarTree extends JTree {
 		}
 		if (name != null) {
 			JarNode child = new JarNode(name, path, archive, entry.isDirectory());
-			if (isArchive(child.name)) {
+			if (child.isArchive()) {
 				archiveLoader.load(child);
-				// child.add(new JarNode("", Settings.NAME_PLACEHOLDER, null, false));
 			}
 			node.add(child);
 		}
