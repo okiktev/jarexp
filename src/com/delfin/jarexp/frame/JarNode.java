@@ -2,6 +2,7 @@ package com.delfin.jarexp.frame;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.JMenuItem;
@@ -9,6 +10,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.utils.Zip;
 
 class JarNode extends DefaultMutableTreeNode {
 
@@ -82,6 +84,18 @@ class JarNode extends DefaultMutableTreeNode {
 	boolean isArchive() {
 		String lowName = name.toLowerCase();
 		return lowName.endsWith(".jar") || lowName.endsWith(".war") || lowName.endsWith(".ear") || lowName.endsWith(".zip");
+	}
+
+	void unzip(File file) {
+		if (isDirectory) {
+			file.mkdir();
+			for (Enumeration<?> children = children(); children.hasMoreElements();) {
+				JarNode child = (JarNode) children.nextElement();
+				child.unzip(new File(file, child.name));
+			}
+		} else {
+			Zip.unzip(path, archive, file);
+		}
 	}
 
 }

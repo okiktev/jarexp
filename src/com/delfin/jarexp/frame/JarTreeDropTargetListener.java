@@ -1,6 +1,5 @@
 package com.delfin.jarexp.frame;
 
-import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTargetDragEvent;
@@ -11,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
@@ -138,6 +138,9 @@ class JarTreeDropTargetListener implements DropTargetListener {
 	}
 
 	void packIntoJar(JarNode node, List<File> droppedFiles) throws IOException {
+		if (log.isLoggable(Level.FINE)) {
+			log.fine("Dropping files " + droppedFiles + " into " + node.getPathList());
+		}
 		List<File> files = new ArrayList<File>();
 		for (File f : droppedFiles) {
 			files.add(f);
@@ -151,19 +154,11 @@ class JarTreeDropTargetListener implements DropTargetListener {
 	}
 
 	private JarNode getNode(DropTargetDragEvent dtde) {
-		return getNodeByLocation(dtde.getLocation());
+		return jarTree.getNodeByLocation(dtde.getLocation());
 	}
 	
 	private JarNode getNode(DropTargetDropEvent dtde) {
-		return getNodeByLocation(dtde.getLocation());
-	}
-	
-	private JarNode getNodeByLocation(Point point) {
-		TreePath parentPath = jarTree.getPathForLocation(point.x, point.y);
-		if (parentPath == null) {
-			return null;
-		}
-		return (JarNode) parentPath.getLastPathComponent();
+		return jarTree.getNodeByLocation(dtde.getLocation());
 	}
 	
 }

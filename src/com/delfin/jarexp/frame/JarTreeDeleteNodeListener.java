@@ -6,14 +6,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.SwingWorker;
 import javax.swing.tree.TreeNode;
 
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
+import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
 class JarTreeDeleteNodeListener implements ActionListener {
+
+	private static final Logger log = Logger.getLogger(JarTreeDeleteNodeListener.class.getCanonicalName());
 
 	private final StatusBar statusBar;
 	
@@ -32,6 +37,9 @@ class JarTreeDeleteNodeListener implements ActionListener {
 			@Override
 			protected Void doInBackground() throws Exception {
 				statusBar.enableProgress("Removing...");
+				if (log.isLoggable(Level.FINE)) {
+					log.fine("Deleting file " + node.path);
+				}
 				try {
 					delFromJar(node);
 				} catch (IOException e1) {
@@ -76,6 +84,6 @@ class JarTreeDeleteNodeListener implements ActionListener {
 				currNode = arc;
 			}
 		//}
-		Zip.copy(path.get(path.size() - 1).archive, new File(path.get(path.size() - 1).name));
+		FileUtils.copy(path.get(path.size() - 1).archive, new File(path.get(path.size() - 1).name));
 	}
 }

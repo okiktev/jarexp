@@ -52,6 +52,8 @@ public class Resources {
 
 	private Icon addIcon;
 
+	private Icon extIcon;
+
 	private Image infoImage;
 
 	private String licenseText;
@@ -62,7 +64,7 @@ public class Resources {
 
 	private static Map<String, Icon> icons = new HashMap<String, Icon>();
 
-	private static File TMP_DIR = Settings.getInstance().getTmpDir();
+	private static File TMP_DIR = Settings.getTmpDir();
 
 	private Resources() {
 
@@ -138,6 +140,17 @@ public class Resources {
 			return addIcon = new ImageIcon(loadImage("add.png"));
 		} catch (IOException e) {
 			throw new ResourcesException("Unable to load add menu icon from class path", e);
+		}
+	}
+
+	public Icon getExtIcon() {
+		if (extIcon != null) {
+			return extIcon;
+		}
+		try {
+			return extIcon = new ImageIcon(loadImage("ext.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load extract menu icon from class path", e);
 		}
 	}
 

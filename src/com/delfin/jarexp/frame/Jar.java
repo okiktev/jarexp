@@ -9,6 +9,7 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
 abstract class Jar {
@@ -78,7 +79,7 @@ abstract class Jar {
 			p = arc.path;
 		}
 		System.out.println("Copying " + path.get(path.size() - 1).archive + " into " + new File(path.get(path.size() - 1).name));
-		Zip.copy(path.get(path.size() - 1).archive, new File(path.get(path.size() - 1).name));
+		FileUtils.copy(path.get(path.size() - 1).archive, new File(path.get(path.size() - 1).name));
 		
 		
 		

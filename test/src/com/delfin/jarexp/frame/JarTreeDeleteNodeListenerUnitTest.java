@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.delfin.jarexp.frame.JarTree.ArchiveLoader;
+import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
 public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
@@ -146,12 +147,12 @@ public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 
 	private List<JarNode> loadBefore() throws IOException {
 		jarTree = new JarTree(null, null, null, null);
-		jarTree.addMouseListener(jarTree.new JarTreeMouseListener(listener, null));
+		jarTree.addMouseListener(jarTree.new JarTreeMouseListener(listener, null, null));
 
 		clearTmp();
 		// copy file into temp
 		test = File.createTempFile("test", "del.ear", tmp);
-		Zip.copy(new File("test/resources/test.ear"), test);
+		FileUtils.copy(new File("test/resources/test.ear"), test);
 
 		// load file
 		JarTree.archiveLoader = new ArchiveLoader() {
@@ -159,7 +160,7 @@ public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 			protected void load(JarNode node) {
 
 				File dst = new File(tmp, node.name);
-				Zip.unzipFrom(node.path, node.archive, dst);
+				Zip.unzip(node.path, node.archive, dst);
 				try {
 					jarTree.addArchive(dst, node);
 				} catch (IOException e) {

@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -14,6 +16,8 @@ import javax.swing.SwingWorker;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
 
 class JarTreeAddNodeListener implements ActionListener {
+
+	private static final Logger log = Logger.getLogger(JarTreeAddNodeListener.class.getCanonicalName());
 
 	private final StatusBar statusBar;
 
@@ -50,6 +54,9 @@ class JarTreeAddNodeListener implements ActionListener {
 				protected Void doInBackground() throws Exception {
 					statusBar.enableProgress("Packing...");
 					jarTree.setPacking(true);
+					if (log.isLoggable(Level.FINE)) {
+						log.fine("Adding file " + node.path);
+					}
 					List<File> files = new ArrayList<File>(1);
 					files.add(f);
 					Jar.pack(node, files);

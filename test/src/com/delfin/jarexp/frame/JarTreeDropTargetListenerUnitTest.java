@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.delfin.jarexp.frame.JarTree.ArchiveLoader;
+import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
 public class JarTreeDropTargetListenerUnitTest extends BaseUnitTest {
@@ -241,7 +242,7 @@ public class JarTreeDropTargetListenerUnitTest extends BaseUnitTest {
 		clearTmp();
 		// copy file into temp
 		test = File.createTempFile("test", "add.ear", tmp);
-		Zip.copy(new File("test/resources/test.ear"), test);
+		FileUtils.copy(new File("test/resources/test.ear"), test);
 
 		// load file
 		JarTree.archiveLoader = new ArchiveLoader() {
@@ -249,7 +250,7 @@ public class JarTreeDropTargetListenerUnitTest extends BaseUnitTest {
 			protected void load(JarNode node) {
 
 				File dst = new File(tmp, node.name);
-				Zip.unzipFrom(node.path, node.archive, dst);
+				Zip.unzip(node.path, node.archive, dst);
 				try {
 					jarTree.addArchive(dst, node);
 				} catch (IOException e) {

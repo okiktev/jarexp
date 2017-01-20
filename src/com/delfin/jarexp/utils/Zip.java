@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -16,37 +15,36 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class Zip {
 
-	private static final int BUFFER_SIZE = 4096;
+	// private static final int BUFFER_SIZE = 4096;
 
-	@Deprecated
-	public static void unzip(String zipFilePath, File dst) throws IOException {
-		if (!dst.exists()) {
-			dst.mkdirs();
-		}
-		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-		ZipEntry entry = zipIn.getNextEntry();
-		// iterates over entries in the zip file
-		while (entry != null) {
-			File file = new File(dst, entry.getName());
-			if (!entry.isDirectory()) {
-				// if the entry is a file, extracts it
-				extractFile(zipIn, file);
-			} else {
-				// if the entry is a directory, make the directory
-				file.mkdir();
-			}
-			zipIn.closeEntry();
-			entry = zipIn.getNextEntry();
-		}
-		zipIn.close();
-	}
+//	@Deprecated
+//	public static void unzip(String zipFilePath, File dst) throws IOException {
+//		if (!dst.exists()) {
+//			dst.mkdirs();
+//		}
+//		ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+//		ZipEntry entry = zipIn.getNextEntry();
+//		// iterates over entries in the zip file
+//		while (entry != null) {
+//			File file = new File(dst, entry.getName());
+//			if (!entry.isDirectory()) {
+//				// if the entry is a file, extracts it
+//				extractFile(zipIn, file);
+//			} else {
+//				// if the entry is a directory, make the directory
+//				file.mkdir();
+//			}
+//			zipIn.closeEntry();
+//			entry = zipIn.getNextEntry();
+//		}
+//		zipIn.close();
+//	}
 
 	
-	 public static void unzipFrom(String path, File archive, File dst) {
+	 public static void unzip(String path, File archive, File dst) {
 		 makeParentDirs(dst);
 		 
 		 //System.out.println("unzipping " + path + " from " + archive + " into " + dst);
@@ -81,16 +79,16 @@ public class Zip {
 	       }
 	 }
 	
-	private static void extractFile(ZipInputStream zipIn, File file) throws IOException {
-		makeParentDirs(file);
-		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-		byte[] bytesIn = new byte[BUFFER_SIZE];
-		int read = 0;
-		while ((read = zipIn.read(bytesIn)) != -1) {
-			bos.write(bytesIn, 0, read);
-		}
-		bos.close();
-	}
+//	private static void extractFile(ZipInputStream zipIn, File file) throws IOException {
+//		makeParentDirs(file);
+//		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+//		byte[] bytesIn = new byte[BUFFER_SIZE];
+//		int read = 0;
+//		while ((read = zipIn.read(bytesIn)) != -1) {
+//			bos.write(bytesIn, 0, read);
+//		}
+//		bos.close();
+//	}
 	
 	
 	
@@ -105,25 +103,6 @@ public class Zip {
 		 }
 	}
 
-
-	public static void copy(File src, File dst) throws IOException {
-		if (dst.isDirectory()) {
-			dst = new File(dst, src.getName());
-		}
-		
-		FileInputStream srcStream = new FileInputStream(src);
-		FileOutputStream dstStream = new FileOutputStream(dst);
-		
-		 FileChannel srcChannel = srcStream.getChannel();
-		  FileChannel dstChannel = dstStream.getChannel();
-		  dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
-		  
-		  srcStream.close();
-		  dstStream.close();
-	}
-
-	
-	
 	public static void delete(String path, File dst) throws IOException {
 		
 		System.out.println("deleted " + path + " from " + dst);

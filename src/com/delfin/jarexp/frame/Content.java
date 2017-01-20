@@ -81,7 +81,7 @@ public class Content extends JPanel {
 					protected Void doInBackground() throws Exception {
 						statusBar.enableProgress("Loading...");
 						File dst = new File(Resources.createTmpDir(), node.name);
-						Zip.unzipFrom(node.path, node.archive, dst);
+						Zip.unzip(node.path, node.archive, dst);
 						try {
 							jarTree.addArchive(dst, node);
 						} catch (IOException e) {
@@ -132,7 +132,7 @@ public class Content extends JPanel {
 					
 					statusBar.enableProgress("Loading...");
 					
-					Zip.unzipFrom(node.path, node.archive, file);
+					Zip.unzip(node.path, node.archive, file);
 					String content = null;
 					String lowPath = node.path.toLowerCase();
 					statusBar.setCompiledVersion("");
@@ -264,7 +264,7 @@ public class Content extends JPanel {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
 				try {
-					delete(Settings.getInstance().getTmpDir());
+					delete(Settings.getTmpDir());
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -291,8 +291,9 @@ public class Content extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.OPEN_DIALOG);
 				chooser.setDialogTitle("Select jar file to open");
-				FileFilter filter = new FileNameExtensionFilter("Jar Files (*.jar,*.war,*.ear)", "jar", "war", "ear");
+				FileFilter filter = new FileNameExtensionFilter("Jar Files (*.jar,*.war,*.ear,*.zip)", "jar", "war", "ear", "zip");
 				chooser.addChoosableFileFilter(filter);
 				chooser.setFileFilter(filter);
 				if (file != null) {

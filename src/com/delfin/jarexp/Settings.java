@@ -10,7 +10,7 @@ public class Settings {
 
 	private String version = Version.get();
 
-	private File tmpDir = new File(System.getProperty("java.io.tmpdir"), "jarexp");
+	private static File tmpDir = new File(System.getProperty("java.io.tmpdir"), "jarexp");
 
 	private Settings() {
 
@@ -27,7 +27,7 @@ public class Settings {
 		return version;
 	}
 
-	public File getTmpDir() {
+	public static File getTmpDir() {
 		return tmpDir;
 	}
 

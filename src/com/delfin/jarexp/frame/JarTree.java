@@ -1,6 +1,7 @@
 package com.delfin.jarexp.frame;
 
 import java.awt.Component;
+import java.awt.Point;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionListener;
@@ -28,7 +29,8 @@ import javax.swing.tree.TreeSelectionModel;
 import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
 import com.delfin.jarexp.frame.resources.Resources;
-import com.delfin.jarexp.utils.Zip;
+import com.delfin.jarexp.utils.FileUtils;
+
 
 class JarTree extends JTree {
 
@@ -60,9 +62,12 @@ class JarTree extends JTree {
 
 		private final ActionListener addActionListener;
 
-		JarTreeMouseListener(ActionListener deleteActionListener, ActionListener addActionListener) {
+		private final ActionListener extractActionListener;
+
+		JarTreeMouseListener(ActionListener deleteActionListener, ActionListener addActionListener, ActionListener extractActionListener) {
 			this.deleteActionListener = deleteActionListener;
 			this.addActionListener = addActionListener;
+			this.extractActionListener = extractActionListener;
 		}
 
 		@Override
@@ -84,6 +89,10 @@ class JarTree extends JTree {
 				JarNodeMenuItem addNode = new JarNodeMenuItem("Add", path);
 				addNode.setIcon(Resources.getInstance().getAddIcon());
 				addNode.addActionListener(addActionListener);
+				JarNodeMenuItem extNode = new JarNodeMenuItem("Extract", path);
+				extNode.setIcon(Resources.getInstance().getExtIcon());
+				extNode.addActionListener(extractActionListener);
+				popupMenu.add(extNode);
 				popupMenu.add(addNode);
 				popupMenu.add(deleteNode);
 				popupMenu.show(JarTree.this, e.getX(), e.getY());
@@ -109,6 +118,8 @@ class JarTree extends JTree {
 			node.add(new JarNode("", Settings.NAME_PLACEHOLDER, null, false));
 		}
 	}
+	
+
 
 	static ArchiveLoader archiveLoader = new ArchiveLoader();
 	
@@ -123,14 +134,19 @@ class JarTree extends JTree {
 	private boolean isPacking;
 
 	JarTree(TreeSelectionListener treeSelectionListener, TreeExpansionListener treeExpansionListener, StatusBar statusBar, JFrame frame) {
-
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		addTreeSelectionListener(treeSelectionListener);
 		addTreeExpansionListener(treeExpansionListener);
 
+		setDragEnabled(true);
+		setTransferHandler(new JarTreeNodeTransferHandler(statusBar));
 		setDropTarget(new DropTarget(this, DnDConstants.ACTION_COPY, new JarTreeDropTargetListener(this, statusBar, frame)));
-		addMouseListener(new JarTreeMouseListener(new JarTreeDeleteNodeListener(this, statusBar)
-				, new JarTreeAddNodeListener(this, statusBar, frame)));
+
+		addMouseListener(new JarTreeMouseListener(
+				new JarTreeDeleteNodeListener(this, statusBar),
+				new JarTreeAddNodeListener(this, statusBar, frame), 
+				new JarTreeExtractNodeListener(statusBar, frame))
+				);
 		setCellRenderer(new JarTreeCellRenderer());
 	}
 
@@ -140,7 +156,7 @@ class JarTree extends JTree {
 			return;
 		}
 		File dst = new File(Resources.createTmpDir(), file.getName());
-		Zip.copy(file, dst);
+		FileUtils.copy(file, dst);
 		root = new JarNode(file.getAbsolutePath(), "", dst, false);
 		new Jar(file) {
 			@Override
@@ -158,7 +174,12 @@ class JarTree extends JTree {
 	JarNode getRoot() {
 		return root;
 	}
-	
+
+	JarNode getNodeByLocation(Point point) {
+		TreePath path = getPathForLocation(point.x, point.y);
+		return path == null ? null : (JarNode) path.getLastPathComponent();
+	}
+
 	static void put(JarNode node, List<File> files) {
 		for (File f : files) {
 			boolean isArchive = node.isArchive();
