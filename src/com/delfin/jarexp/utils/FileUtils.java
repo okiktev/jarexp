@@ -3,9 +3,11 @@ package com.delfin.jarexp.utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -24,6 +26,18 @@ public class FileUtils {
 
 	public static String toString(URL url) throws IOException {
 		return read(url.openStream());
+	}
+
+	public static void toFile(File file, String content) throws IOException {
+		PrintStream out = null;
+		try {
+			out = new PrintStream(new FileOutputStream(file));
+			out.print(content);
+		} finally {
+			if (out != null) {
+				out.close();
+			}
+		}
 	}
 
 	private static String read(InputStream stream) {

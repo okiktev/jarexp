@@ -19,7 +19,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeExpansionListener;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -133,9 +132,9 @@ class JarTree extends JTree {
 
 	private boolean isPacking;
 
-	JarTree(TreeSelectionListener treeSelectionListener, TreeExpansionListener treeExpansionListener, StatusBar statusBar, JFrame frame) {
+	JarTree(TreeExpansionListener treeExpansionListener, StatusBar statusBar, JFrame frame) {
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		addTreeSelectionListener(treeSelectionListener);
+		//addTreeSelectionListener(treeSelectionListener);
 		addTreeExpansionListener(treeExpansionListener);
 
 		setDragEnabled(true);

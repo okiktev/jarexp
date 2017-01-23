@@ -2,6 +2,7 @@ package com.delfin.jarexp.frame;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -40,12 +41,23 @@ abstract class Jar {
 			}
 		}
 	}
-	
+
+	static void pack(JarNode node, File file) throws IOException {
+		List<File> files = new ArrayList<File>(1);
+		files.add(file);
+		pack(node, files);
+	}
+
 	static void pack(JarNode node, List<File> files) throws IOException {
 		List<JarNode> path = node.getPathList();
 		JarNode currNode = path.get(0);
-		String p = currNode.path.endsWith(currNode.name) ? "" : currNode.path;
-		File archive = p.isEmpty() ? currNode.getCurrentArchive() : currNode.archive;
+		String p = currNode.path;
+		File archive = currNode.archive;
+		if (node.isDirectory || !node.isLeaf()) {
+			p = currNode.path.endsWith(currNode.name) ? "" : currNode.path;
+			archive = p.isEmpty() ? currNode.getCurrentArchive() : currNode.archive;
+		}
+		//File archive = p.isEmpty() ? currNode.getCurrentArchive() : currNode.archive;
 		System.out.println("Adding " + p + " | " + archive + " | " + files);
 		Zip.add(p, archive, files);
 		
@@ -120,6 +132,43 @@ abstract class Jar {
 		// Zip.copy(prevInfo.archive, new File(path.get(path.size() - 1).name));
 	}
 
+	
+	static void delete(JarNode node) throws IOException {
+		List<JarNode> path = node.getPathList();
+
+		JarNode currNode = path.get(0);
+		String delPath = currNode.path;
+		Zip.delete(currNode.path, currNode.archive);
+		System.out.println("del " + currNode.path + " | " + currNode.archive);
+
+
+		List<JarNode> archives = node.grabParentArchives();
+		System.out.println(archives);
+		//if (archives.size() > 2) {
+			// JarNode prevNode = path.get(path.size() - 1);
+
+			List<File> files = new ArrayList<File>();
+			files.add(currNode.archive);
+			currNode = archives.get(0);
+			for (int i = 1; i < archives.size(); ++i) {
+				JarNode arc = archives.get(i);
+				if (!currNode.path.equals(delPath)) {
+					System.out.println("Adding " + currNode.path + " | " + arc.getCurrentArchive() + " | " + files);
+					Zip.add(currNode.path, arc.getCurrentArchive(), files);
+					// System.out.println("Added " + currNode.path + " | " + arc.getCurrentArchive() + " | " + files);
+				}
+				files.clear();
+				files.add(arc.getCurrentArchive());
+				currNode = arc;
+			}
+		//}
+		FileUtils.copy(path.get(path.size() - 1).archive, new File(path.get(path.size() - 1).name));
+	}
+	
+	
+	
 	protected abstract void process(JarEntry entry) throws IOException;
+
+
 
 }

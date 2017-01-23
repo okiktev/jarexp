@@ -236,7 +236,7 @@ public class JarTreeDropTargetListenerUnitTest extends BaseUnitTest {
 	}
 
 	private List<JarNode> loadBefore() throws IOException {
-		jarTree = new JarTree(null, null, null, null);
+		jarTree = new JarTree(null, null, null);
 		jarTree.setDropTarget(new DropTarget(jarTree, DnDConstants.ACTION_COPY, listener));
 
 		clearTmp();

@@ -113,7 +113,7 @@ class JarTreeDropTargetListener implements DropTargetListener {
 			}
 			int reply = JOptionPane.showConfirmDialog(frame,
 			        "Do you want to add files " + droppedFiles + " into " + node.name, "Adding files confirmation",
-			        JOptionPane.YES_NO_OPTION);
+			        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (reply == JOptionPane.YES_OPTION) {
 				new SwingWorker<Void, Void>() {
 					@Override

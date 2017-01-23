@@ -2,6 +2,9 @@ package com.delfin.jarexp;
 
 import java.io.File;
 
+import javax.swing.BorderFactory;
+import javax.swing.border.Border;
+
 public class Settings {
 
 	public final static String NAME_PLACEHOLDER = ".$placehoder|\\";
@@ -11,6 +14,8 @@ public class Settings {
 	private String version = Version.get();
 
 	private static File tmpDir = new File(System.getProperty("java.io.tmpdir"), "jarexp");
+
+	public static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
 
 	private Settings() {
 

@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import com.delfin.jarexp.frame.Content;
+import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.frame.resources.Resources;
 
 
@@ -22,11 +22,11 @@ class Notice extends JPanel {
 		license.setOpaque(false);
 		license.setText(Resources.getInstance().getNoticeText());
 		license.setFont(Dialog.textFont);
-		license.setBorder(Content.emptyBorder);
+		license.setBorder(Settings.EMPTY_BORDER);
 
 		JScrollPane scrollPane = new JScrollPane(license);
 		scrollPane.setWheelScrollingEnabled(true);
-		scrollPane.setBorder(Content.emptyBorder);
+		scrollPane.setBorder(Settings.EMPTY_BORDER);
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				scrollPane.getVerticalScrollBar().setValue(0);

@@ -19,8 +19,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -28,26 +26,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.SwingWorker;
-import javax.swing.border.Border;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.fife.ui.rsyntaxtextarea.Theme;
-import org.fife.ui.rtextarea.RTextScrollPane;
-
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
-import com.delfin.jarexp.Version;
 import com.delfin.jarexp.frame.about.Dialog;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
-import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
 public class Content extends JPanel {
@@ -55,9 +43,7 @@ public class Content extends JPanel {
 	private static final Logger log = Logger.getLogger(Content.class.getCanonicalName());
 
 	private static final long serialVersionUID = 2832926850075095267L;
-	
-	public static final Border emptyBorder = BorderFactory.createEmptyBorder();
-	
+
 	private static TreeExpansionListener treeExpansionListener = new TreeExpansionListener() {
 
 		@Override
@@ -102,140 +88,6 @@ public class Content extends JPanel {
 		}
 
 	};
-
-	private static TreeSelectionListener treeSelectionListener = new TreeSelectionListener() {
-
-		@Override
-		public void valueChanged(TreeSelectionEvent event) {
-			
-			if (jarTree.isDragging()) {
-				return;
-			}
-			JarNode node = (JarNode) jarTree.getLastSelectedPathComponent();
-			if (node == null || !node.isLeaf()) {
-				return;
-			}
-
-			File file = new File(node.archive.getParent(), node.path);
-			if (node.isDirectory) {
-				return;
-			}
-			
-			statusBar.setPath(node.path);
-			new SwingWorker<Void, Void>() {
-				@Override
-				protected Void doInBackground() throws Exception {
-					
-					Content current = (Content) frame.getContentPane();
-					JSplitPane pane = (JSplitPane) current.getComponent(1);
-					Component contentView = pane.getRightComponent();
-					
-					statusBar.enableProgress("Loading...");
-					
-					Zip.unzip(node.path, node.archive, file);
-					String content = null;
-					String lowPath = node.path.toLowerCase();
-					statusBar.setCompiledVersion("");
-					if (lowPath.endsWith(".class")) {
-						
-						statusBar.enableProgress("Decompiling...");
-						content = com.delfin.jarexp.utils.Compiler.decompile(file);
-						
-						statusBar.setCompiledVersion(Version.getCompiledJava(file));
-						
-					      RSyntaxTextArea textArea = new RSyntaxTextArea();
-					      textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-					         Theme theme = Theme.load(getClass().getResourceAsStream(
-					                 "/org/fife/ui/rsyntaxtextarea/themes/eclipse.xml"));
-					           theme.apply(textArea);
-					      
-					      textArea.setCodeFoldingEnabled(true);
-					      textArea.setText(content);
-					      textArea.setBorder(emptyBorder);
-					      textArea.setEditable(false);
-						
-					      Dimension size = contentView.getPreferredSize();
-					      
-					      pane.remove(contentView);
-					      contentView = new RTextScrollPane(textArea);
-					      contentView.setPreferredSize(size);
-						statusBar.disableProgress();
-					} else if (isImgFile(lowPath)) {
-						try {
-							JPanel img = new ImgPanel(ImageIO.read(file));
-							img.setBorder(emptyBorder);
-							pane.remove(contentView);
-							contentView = new JScrollPane(img);
-						} catch (IOException e) {
-							throw new JarexpException("Couldn't read file " + file + " as image", e);
-						}
-					} else {
-						if (!file.isDirectory()) {
-							statusBar.enableProgress("Reading...");
-							
-							content = FileUtils.toString(file);
-							
-						      RSyntaxTextArea textArea = new RSyntaxTextArea();
-						      String syntax = SyntaxConstants.SYNTAX_STYLE_NONE;
-						      if (lowPath.endsWith(".html") || lowPath.endsWith(".htm")) {
-						    	  syntax = SyntaxConstants.SYNTAX_STYLE_HTML;
-						      } else if (lowPath.endsWith(".xml")) {
-						    	  syntax = SyntaxConstants.SYNTAX_STYLE_XML;
-						      } else if (lowPath.endsWith(".properties")) {
-						    	  syntax = SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE;
-						      } else if (lowPath.endsWith(".dtd")) {
-						    	  syntax = SyntaxConstants.SYNTAX_STYLE_DTD;
-						      } else if (lowPath.endsWith(".css")) {
-						    	  syntax = SyntaxConstants.SYNTAX_STYLE_CSS;
-						      } else if (lowPath.endsWith(".jsp")) {
-						    	  syntax = SyntaxConstants.SYNTAX_STYLE_JSP;
-						      } else if (lowPath.endsWith(".js")) {
-						    	  syntax = SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT;
-						      } else if (lowPath.endsWith(".bat") || lowPath.endsWith(".cmd")) {
-						    	  syntax = SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH;
-						      } else if (lowPath.endsWith(".sh")) {
-						    	  syntax = SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL;
-						      } else if (lowPath.endsWith(".java")) {
-						    	  syntax = SyntaxConstants.SYNTAX_STYLE_JAVA;
-						      }
-						      
-						      textArea.setSyntaxEditingStyle(syntax);
-						      textArea.setBorder(emptyBorder);
-						      textArea.setCodeFoldingEnabled(true);
-						      textArea.setText(content);
-						      textArea.setEditable(false);
-						         Theme theme = Theme.load(getClass().getResourceAsStream(
-						                 "/org/fife/ui/rsyntaxtextarea/themes/eclipse.xml"));
-						           theme.apply(textArea);
-							
-						      Dimension size = contentView.getPreferredSize();
-						      
-						      pane.remove(contentView);
-						      contentView = new RTextScrollPane(textArea);
-						      contentView.setPreferredSize(size);
-						}
-					}
-					
-					((JComponent)contentView).setBorder(emptyBorder);
-					pane.setRightComponent(contentView);
-
-					pane.validate();
-					pane.repaint();
-					statusBar.disableProgress();
-					return null;
-				}
-
-
-			}.execute();
-		}
-
-		private boolean isImgFile(String fileName) {
-			return fileName.endsWith(".png") || fileName.endsWith(".gif") || fileName.endsWith(".jpg")
-					|| fileName.endsWith(".jpeg") || fileName.endsWith(".bmp");
-		}
-
-	};
-	
 
 	private static JFrame frame;
 	private static JarTree jarTree;
@@ -317,7 +169,7 @@ public class Content extends JPanel {
 
 		// Create and set up the content pane.
 		Content newContentPane = new Content();
-		((JComponent)newContentPane).setBorder(emptyBorder);
+		((JComponent)newContentPane).setBorder(Settings.EMPTY_BORDER);
 		//newContentPane.setOpaque(true); // content panes must be opaque
 		frame.setContentPane(newContentPane);
 		frame.setDropTarget(new DropTarget() {
@@ -360,17 +212,17 @@ public class Content extends JPanel {
 				statusBar.enableProgress("Loading...");
 				
 				JSplitPane pane = getSplitPane();
-				pane.setBorder(emptyBorder);
+				pane.setBorder(Settings.EMPTY_BORDER);
 				Component treeView = pane.getLeftComponent();
 				pane.remove(treeView);
 				
 				try {
-					jarTree = new JarTree(treeSelectionListener
-							, treeExpansionListener, statusBar, frame);
+					jarTree = new JarTree(treeExpansionListener, statusBar, frame);
+					jarTree.addTreeSelectionListener(new JarTreeSelectionListener(jarTree, statusBar, frame));
 					jarTree.load(f);
-					jarTree.setBorder(emptyBorder);
+					jarTree.setBorder(Settings.EMPTY_BORDER);
 					treeView = new JScrollPane(jarTree);
-					((JComponent)treeView).setBorder(emptyBorder);
+					((JComponent)treeView).setBorder(Settings.EMPTY_BORDER);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -378,7 +230,7 @@ public class Content extends JPanel {
 		
 				pane.setLeftComponent(treeView);
 				JScrollPane contentView = new JScrollPane();
-				contentView.setBorder(emptyBorder);
+				contentView.setBorder(Settings.EMPTY_BORDER);
 				pane.setRightComponent(contentView);
 		
 				frame.validate();
