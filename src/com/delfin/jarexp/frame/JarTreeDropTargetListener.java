@@ -7,7 +7,6 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -15,27 +14,26 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.JarexpException;
 
 class JarTreeDropTargetListener implements DropTargetListener {
-	
+
 	private static final Logger log = Logger.getLogger(JarTreeDropTargetListener.class.getCanonicalName());
-	
+
 	private final JarTree jarTree;
-	
+
 	private final StatusBar statusBar;
-	
+
 	private final JFrame frame;
-	
+
 	JarTreeDropTargetListener(JarTree jarTree, StatusBar statusBar, JFrame frame) {
 		this.jarTree = jarTree;
 		this.statusBar = statusBar;
 		this.frame = frame;
 	}
-	
+
 	@Override
 	public void dragEnter(DropTargetDragEvent dtde) {
 		jarTree.setDragging(true);
@@ -43,12 +41,8 @@ class JarTreeDropTargetListener implements DropTargetListener {
 
 	@Override
 	public void dragOver(DropTargetDragEvent dtde) {
-		if (jarTree.isPacking()) {
-			dtde.rejectDrag();
-			return;
-		}
-		JarNode node = getNode(dtde);
-		if (node == null) {
+		JarNode node = null;
+		if (jarTree.isPacking() || (node = getNode(dtde)) == null) {
 			dtde.rejectDrag();
 			return;
 		}
@@ -75,69 +69,73 @@ class JarTreeDropTargetListener implements DropTargetListener {
 			dtde.rejectDrop();
 			return;
 		}
-		
-		JarNode node = getNode(dtde);
+		final JarNode node = getNode(dtde);
 		if (node == null) {
 			dtde.rejectDrop();
-			return;				
+			return;
 		}
+		List<File> droppedFiles = getDroppedFiles(dtde);
+		if (droppedFiles.isEmpty()) {
+			JOptionPane.showConfirmDialog(frame, "There is wrong dopped data format. Expected only files list.",
+			        "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+			dtde.dropComplete(true);
+			return;
+		}
+		int reply = JOptionPane.showConfirmDialog(frame,
+		        "Do you want to add files " + droppedFiles + " into " + node.name, "Adding files confirmation",
+		        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		if (reply == JOptionPane.YES_OPTION) {
+			new Executor() {
+
+				@Override
+				protected void perform() {
+					statusBar.enableProgress("Packing...");
+					jarTree.setPacking(true);
+					packIntoJar(node, droppedFiles);
+					jarTree.update(node);
+				}
+
+				@Override
+				protected void doFinally() {
+					dtde.dropComplete(true);
+					jarTree.setDragging(false);
+					jarTree.setPacking(false);
+					statusBar.disableProgress();
+				};
+			}.execute();
+		}
+
+	}
+
+	private static List<File> getDroppedFiles(DropTargetDropEvent dtde) {
 		try {
-			final List<File> droppedFiles = new ArrayList<File>();
+			List<File> res = new ArrayList<File>();
 			Transferable tr = dtde.getTransferable();
 			DataFlavor[] flavors = tr.getTransferDataFlavors();
 			if (flavors.length > 1) {
 				log.warning("There are " + flavors.length + " flavors found");
 			}
-			
 			for (int i = 0; i < flavors.length; i++) {
 				if (tr.isDataFlavorSupported(flavors[i])) {
 					dtde.acceptDrop(dtde.getDropAction());
 					Object obj = tr.getTransferData(flavors[i]);
 					if (obj instanceof List<?>) {
-						droppedFiles.clear();
-						for (Object o : (List<?>)obj) {
-							if (!(o instanceof File)) {
-								continue;
+						res.clear();
+						for (Object o : (List<?>) obj) {
+							if (o instanceof File) {
+								res.add((File) o);
 							}
-							droppedFiles.add((File)o);
 						}
 					}
 				}
 			}
-			if (droppedFiles.isEmpty()) {
-				JOptionPane.showConfirmDialog(frame,
-				        "There is wrong dopped data format. Expected only files list.", 
-				        "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-				dtde.dropComplete(true);
-				return;
-			}
-			int reply = JOptionPane.showConfirmDialog(frame,
-			        "Do you want to add files " + droppedFiles + " into " + node.name, "Adding files confirmation",
-			        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (reply == JOptionPane.YES_OPTION) {
-				new SwingWorker<Void, Void>() {
-					@Override
-					protected Void doInBackground() throws Exception {
-						statusBar.enableProgress("Packing...");
-						jarTree.setPacking(true);
-						packIntoJar(node, droppedFiles);
-						jarTree.update(node);
-						statusBar.disableProgress();
-						jarTree.setDragging(false);
-						jarTree.setPacking(false);
-						dtde.dropComplete(true);
-						return null;
-					}
-				}.execute();
-			}
+			return res;
 		} catch (Exception e) {
-			throw new JarexpException("An error occurred while adding data into jar", e);
-		} finally {
-			jarTree.setDragging(false);
+			throw new JarexpException("An error occurred while retrieving dropped files", e);
 		}
 	}
 
-	void packIntoJar(JarNode node, List<File> droppedFiles) throws IOException {
+	void packIntoJar(JarNode node, List<File> droppedFiles) {
 		if (log.isLoggable(Level.FINE)) {
 			log.fine("Dropping files " + droppedFiles + " into " + node.getPathList());
 		}
@@ -156,9 +154,9 @@ class JarTreeDropTargetListener implements DropTargetListener {
 	private JarNode getNode(DropTargetDragEvent dtde) {
 		return jarTree.getNodeByLocation(dtde.getLocation());
 	}
-	
+
 	private JarNode getNode(DropTargetDropEvent dtde) {
 		return jarTree.getNodeByLocation(dtde.getLocation());
 	}
-	
+
 }

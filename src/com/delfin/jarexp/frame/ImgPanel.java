@@ -1,5 +1,6 @@
 package com.delfin.jarexp.frame;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 
@@ -13,6 +14,7 @@ class ImgPanel extends JPanel {
 
 	ImgPanel(Image image) {
 		this.image = image;
+		setPreferredSize(new Dimension(image.getWidth(null), image.getHeight(null)));
 	}
 
 	@Override

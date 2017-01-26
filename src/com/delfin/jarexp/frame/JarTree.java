@@ -149,7 +149,7 @@ class JarTree extends JTree {
 		setCellRenderer(new JarTreeCellRenderer());
 	}
 
-	void load(File file) throws IOException {
+	void load(File file) {
 		if (file == null) {
 			root = new JarNode();
 			return;
@@ -199,7 +199,7 @@ class JarTree extends JTree {
 		}
 	}
 
-	void addArchive(File jar, JarNode node) throws IOException {
+	void addArchive(File jar, JarNode node) {
 		new Jar(jar) {
 			@Override
 			protected void process(JarEntry entry) throws IOException {

@@ -25,7 +25,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -68,6 +67,10 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 	private JarNode node;
 
+	private int dividerLocation;
+
+	private boolean isLocked;
+
 	JarTreeSelectionListener(JarTree jarTree, StatusBar statusBar, JFrame frame) {
 		this.jarTree = jarTree;
 		this.statusBar = statusBar;
@@ -79,9 +82,10 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 		if (jarTree.isDragging()) {
 			return;
 		}
-		new SwingWorker<Void, Void>() {
+		new Executor() {
 			@Override
-			protected Void doInBackground() throws Exception {
+			protected void perform() {
+				isLocked = true;
 				if (wasEdited) {
 					try {
 						statusBar.enableProgress("Saving...");
@@ -97,7 +101,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				}
 				node = (JarNode) jarTree.getLastSelectedPathComponent();
 				if (node == null || !node.isLeaf() || node.isDirectory) {
-					return null;
+					return;
 				}
 				File file = new File(node.archive.getParent(), node.path);
 
@@ -109,85 +113,88 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				statusBar.setPath(node.path);
 				statusBar.setCompiledVersion("");
 
-				try {
-					Zip.unzip(node.path, node.archive, file);
-					String lowPath = node.path.toLowerCase();
-					if (lowPath.endsWith(".class")) {
-						statusBar.enableProgress("Decompiling...");
-						statusBar.setCompiledVersion(Version.getCompiledJava(file));
+				Zip.unzip(node.path, node.archive, file);
+				String lowPath = node.path.toLowerCase();
+				if (lowPath.endsWith(".class")) {
+					statusBar.enableProgress("Decompiling...");
+					statusBar.setCompiledVersion(Version.getCompiledJava(file));
 
-						RSyntaxTextArea textArea = new RSyntaxTextArea(
-						        com.delfin.jarexp.utils.Compiler.decompile(file));
-						textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+					RSyntaxTextArea textArea = new RSyntaxTextArea(com.delfin.jarexp.utils.Compiler.decompile(file));
+					textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+					textArea.setBorder(Settings.EMPTY_BORDER);
+					textArea.setCodeFoldingEnabled(true);
+					textArea.setEditable(false);
+					applyTheme(textArea);
+					area = textArea;
+
+					Dimension size = contentView.getPreferredSize();
+					pane.remove(contentView);
+					contentView = new RTextScrollPane(textArea);
+					contentView.setPreferredSize(size);
+				} else if (isImgFile(lowPath)) {
+					try {
+						JPanel img = new ImgPanel(ImageIO.read(file));
+						img.setBorder(Settings.EMPTY_BORDER);
+						pane.remove(contentView);
+						contentView = new JScrollPane(img);
+						
+						// pane.setResizeWeight(1);
+						//pane.setDividerSize(0);
+					} catch (IOException e) {
+						throw new JarexpException("Couldn't read file " + file + " as image", e);
+					}
+				} else {
+					if (!file.isDirectory()) {
+						statusBar.enableProgress("Reading...");
+						RSyntaxTextArea textArea = new RSyntaxTextArea(FileUtils.toString(file));
+						textArea.setSyntaxEditingStyle(getSyntax(lowPath));
 						textArea.setBorder(Settings.EMPTY_BORDER);
 						textArea.setCodeFoldingEnabled(true);
-						textArea.setEditable(false);
+						textArea.setEditable(true);
+						textArea.getDocument().addDocumentListener(new TextAreaDocumentListener());
 						applyTheme(textArea);
+						KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK);
+						textArea.getInputMap().put(key, new AbstractAction() {
+							private static final long serialVersionUID = -3016470783134782605L;
+
+							@Override
+							public void actionPerformed(ActionEvent event) {
+								if (wasEdited) {
+									try {
+										statusBar.enableProgress("Saving...");
+										saveChanges();
+									} catch (IOException e) {
+										wasEdited = false;
+										node = null;
+										area = null;
+										throw new JarexpException("An error occurred while saving changes", e);
+									} finally {
+										statusBar.disableProgress();
+									}
+								}
+							}
+						});
 						area = textArea;
 
 						Dimension size = contentView.getPreferredSize();
 						pane.remove(contentView);
 						contentView = new RTextScrollPane(textArea);
 						contentView.setPreferredSize(size);
-					} else if (isImgFile(lowPath)) {
-						try {
-							JPanel img = new ImgPanel(ImageIO.read(file));
-							img.setBorder(Settings.EMPTY_BORDER);
-							pane.remove(contentView);
-							contentView = new JScrollPane(img);
-						} catch (IOException e) {
-							throw new JarexpException("Couldn't read file " + file + " as image", e);
-						}
-					} else {
-						if (!file.isDirectory()) {
-							statusBar.enableProgress("Reading...");
-							RSyntaxTextArea textArea = new RSyntaxTextArea(FileUtils.toString(file));
-							textArea.setSyntaxEditingStyle(getSyntax(lowPath));
-							textArea.setBorder(Settings.EMPTY_BORDER);
-							textArea.setCodeFoldingEnabled(true);
-							textArea.setEditable(true);
-							textArea.getDocument().addDocumentListener(new TextAreaDocumentListener());
-							applyTheme(textArea);
-							KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK);
-							textArea.getInputMap().put(key, new AbstractAction() {
-								private static final long serialVersionUID = -3016470783134782605L;
-
-								@Override
-								public void actionPerformed(ActionEvent event) {
-									System.out.println("action");
-									if (wasEdited) {
-										try {
-											statusBar.enableProgress("Saving...");
-											saveChanges();
-										} catch (IOException e) {
-											wasEdited = false;
-											node = null;
-											area = null;
-											throw new JarexpException("An error occurred while saving changes", e);
-										} finally {
-											statusBar.disableProgress();
-										}
-									}
-								}
-							});
-							area = textArea;
-
-							Dimension size = contentView.getPreferredSize();
-							pane.remove(contentView);
-							contentView = new RTextScrollPane(textArea);
-							contentView.setPreferredSize(size);
-						}
 					}
-
-					((JComponent) contentView).setBorder(Settings.EMPTY_BORDER);
-					pane.setRightComponent(contentView);
-
-					pane.validate();
-					pane.repaint();
-				} finally {
-					statusBar.disableProgress();
 				}
-				return null;
+
+				((JComponent) contentView).setBorder(Settings.EMPTY_BORDER);
+				pane.setRightComponent(contentView);
+
+				pane.setDividerLocation(dividerLocation);
+				pane.validate();
+				pane.repaint();
+			}
+
+			@Override
+			protected void doFinally() {
+				isLocked = false;
+				statusBar.disableProgress();
 			}
 
 			private String getSyntax(String lowPath) {
@@ -274,6 +281,14 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 		public void changedUpdate(DocumentEvent e) {
 			wasEdited = true;
 		}
+	}
+
+	boolean isLocked() {
+		return isLocked;
+	}
+
+	void setDividerLocation(int dividerLocation) {
+		this.dividerLocation = dividerLocation;
 	}
 
 }

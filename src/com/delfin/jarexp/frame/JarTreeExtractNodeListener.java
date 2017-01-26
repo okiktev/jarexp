@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
 
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
 import com.delfin.jarexp.frame.resources.Resources;
@@ -55,9 +54,9 @@ class JarTreeExtractNodeListener implements ActionListener {
 				int res = JOptionPane.showConfirmDialog(frame, "File " + dst + " already exist. Do you want to replace one?", "Replace or skip file"
 						, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if (res == JOptionPane.YES_OPTION) {
-					new SwingWorker<Void, Void>() {
+					new Executor() {
 						@Override
-						protected Void doInBackground() throws Exception {
+						protected void perform() {
 							statusBar.enableProgress("Extracting...");
 							if (log.isLoggable(Level.FINE)) {
 								log.fine("Extracting file " + node.path);
@@ -65,8 +64,11 @@ class JarTreeExtractNodeListener implements ActionListener {
 							File tmp = new File(Resources.createTmpDir(), node.name);
 							node.unzip(tmp);
 							FileUtils.copy(tmp, dst);
+						}
+
+						@Override
+						protected void doFinally() {
 							statusBar.disableProgress();
-							return null;
 						}
 					}.execute();
 				}

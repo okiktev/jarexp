@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
 
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
 
@@ -49,9 +48,10 @@ class JarTreeAddNodeListener implements ActionListener {
 			}
 			JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
 			JarNode node = (JarNode) item.path.getLastPathComponent();
-			new SwingWorker<Void, Void>() {
+			new Executor() {
+
 				@Override
-				protected Void doInBackground() throws Exception {
+				protected void perform() {
 					statusBar.enableProgress("Packing...");
 					jarTree.setPacking(true);
 					if (log.isLoggable(Level.FINE)) {
@@ -64,10 +64,14 @@ class JarTreeAddNodeListener implements ActionListener {
 					files.add(f);
 					JarTree.put(node, files);
 					jarTree.update(node);
-					statusBar.disableProgress();
-					jarTree.setPacking(false);
-					return null;
 				}
+
+				@Override
+				protected void doFinally() {
+					jarTree.setPacking(false);
+					statusBar.disableProgress();
+				};
+
 			}.execute();
 		}
 	}

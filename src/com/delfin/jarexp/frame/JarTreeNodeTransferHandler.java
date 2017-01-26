@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
-import javax.swing.SwingWorker;
 import javax.swing.TransferHandler;
 
 import com.delfin.jarexp.frame.resources.Resources;
@@ -48,24 +47,26 @@ class JarTreeNodeTransferHandler extends TransferHandler {
 			List<File> files = new ArrayList<File>(1);
 			if (node != null) {
 				if (file == null) {
-					new SwingWorker<Void, Void>() {
+					new Executor() {
 						@Override
-						protected Void doInBackground() throws Exception {
+						protected void perform() {
 							statusBar.enableProgress("Extracting...");
 							if (log.isLoggable(Level.FINE)) {
 								log.fine("Extracting file " + node.path);
 							}
 							node.unzip(file = new File(Resources.createTmpDir(), node.name));
-							statusBar.disableProgress();
-							return null;
 						}
+
+						@Override
+						protected void doFinally() {
+							statusBar.disableProgress();
+						};
 					}.execute();
 				}
 				files.add(file);
 			}
 			return files;
 		}
-
 	}
 
 	JarTreeNodeTransferHandler(StatusBar statusBar) {

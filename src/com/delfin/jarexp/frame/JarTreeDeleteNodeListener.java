@@ -2,14 +2,11 @@ package com.delfin.jarexp.frame;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.SwingWorker;
 import javax.swing.tree.TreeNode;
 
-import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
 
 class JarTreeDeleteNodeListener implements ActionListener {
@@ -29,28 +26,29 @@ class JarTreeDeleteNodeListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
 		JarNode node = (JarNode) item.path.getLastPathComponent();
-		new SwingWorker<Void, Void>() {
+		new Executor() {
+
 			@Override
-			protected Void doInBackground() throws Exception {
+			protected void perform() {
 				statusBar.enableProgress("Removing...");
 				if (log.isLoggable(Level.FINE)) {
 					log.fine("Deleting file " + node.path);
 				}
-				try {
-					delFromJar(node);
-				} catch (IOException e) {
-					throw new JarexpException("An error occurred while deleting node " + node.path, e);
-				}
+				delFromJar(node);
 				TreeNode parent = node.getParent();
 				jarTree.remove(node);
 				jarTree.update(parent);
+			}
+
+			@Override
+			protected void doFinally() {
 				statusBar.disableProgress();
-				return null;
 			}
 		}.execute();
+
 	}
 
-	void delFromJar(JarNode node) throws IOException {
+	void delFromJar(JarNode node) {
 		Jar.delete(node);
 	}
 

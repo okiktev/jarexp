@@ -3,6 +3,7 @@ package com.delfin.jarexp.utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,8 +21,12 @@ public class FileUtils {
 
 	private static final Logger log = Logger.getLogger(FileUtils.class.getCanonicalName());
 
-	public static String toString(File file) throws IOException {
-		return read(new FileInputStream(file));
+	public static String toString(File file) {
+		try {
+			return read(new FileInputStream(file));
+		} catch (FileNotFoundException e) {
+			throw new JarexpException("An error occurred while reading file " + file, e);
+		}
 	}
 
 	public static String toString(URL url) throws IOException {
@@ -62,12 +67,15 @@ public class FileUtils {
 		}
 	}
 
-	public static void copy(File src, File dst) throws IOException {
+	public static void copy(File src, File dst) {
 		if (dst.isDirectory()) {
 			dst = new File(dst, src.getName());
 		}
-		
-		Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		try {
+			Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		} catch (Exception e) {
+			throw new JarexpException("An error occurred while copying file " + src + " into " + dst, e);
+		}
 
 //		FileInputStream srcStream = new FileInputStream(src);
 //		FileOutputStream dstStream = new FileOutputStream(dst);

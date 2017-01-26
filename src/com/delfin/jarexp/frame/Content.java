@@ -13,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -25,7 +27,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.SwingWorker;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.filechooser.FileFilter;
@@ -62,21 +63,18 @@ public class Content extends JPanel {
 				}
 			}
 			if (isNeedToFill) {
-				new SwingWorker<Void, Void>() {
+				new Executor() {
 					@Override
-					protected Void doInBackground() throws Exception {
+					protected void perform() {
 						statusBar.enableProgress("Loading...");
 						File dst = new File(Resources.createTmpDir(), node.name);
 						Zip.unzip(node.path, node.archive, dst);
-						try {
-							jarTree.addArchive(dst, node);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						jarTree.addArchive(dst, node);
 						jarTree.update(node);
+					}
+					@Override
+					protected void doFinally() {
 						statusBar.disableProgress();
-						return null;
 					}
 				}.execute();
 			}
@@ -93,6 +91,7 @@ public class Content extends JPanel {
 	private static JarTree jarTree;
 	private static File file;
 	private static StatusBar statusBar;
+	private static JarTreeSelectionListener jarTreeSelectionListener;
 
 	private Content() {
 		super(new BorderLayout());
@@ -201,42 +200,48 @@ public class Content extends JPanel {
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
+
 	protected static void loadJarFile(File f) {
 		log.fine("Loading file " + f);
-
-		new SwingWorker<Void, Void>() {
-
+		
+		new Executor() {
 			@Override
-			protected Void doInBackground() throws Exception {
+			protected void perform() {
 				statusBar.enableProgress("Loading...");
-				
+
 				JSplitPane pane = getSplitPane();
 				pane.setBorder(Settings.EMPTY_BORDER);
 				Component treeView = pane.getLeftComponent();
 				pane.remove(treeView);
-				
-				try {
-					jarTree = new JarTree(treeExpansionListener, statusBar, frame);
-					jarTree.addTreeSelectionListener(new JarTreeSelectionListener(jarTree, statusBar, frame));
-					jarTree.load(f);
-					jarTree.setBorder(Settings.EMPTY_BORDER);
-					treeView = new JScrollPane(jarTree);
-					((JComponent)treeView).setBorder(Settings.EMPTY_BORDER);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		
+
+				jarTree = new JarTree(treeExpansionListener, statusBar, frame);
+				jarTree.addTreeSelectionListener(jarTreeSelectionListener = new JarTreeSelectionListener(jarTree, statusBar, frame));
+				jarTree.load(f);
+				jarTree.setBorder(Settings.EMPTY_BORDER);
+				treeView = new JScrollPane(jarTree);
+				((JComponent) treeView).setBorder(Settings.EMPTY_BORDER);
+
 				pane.setLeftComponent(treeView);
 				JScrollPane contentView = new JScrollPane();
 				contentView.setBorder(Settings.EMPTY_BORDER);
 				pane.setRightComponent(contentView);
-		
+
 				frame.validate();
-				frame.repaint();		
+				frame.repaint();
+				jarTreeSelectionListener.setDividerLocation(treeView.getWidth());
+				pane.addPropertyChangeListener(new PropertyChangeListener() {
+					@Override
+					public void propertyChange(PropertyChangeEvent evt) {
+						if (!jarTreeSelectionListener.isLocked()) {
+							jarTreeSelectionListener.setDividerLocation(pane.getDividerLocation());
+						}
+					}
+				});
+			}
+
+			@Override
+			protected void doFinally() {
 				statusBar.disableProgress();
-				return null;
 			}
 
 			private JSplitPane getSplitPane() {
@@ -248,16 +253,14 @@ public class Content extends JPanel {
 						pane.setRightComponent(new JScrollPane());
 						frame.add(pane);
 						return pane;
-					} if (comp instanceof JSplitPane) {
+					}
+					if (comp instanceof JSplitPane) {
 						return (JSplitPane) comp;
 					}
 				}
 				throw new JarexpException("Couldn't find split pane on frame");
 			}
-			
 		}.execute();
-		
-
 	}
 
 }

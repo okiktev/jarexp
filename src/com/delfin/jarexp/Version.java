@@ -18,7 +18,7 @@ public class Version {
 		return ver;
 	}
 
-	public static String getCompiledJava(File file) throws IOException {
+	public static String getCompiledJava(File file) {
 		InputStream in = null;
 		DataInputStream data = null;
 		try {
@@ -63,7 +63,7 @@ public class Version {
 		} catch (Exception e) {
 			String msg = "An error occurred while trying to identify java version which was compiled file " + file;
 			log.log(Level.SEVERE, msg, e);
-			throw new IOException(msg, e);
+			throw new JarexpException(msg, e);
 		} finally {
 			if (data != null) {
 				try {

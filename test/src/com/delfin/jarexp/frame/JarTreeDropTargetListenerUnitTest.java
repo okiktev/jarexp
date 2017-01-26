@@ -253,7 +253,7 @@ public class JarTreeDropTargetListenerUnitTest extends BaseUnitTest {
 				Zip.unzip(node.path, node.archive, dst);
 				try {
 					jarTree.addArchive(dst, node);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					throw new RuntimeException("Unable add archive into node", e);
 				}
 			}
