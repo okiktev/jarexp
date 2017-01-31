@@ -48,8 +48,8 @@ class JarTreeExtractNodeListener implements ActionListener {
 				return;
 			}
 			JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
-			JarNode node = (JarNode) item.path.getLastPathComponent();
-			File dst = new File(f, node.name);
+			final JarNode node = (JarNode) item.path.getLastPathComponent();
+			final File dst = new File(f, node.name);
 			if (dst.exists()) {
 				int res = JOptionPane.showConfirmDialog(frame, "File " + dst + " already exist. Do you want to replace one?", "Replace or skip file"
 						, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);

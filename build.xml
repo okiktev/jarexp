@@ -5,9 +5,7 @@
 		Builds Jar Explorer application.
 	</description>
 
-
 	<property file="${basedir}/build.properties" />
-
 
 	<target name="clean">
 		<echo message="Cleaning build directory" />
@@ -15,9 +13,7 @@
 		<delete dir="${build.dir}" />
 		<mkdir dir="${build.dir}" />
 		<antcall target="generate-build-num" />
-
 	</target>
-
 
 	<target name="compile" depends="clean">
 		<echo message="Compiling sources into ${classes.dir}" />
@@ -46,17 +42,16 @@
 		</copy>
 
 		<javac srcdir="${build.dir}/src" debug="${debug}" debuglevel="${debug.level}"
-			destdir="${classes.dir}" includeantruntime="false" >
+			destdir="${classes.dir}" includeantruntime="false" source="1.6" target="1.6" >
 			<classpath>
 				<filelist>
 					<file name="${dependency1}"/>
 					<file name="${dependency2}"/>
+					<file name="${dependency3}"/>
 				</filelist>
 			</classpath>
 		</javac>
-
 	</target>
-
 
 	<target name="assembly" depends="compile">
 		<echo message="Assembling files into ${jar.dir}" />
@@ -69,6 +64,8 @@
 		<unjar src="${dependency1}" dest="${jar.dir}" />
 		<delete dir="${jar.dir}/META-INF" />
 		<unjar src="${dependency2}" dest="${jar.dir}" />
+		<delete dir="${jar.dir}/META-INF" />
+		<unjar src="${dependency3}" dest="${jar.dir}" />
 		<delete dir="${jar.dir}/META-INF" />
 
 		<copy todir="${jar.dir}">
@@ -83,7 +80,6 @@
 
 	</target>
 
-
 	<target name="generate-build-num">
 		<echo message="Generating new build number" />
 
@@ -91,9 +87,7 @@
 			<arg value="/c" />
 			<arg value="gen_build_num.bat" />
 		</exec>
-
 	</target>
-
 
 	<target name="jar" depends="assembly">
 		<echo message="Making jar file into ${artifacts.dir}" />
@@ -120,6 +114,37 @@
 		</jar>
 	</target>
 
+	<target name="pack" depends="jar">
+		<property name="build.exe.dir" value="${basedir}/build_exe" />
+		<copy todir="${artifacts.dir}">
+			<fileset dir="${build.exe.dir}" includes="jarexp.bat" />
+			<filterset>
+				<filter token="FILENAME" value="jar-explorer-${full.version}.jar" />
+			</filterset>
+		</copy>
+		<property name="bte.dir" value="${build.exe.dir}/bte" />
+		<echo message="Making exe file in ${artifacts.dir}" />
+		<exec executable="${bte.dir}/bte.exe" dir="${bte.dir}" failonerror="true">
+			<arg value="-bat" />
+			<arg value="${artifacts.dir}/jarexp.bat" />
+			<arg value="-save" />
+			<arg value="${artifacts.dir}/Jar Explorer.exe" />
+			<arg value="-icon" />
+			<arg value="${build.exe.dir}/jarexp.ico" />
+			<arg value="-invisible" />
+			<arg value="-productname" />
+			<arg value="Jar Explorer" />
+			<arg value="-copyright" />
+			<arg value="${copyright}" />
+			<arg value="-description" />
+			<arg value="Jar Explorer" />
+		</exec>
+		<delete file="${artifacts.dir}/jarexp.bat" />
+
+		<mkdir dir="${artifacts.dir}/lib" />
+		<move file="${artifacts.dir}/jar-explorer-${full.version}.jar" todir="${artifacts.dir}/lib" />
+		<zip destfile="${artifacts.dir}/JarExplorer.${full.version}.zip" basedir="${artifacts.dir}" />
+	</target>
 
 </project>
 

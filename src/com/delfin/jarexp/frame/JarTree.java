@@ -154,7 +154,7 @@ class JarTree extends JTree {
 			root = new JarNode();
 			return;
 		}
-		File dst = new File(Resources.createTmpDir(), file.getName());
+		final File dst = new File(Resources.createTmpDir(), file.getName());
 		FileUtils.copy(file, dst);
 		root = new JarNode(file.getAbsolutePath(), "", dst, false);
 		new Jar(file) {
@@ -199,7 +199,7 @@ class JarTree extends JTree {
 		}
 	}
 
-	void addArchive(File jar, JarNode node) {
+	void addArchive(final File jar, final JarNode node) {
 		new Jar(jar) {
 			@Override
 			protected void process(JarEntry entry) throws IOException {

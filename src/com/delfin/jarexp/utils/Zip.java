@@ -275,7 +275,7 @@ public class Zip {
 		 // unzip("D:\\fernflower\\arpluginsvr90_build001.jar", "D:\\fernflower\\out");
 		 // unzip("D:\\fernflower\\mt\\MidTier.jar", "D:\\fernflower\\mt\\out");
 		 // unzip("D:\\fernflower\\je\\JarExplorer.jar", new File("D:\\fernflower\\je\\out"));
-		List<File> files = new ArrayList<>();
+		List<File> files = new ArrayList<File>();
 		files.add(new File("bookstore-web.war"));
 		//files.add(new File("img.jpg"));
 		//add("META-INF/", new File("hibernate.jar"), files);

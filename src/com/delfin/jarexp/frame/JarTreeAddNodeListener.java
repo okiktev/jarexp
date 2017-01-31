@@ -40,14 +40,14 @@ class JarTreeAddNodeListener implements ActionListener {
 			chooser.setCurrentDirectory(file.getParentFile());
 		}
 		if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-			File f = chooser.getSelectedFile();
+			final File f = chooser.getSelectedFile();
 			if (!f.exists()) {
 				JOptionPane.showConfirmDialog(frame, "File " + f.getAbsolutePath() + " is not exist", "Error",
 				        JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
-			JarNode node = (JarNode) item.path.getLastPathComponent();
+			final JarNode node = (JarNode) item.path.getLastPathComponent();
 			new Executor() {
 
 				@Override

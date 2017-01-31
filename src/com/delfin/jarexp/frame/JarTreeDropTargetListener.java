@@ -64,7 +64,7 @@ class JarTreeDropTargetListener implements DropTargetListener {
 	}
 
 	@Override
-	public void drop(DropTargetDropEvent dtde) {
+	public void drop(final DropTargetDropEvent dtde) {
 		if (jarTree.isPacking()) {
 			dtde.rejectDrop();
 			return;
@@ -74,7 +74,7 @@ class JarTreeDropTargetListener implements DropTargetListener {
 			dtde.rejectDrop();
 			return;
 		}
-		List<File> droppedFiles = getDroppedFiles(dtde);
+		final List<File> droppedFiles = getDroppedFiles(dtde);
 		if (droppedFiles.isEmpty()) {
 			JOptionPane.showConfirmDialog(frame, "There is wrong dopped data format. Expected only files list.",
 			        "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);

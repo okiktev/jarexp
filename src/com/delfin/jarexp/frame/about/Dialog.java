@@ -39,11 +39,9 @@ public class Dialog extends JDialog {
 		tabbedPane.addTab("General", null, new General(), "General panel");
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_G);
 		tabbedPane.addTab("License", null, new License(), "License information");
-		tabbedPane.setMnemonicAt(1, KeyEvent.VK_L);
-		tabbedPane.addTab("Notice", null, new Notice(), "Notice panel");
-		tabbedPane.setMnemonicAt(2, KeyEvent.VK_N);
+		tabbedPane.setMnemonicAt(1, KeyEvent.VK_N);
 		tabbedPane.addTab("RSyntaxTextArea license", null, new SyntaxLicense(), "RSyntaxTextArea license");
-		tabbedPane.setMnemonicAt(3, KeyEvent.VK_R);
+		tabbedPane.setMnemonicAt(2, KeyEvent.VK_R);
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
 		add(tabbedPane, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(2, 2, 2, 2), 0, 0));

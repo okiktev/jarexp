@@ -1,5 +1,6 @@
 package com.delfin.jarexp;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -15,7 +16,7 @@ public class Main {
 
 	private static final Logger log = Logger.getLogger(Main.class.getCanonicalName());
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -23,6 +24,7 @@ public class Main {
 				} catch (IOException e) {
 					System.err.println("Could not setup logger configuration.");
 					e.printStackTrace(System.err);
+					throw new RuntimeException("Unable to initiate logger");
 				}
 				String sysLookFeel = UIManager.getSystemLookAndFeelClassName();
 				try {
@@ -31,7 +33,7 @@ public class Main {
 					log.log(Level.WARNING, "Unable to set " + sysLookFeel + " as current. Using: " + UIManager.getLookAndFeel().getName(), e);
 				}
 				try {
-					Content.createAndShowGUI();
+					Content.createAndShowGUI(getPassedFile(args));
 				} catch (Exception e) {
 					log.log(Level.SEVERE, "An error occurred while starting application", e);
 					JOptionPane.showMessageDialog(null, "Something happened: " + e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE, null);
@@ -39,6 +41,18 @@ public class Main {
 				}
 			}
 		});
+	}
+
+	protected static File getPassedFile(String[] args) {
+		if (args != null && args.length != 0) {
+			File file = new File(args[0]);
+			if (!file.exists()) {
+				log.warning("Passed file " + file + " does not exist");
+			} else {
+				return file;
+			}
+		}
+		return null;
 	}
 
 }

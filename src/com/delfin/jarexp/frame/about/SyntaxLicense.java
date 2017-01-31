@@ -24,7 +24,7 @@ class SyntaxLicense extends JPanel {
 		license.setFont(Dialog.textFont);
 		license.setBorder(Settings.EMPTY_BORDER);
 
-		JScrollPane scrollPane = new JScrollPane(license);
+		final JScrollPane scrollPane = new JScrollPane(license);
 		scrollPane.setWheelScrollingEnabled(true);
 		scrollPane.setBorder(Settings.EMPTY_BORDER);
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {

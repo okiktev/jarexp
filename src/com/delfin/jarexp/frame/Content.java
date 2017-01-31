@@ -49,7 +49,7 @@ public class Content extends JPanel {
 
 		@Override
 		public void treeExpanded(TreeExpansionEvent event) {
-			JarNode node = (JarNode) event.getPath().getLastPathComponent();
+			final JarNode node = (JarNode) event.getPath().getLastPathComponent();
 			if (node == null) {
 				return;
 			}
@@ -95,9 +95,9 @@ public class Content extends JPanel {
 
 	private Content() {
 		super(new BorderLayout());
+
 		JPanel initPanel = new ImgPanel(Resources.getInstance().getDragImage());
 		initPanel.setPreferredSize(new Dimension(Settings.getInstance().getFrameWidth(), 400));
-
 		add(initPanel);
 		add(statusBar = new StatusBar(this), BorderLayout.SOUTH);
 	}
@@ -105,9 +105,10 @@ public class Content extends JPanel {
 	/**
 	 * Create the GUI and show it. For thread safety, this method should be
 	 * invoked from the event-dispatching thread.
+	 * @param passedFile 
 	 * @throws ResourcesException 
 	 */
-	public static void createAndShowGUI() throws ResourcesException {
+	public static void createAndShowGUI(File passedFile) throws ResourcesException {
 		// Create and set up the window.
 		frame = new JFrame("Jar Explorer " + Settings.getInstance().getVersion());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -167,25 +168,20 @@ public class Content extends JPanel {
 		}));
 
 		// Create and set up the content pane.
-		Content newContentPane = new Content();
-		((JComponent)newContentPane).setBorder(Settings.EMPTY_BORDER);
+		Content content = new Content();
+		((JComponent)content).setBorder(Settings.EMPTY_BORDER);
 		//newContentPane.setOpaque(true); // content panes must be opaque
-		frame.setContentPane(newContentPane);
+		frame.setContentPane(content);
 		frame.setDropTarget(new DropTarget() {
 
 			private static final long serialVersionUID = -2086424207425075731L;
 
 			public synchronized void drop(DropTargetDropEvent evt) {
 		        try {
-
-		        	
 		            evt.acceptDrop(DnDConstants.ACTION_COPY);
 		            @SuppressWarnings("unchecked")
 					List<File> droppedFiles = (List<File>)
 		                evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-		            
-		        	System.out.println("from content " + droppedFiles);
-		            
 		            for (File f : droppedFiles) {
 		            	loadJarFile(file = f);
 		            	break;
@@ -196,12 +192,15 @@ public class Content extends JPanel {
 		    }
 		});
 		frame.setIconImage(Resources.getInstance().getLogoImage());
-
 		frame.pack();
 		frame.setVisible(true);
+		
+		if (passedFile != null) {
+			loadJarFile(passedFile);
+		}
 	}
 
-	protected static void loadJarFile(File f) {
+	protected static void loadJarFile(final File f) {
 		log.fine("Loading file " + f);
 		
 		new Executor() {
@@ -209,7 +208,7 @@ public class Content extends JPanel {
 			protected void perform() {
 				statusBar.enableProgress("Loading...");
 
-				JSplitPane pane = getSplitPane();
+				final JSplitPane pane = getSplitPane();
 				pane.setBorder(Settings.EMPTY_BORDER);
 				Component treeView = pane.getLeftComponent();
 				pane.remove(treeView);

@@ -4,6 +4,8 @@
 .settings/
 bin/
 build/
+build_exe/bte/
+lib/
 
 
 

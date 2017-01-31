@@ -25,7 +25,7 @@ class JarTreeDeleteNodeListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
-		JarNode node = (JarNode) item.path.getLastPathComponent();
+		final JarNode node = (JarNode) item.path.getLastPathComponent();
 		new Executor() {
 
 			@Override
