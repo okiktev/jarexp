@@ -71,11 +71,23 @@ public class FileUtils {
 		if (dst.isDirectory()) {
 			dst = new File(dst, src.getName());
 		}
-		try {
-			Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		} catch (Exception e) {
-			throw new JarexpException("An error occurred while copying file " + src + " into " + dst, e);
+		if (src.isDirectory()) {
+			dst.mkdirs();
+			File[] files = src.listFiles();
+			if (files != null) {
+				for (int i = 0; i < files.length; ++i) {
+					copy(files[i],  new File(dst, files[i].getName()));
+				}
+			}
+		} else {
+    		try {
+    			Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    		} catch (Exception e) {
+    			throw new JarexpException("An error occurred while copying file " + src + " into " + dst, e);
+    		}
 		}
+
+
 
 //		FileInputStream srcStream = new FileInputStream(src);
 //		FileOutputStream dstStream = new FileOutputStream(dst);

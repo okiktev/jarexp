@@ -13,7 +13,7 @@ public class Settings {
 
 	private String version = Version.get();
 
-	private static File tmpDir = new File(System.getProperty("java.io.tmpdir"), "jarexp");
+	private static File tmpDir = new File(System.getProperty("java.io.tmpdir"), "jarexp" + System.currentTimeMillis());
 
 	public static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
 

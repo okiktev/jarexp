@@ -49,31 +49,40 @@ class JarTreeExtractNodeListener implements ActionListener {
 			}
 			JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
 			final JarNode node = (JarNode) item.path.getLastPathComponent();
-			final File dst = new File(f, node.name);
+			final File dst = new File(f, getName(node));
 			if (dst.exists()) {
 				int res = JOptionPane.showConfirmDialog(frame, "File " + dst + " already exist. Do you want to replace one?", "Replace or skip file"
 						, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-				if (res == JOptionPane.YES_OPTION) {
-					new Executor() {
-						@Override
-						protected void perform() {
-							statusBar.enableProgress("Extracting...");
-							if (log.isLoggable(Level.FINE)) {
-								log.fine("Extracting file " + node.path);
-							}
-							File tmp = new File(Resources.createTmpDir(), node.name);
-							node.unzip(tmp);
-							FileUtils.copy(tmp, dst);
-						}
-
-						@Override
-						protected void doFinally() {
-							statusBar.disableProgress();
-						}
-					}.execute();
+				if (res != JOptionPane.YES_OPTION) {
+					return;
 				}
 			}
+			new Executor() {
+				@Override
+				protected void perform() {
+					statusBar.enableProgress("Extracting...");
+					if (log.isLoggable(Level.FINE)) {
+						log.fine("Extracting file " + node.path);
+					}
+					File tmp = getTmpFile(node);
+					node.unzip(tmp);
+					FileUtils.copy(tmp, dst);
+				}
+
+				@Override
+				protected void doFinally() {
+					statusBar.disableProgress();
+				}
+			}.execute();
 		}
+	}
+	
+	private static File getTmpFile(JarNode node) {
+		return node.getParent() == null ? new File(node.name) : new File(Resources.createTmpDir(), node.name);
+	}
+	
+	private static String getName(JarNode node) {
+		return node.getParent() == null ? new File(node.name).getName() : node.name;
 	}
 
 	private void errorDlg(String msg) {

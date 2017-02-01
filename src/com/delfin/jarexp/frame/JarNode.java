@@ -87,6 +87,9 @@ class JarNode extends DefaultMutableTreeNode {
 	}
 
 	void unzip(File file) {
+		if (getParent() == null) {
+			return;
+		}
 		if (isDirectory) {
 			file.mkdir();
 			for (Enumeration<?> children = children(); children.hasMoreElements();) {
