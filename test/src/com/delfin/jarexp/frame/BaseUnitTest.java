@@ -47,17 +47,7 @@ class BaseUnitTest {
 	}
 	
 	private boolean equals(JarNode l, JarNode r) {
-		List<JarNode> left = l.getPathList();
-		List<JarNode> right = r.getPathList();
-		if (left.size() != right.size()) {
-			return false;
-		}
-		for (int i = 0; i < left.size(); ++i) {
-			if (!left.get(i).path.equals(right.get(i).path)) {
-				return false;
-			}
-		}
-		return true;
+		return l.eq(r);
 	}
 	
 	protected void bypass(JarNode node, List<JarNode> data) {

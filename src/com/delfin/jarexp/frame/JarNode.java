@@ -101,4 +101,24 @@ class JarNode extends DefaultMutableTreeNode {
 		}
 	}
 
+	boolean eq(JarNode node) {
+		if (node == null) {
+			return false;
+		}
+		if (this == node) {
+			return true;
+		}
+		List<JarNode> left = getPathList();
+		List<JarNode> right = node.getPathList();
+		if (left.size() != right.size()) {
+			return false;
+		}
+		for (int i = 0; i < left.size(); ++i) {
+			if (!left.get(i).path.equals(right.get(i).path)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

@@ -147,6 +147,7 @@ class JarTree extends JTree {
 				new JarTreeExtractNodeListener(statusBar, frame))
 				);
 		setCellRenderer(new JarTreeCellRenderer());
+		getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 	}
 
 	void load(File file) {
