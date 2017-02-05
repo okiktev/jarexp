@@ -50,6 +50,8 @@ public class Resources {
 
 	private Icon delIcon;
 
+	private Icon unpackIcon;
+
 	private Icon addIcon;
 
 	private Icon extIcon;
@@ -129,6 +131,17 @@ public class Resources {
 			return delIcon = new ImageIcon(loadImage("del.png"));
 		} catch (IOException e) {
 			throw new ResourcesException("Unable to load delete menu icon from class path", e);
+		}
+	}
+
+	public Icon getUnpackIcon() {
+		if (unpackIcon != null) {
+			return unpackIcon;
+		}
+		try {
+			return unpackIcon = new ImageIcon(loadImage("unpack.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load unpack menu icon from class path", e);
 		}
 	}
 

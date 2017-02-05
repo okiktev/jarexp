@@ -63,10 +63,14 @@ class JarTree extends JTree {
 
 		private final ActionListener extractActionListener;
 
-		JarTreeMouseListener(ActionListener deleteActionListener, ActionListener addActionListener, ActionListener extractActionListener) {
+		private final ActionListener unpackActionListener;
+
+		JarTreeMouseListener(ActionListener deleteActionListener, ActionListener addActionListener
+				, ActionListener extractActionListener, ActionListener unpackActionListener) {
 			this.deleteActionListener = deleteActionListener;
 			this.addActionListener = addActionListener;
 			this.extractActionListener = extractActionListener;
+			this.unpackActionListener = unpackActionListener;
 		}
 
 		@Override
@@ -91,6 +95,13 @@ class JarTree extends JTree {
 				JarNodeMenuItem extNode = new JarNodeMenuItem("Extract", path);
 				extNode.setIcon(Resources.getInstance().getExtIcon());
 				extNode.addActionListener(extractActionListener);
+				JarNode node = (JarNode) path.getLastPathComponent();
+				if (node.isArchive()) {
+					JarNodeMenuItem unpackNode = new JarNodeMenuItem("Unpack", path);
+					unpackNode.setIcon(Resources.getInstance().getUnpackIcon());
+					unpackNode.addActionListener(unpackActionListener);
+					popupMenu.add(unpackNode);
+				}
 				popupMenu.add(extNode);
 				popupMenu.add(addNode);
 				popupMenu.add(deleteNode);
@@ -144,8 +155,9 @@ class JarTree extends JTree {
 		addMouseListener(new JarTreeMouseListener(
 				new JarTreeDeleteNodeListener(this, statusBar),
 				new JarTreeAddNodeListener(this, statusBar, frame), 
-				new JarTreeExtractNodeListener(statusBar, frame))
-				);
+				new JarTreeExtractNodeListener(statusBar, frame),
+				new JarTreeUnpackNodeListener(statusBar, frame)
+				));
 		setCellRenderer(new JarTreeCellRenderer());
 		getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 	}

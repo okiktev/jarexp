@@ -14,9 +14,16 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import com.delfin.jarexp.JarexpException;
 
 public class Zip {
+	
+	private static final Logger log = Logger.getLogger(Zip.class.getCanonicalName());
 
 	// private static final int BUFFER_SIZE = 4096;
 
@@ -79,16 +86,16 @@ public class Zip {
 	       }
 	 }
 	
-//	private static void extractFile(ZipInputStream zipIn, File file) throws IOException {
-//		makeParentDirs(file);
-//		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-//		byte[] bytesIn = new byte[BUFFER_SIZE];
-//		int read = 0;
-//		while ((read = zipIn.read(bytesIn)) != -1) {
-//			bos.write(bytesIn, 0, read);
-//		}
-//		bos.close();
-//	}
+	private static void extractFile(ZipInputStream zipIn, File file) throws IOException {
+		makeParentDirs(file);
+		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+		byte[] bytesIn = new byte[4096];
+		int read = 0;
+		while ((read = zipIn.read(bytesIn)) != -1) {
+			bos.write(bytesIn, 0, read);
+		}
+		bos.close();
+	}
 	
 	
 	
@@ -281,5 +288,37 @@ public class Zip {
 		//add("META-INF/", new File("hibernate.jar"), files);
 		add("", new File("bookstore.ear"), files);
 	 }
+
+	public static void unzip(File archive, File dir) {
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		ZipInputStream is = null;
+		try {
+			is = new ZipInputStream(new FileInputStream(archive));
+			ZipEntry entry = is.getNextEntry();
+			while (entry != null) {
+				File file = new File(dir, entry.getName());
+				if (!entry.isDirectory()) {
+					extractFile(is, file);
+				} else {
+					file.mkdir();
+				}
+				is.closeEntry();
+				entry = is.getNextEntry();
+			}
+
+		} catch (Exception e) {
+			throw new JarexpException("An error occurred while unpacking file " + archive, e);
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					log.log(Level.WARNING, "An error occurred while closing stream to archive " + archive, e);
+				}
+			}
+		}
+	}
 
 }
