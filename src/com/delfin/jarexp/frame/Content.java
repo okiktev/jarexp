@@ -196,7 +196,7 @@ public class Content extends JPanel {
 		frame.setVisible(true);
 		
 		if (passedFile != null) {
-			loadJarFile(passedFile);
+			loadJarFile(file = passedFile);
 		}
 	}
 
