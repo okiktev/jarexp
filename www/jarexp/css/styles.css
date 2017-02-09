@@ -1,0 +1,212 @@
+*{margin:0;padding:0}
+
+body{
+font-size:11pt;
+font-family:'Segoe UI Light';
+font-weight:lighter;
+}
+
+#center{
+width: 800px;
+height: 100%;
+margin: 0 auto;
+
+/* background-color: green; */
+}
+
+#header{
+width:100%;
+height:160px;
+background-image:url("../img/logo.png");
+background-repeat:no-repeat;
+/* background-position:10px; */
+
+/* background-color: aqua; */
+}
+
+h1{
+font-weight:lighter;
+font-size:3em;
+text-align:right;
+position:relative;
+top:60%;
+}
+
+h2{
+/* 	font-weight:lighter; */
+	margin-top: 30px;
+	margin-bottom: 10px;
+/* 	text-decoration: underline; */
+}
+
+h3{font-weight:lighter;}
+
+#lang{
+float:right;
+margin:-50px 5px 0 0;
+}
+
+#content{
+width: 100%;
+height: 100%;
+
+/* background-color: gray; */
+}
+
+
+
+#menu{
+width:100%;
+height:40px;
+background-color:#c1e0ec;
+/* background-color: white; */
+}
+
+#menu div{
+float:left;
+padding-left:10px;
+padding-right:10px;
+height:100%;
+}
+
+#menu div:HOVER{background-color:lime;}
+
+#menu a{
+font-size:1.8em;
+color:black;
+text-decoration:none;
+}
+
+#footer{
+width:100%;
+height:40px;
+text-align:center;
+
+/* background-color: fuchsia; */
+}
+
+#home{
+	
+}
+
+#home .left{
+	width: 70%;
+	float:left;
+	
+/*  	background-color: blue;  */
+}
+
+#home .left .content{padding-right:10px;}
+
+#home .right{
+	width: 30%;
+	float:right;
+
+	
+/*  	background-color: maroon;  */
+}
+
+#home p{
+text-align:justify;
+}
+
+#home ul{
+padding-left: 1.2em;
+}
+
+#home .right .content{
+border-left-width:1px;
+border-left-style:double;
+border-left-color:black;
+padding-left:10px;
+}
+
+.home .news_line{padding-bottom:10px;}
+
+#downloads p{
+padding-top:30px;
+text-align:justify;
+}
+
+#downloads .dbtn{padding-top:30px}
+
+#downloads .btn{
+	cursor:pointer;
+	color:black;
+	min-width:60px;
+	text-align:center;
+padding:0px 10px 0px 10px;
+	background-color:#c1e0ec;
+	display:inline-block;
+	text-decoration:none;
+	height:40px;
+font-size:1.8em;
+}
+#downloads .btn:hover{background-color:lime;}
+
+
+/*#downloads input{
+font-size:1.4em;
+padding:5px;
+}*/
+
+.info{padding-top:30px;padding-left:40px;}
+.info .img{
+width:48px;
+height: 48px;
+float:left;
+background-image: URL(../img/info48.png);
+background-repeat: no-repeat;
+margin-top: 5px;
+margin-right: 5px;
+}
+.info .text{
+	width:500px;
+	float:left;
+}
+.text div{
+border-left-width:1px;
+border-left-style:double;
+border-left-color:black;
+padding-left:10px;
+}
+.info .text p{
+padding-top:0px !important;
+}
+
+
+
+.warn{padding-top:30px;padding-left:40px;}
+.warn .img{
+width:48px;
+height: 48px;
+float:left;
+background-image: URL(../img/warn48.png);
+background-repeat: no-repeat;
+margin-top: 5px;
+margin-right: 5px;
+}
+.warn .text{
+	width:500px;
+	float:left;
+}
+.text div{
+border-left-width:1px;
+border-left-style:double;
+border-left-color:black;
+padding-left:10px;
+}
+.warn .text p{
+padding-top:0px !important;
+}
+
+
+
+
+
+
+
+
+.clr{clear:both}
+
+

@@ -102,7 +102,6 @@
 				</tokenfilter>
 			</filterchain>
 		</loadfile>
-		<property name="full.version" value="${version}.${build}" />
 
 		<jar destfile="${artifacts.dir}/jar-explorer-${full.version}.jar">
 			<manifest>
@@ -144,6 +143,28 @@
 		<mkdir dir="${artifacts.dir}/lib" />
 		<move file="${artifacts.dir}/jar-explorer-${full.version}.jar" todir="${artifacts.dir}/lib" />
 		<zip destfile="${artifacts.dir}/JarExplorer.${full.version}.zip" basedir="${artifacts.dir}" />
+	</target>
+
+	<target name="site" depends="pack">
+		<property name="jarexp.dir" value="${artifacts.dir}/jarexp" />
+		<property name="download.zip" value="JarExplorer.${full.version}.zip" />
+		<mkdir dir="${jarexp.dir}" />
+		<copy todir="${jarexp.dir}">
+			<fileset dir="${basedir}/www/jarexp">
+				<exclude name="**/*.zip" />
+				<exclude name=".htaccess" />
+			</fileset>
+			<filterset>
+				<filter token="COPYRIGHT" value="${copyright}" />
+				<filter token="DOWNLOAD_FILE" value="${download.zip}" />
+			</filterset>
+		</copy>
+		<copy todir="${jarexp.dir}/downloads">
+			<fileset dir="${artifacts.dir}">
+				<include name="${download.zip}" />
+			</fileset>
+		</copy>
+		<zip destfile="${artifacts.dir}/jarexp.zip" basedir="${artifacts.dir}/jarexp" />
 	</target>
 
 </project>

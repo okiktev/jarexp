@@ -6,6 +6,8 @@ bin/
 build/
 build_exe/bte/
 lib/
+www/jarexp/.htaccess
+www/jarexp/downloads/*.zip
 
 
 
