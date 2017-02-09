@@ -3,6 +3,7 @@ package com.delfin.jarexp.frame;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Event;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.ByteArrayInputStream;
@@ -20,7 +21,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -133,13 +133,14 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					contentView.setPreferredSize(size);
 				} else if (isImgFile(lowPath)) {
 					try {
-						JPanel img = new ImgPanel(ImageIO.read(file));
-						img.setBorder(Settings.EMPTY_BORDER);
+						Image image = ImageIO.read(file);
+						if (image == null) {
+							JOptionPane.showConfirmDialog(frame, "Could not read image " + node.path,
+							        "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+							return;
+						}
 						pane.remove(contentView);
-						contentView = new JScrollPane(img);
-						
-						// pane.setResizeWeight(1);
-						//pane.setDividerSize(0);
+						contentView = new JScrollPane(new ImgPanel(image));
 					} catch (IOException e) {
 						throw new JarexpException("Couldn't read file " + file + " as image", e);
 					}

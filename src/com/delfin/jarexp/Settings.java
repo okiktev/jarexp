@@ -37,7 +37,7 @@ public class Settings {
 	}
 
 	public int getFrameWidth() {
-		return 600;
+		return 800;
 	}
 
 }

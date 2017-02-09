@@ -6,6 +6,8 @@ import java.awt.Image;
 
 import javax.swing.JPanel;
 
+import com.delfin.jarexp.Settings;
+
 class ImgPanel extends JPanel {
 
 	private static final long serialVersionUID = -8324612145574417005L;
@@ -15,6 +17,7 @@ class ImgPanel extends JPanel {
 	ImgPanel(Image image) {
 		this.image = image;
 		setPreferredSize(new Dimension(image.getWidth(null), image.getHeight(null)));
+		setBorder(Settings.EMPTY_BORDER);
 	}
 
 	@Override

@@ -153,6 +153,25 @@
 			<fileset dir="${basedir}/www/jarexp">
 				<exclude name="**/*.zip" />
 				<exclude name=".htaccess" />
+				<exclude name="**/*.html" />
+				<exclude name="**/*.htm" />
+			</fileset>
+		</copy>
+		<copy todir="${jarexp.dir}">
+			<fileset dir="${basedir}/www/jarexp">
+				<include name="**/*.html" />
+				<include name="**/*.htm" />
+			</fileset>
+			<filterset>
+				<filter token="COPYRIGHT" value="${copyright}" />
+				<filter token="DOWNLOAD_FILE" value="${download.zip}" />
+			</filterset>
+		</copy>
+
+		<copy todir="${jarexp.dir}">
+			<fileset dir="${basedir}/www/jarexp">
+				<exclude name="**/*.zip" />
+				<exclude name=".htaccess" />
 			</fileset>
 			<filterset>
 				<filter token="COPYRIGHT" value="${copyright}" />
