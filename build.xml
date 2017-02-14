@@ -145,8 +145,21 @@
 		<zip destfile="${artifacts.dir}/JarExplorer.${full.version}.zip" basedir="${artifacts.dir}" />
 	</target>
 
-	<target name="site" depends="pack">
-		<property name="jarexp.dir" value="${artifacts.dir}/jarexp" />
+	<target name="site">
+		<property name="site.dir" value="${artifacts.dir}/site" />
+		<delete dir="${artifacts.dir}/site"  file="${site.dir}" />
+		<mkdir dir="${site.dir}" />
+
+		<property name="jarexp.dir" value="${site.dir}/jarexp" />
+		<loadfile srcfile="${build.num.file}" property="build">
+			<filterchain>
+				<tokenfilter>
+					<filetokenizer />
+					<replacestring from=" " to="" />
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
+		<property name="full.version" value="${version}.${build}" />
 		<property name="download.zip" value="JarExplorer.${full.version}.zip" />
 		<mkdir dir="${jarexp.dir}" />
 		<copy todir="${jarexp.dir}">
@@ -157,7 +170,7 @@
 				<exclude name="**/*.htm" />
 			</fileset>
 		</copy>
-		<copy todir="${jarexp.dir}">
+		<copy todir="${jarexp.dir}" encoding="cp1251">
 			<fileset dir="${basedir}/www/jarexp">
 				<include name="**/*.html" />
 				<include name="**/*.htm" />
@@ -183,7 +196,7 @@
 				<include name="${download.zip}" />
 			</fileset>
 		</copy>
-		<zip destfile="${artifacts.dir}/jarexp.zip" basedir="${artifacts.dir}/jarexp" />
+		<zip destfile="${artifacts.dir}/jarexp.zip" basedir="${jarexp.dir}" />
 	</target>
 
 </project>

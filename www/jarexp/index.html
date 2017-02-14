@@ -23,18 +23,15 @@ foreach($_GET as $key => $value){
 		$get_without_lang.='&';
 	}
 }
-
-
 ?>
 
 
 <html>
 <head>
-	<!-- <meta charset="UTF-8"> -->
 	<meta http-equiv="Content-Type" content="text/html;charset=windows-1251">
-	<!--<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">-->
 	<title>Jar Explorer</title>
 	<link rel="stylesheet" href="css/styles.css">
+	<script src="script/script.js" ></script>
 </head>
 <body>
 	<div id="center">
@@ -48,25 +45,22 @@ foreach($_GET as $key => $value){
 			<?php include $root_cont.'menu.htm' ?>
 		</div>
 		<div id="content">
-		
+
 		<?php
 			$menu = $_GET['m'];
 			$link='';
 			switch( $menu ) {
   				case 1:$link=$root_cont.'downloads.htm';break;
-				case 2:$link=$root_cont.'getting_started.htm';break;
-
+				case 2:$link=$root_cont.'screens.htm';break;
   				default:$link=$root_cont.'home.htm';break;
 			}
 			include $link;
 		?>
-		
-		
+
 		</div>
 		<div id="footer">
 			Copyright &copy; @COPYRIGHT@.<br/>Developed by delfin
 		</div>
 	</div>
-
 </body>
 </html>
