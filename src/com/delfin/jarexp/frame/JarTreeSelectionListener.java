@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -42,6 +43,25 @@ import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
 class JarTreeSelectionListener implements TreeSelectionListener {
+
+	class FilterAction extends AbstractAction {
+		private static final long serialVersionUID = 2090916851645693410L;
+		private RSyntaxTextArea textArea;
+		FilterAction(RSyntaxTextArea textArea) {
+			this.textArea = textArea;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent event) {
+			JSplitPane pane = Content.getSplitPane();
+			pane.setRightComponent(new ContentPanel(
+					new FilterPanel(JarTreeSelectionListener.this, textArea),
+					((ContentPanel) pane.getRightComponent()).getContent()));
+			pane.setDividerLocation(dividerLocation);
+			pane.validate();
+			pane.repaint();
+		}
+	}
 
 	private static final Logger log = Logger.getLogger(JarTreeDropTargetListener.class.getCanonicalName());
 
@@ -103,6 +123,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				if (node == null || !node.isLeaf() || node.isDirectory) {
 					return;
 				}
+
 				File file = new File(node.archive.getParent(), node.path);
 
 				Content current = (Content) frame.getContentPane();
@@ -124,12 +145,15 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					textArea.setBorder(Settings.EMPTY_BORDER);
 					textArea.setCodeFoldingEnabled(true);
 					textArea.setEditable(false);
+					textArea.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK), new FilterAction(textArea));
 					applyTheme(textArea);
 					area = textArea;
 
 					Dimension size = contentView.getPreferredSize();
 					pane.remove(contentView);
-					contentView = new RTextScrollPane(textArea);
+					RTextScrollPane textScrollPane = new RTextScrollPane(textArea);
+					textScrollPane.setBorder(Settings.EMPTY_BORDER);
+					contentView = new ContentPanel(textScrollPane);
 					contentView.setPreferredSize(size);
 				} else if (isImgFile(lowPath)) {
 					try {
@@ -147,15 +171,15 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				} else {
 					if (!file.isDirectory()) {
 						statusBar.enableProgress("Reading...");
-						RSyntaxTextArea textArea = new RSyntaxTextArea(FileUtils.toString(file));
+						final RSyntaxTextArea textArea = new RSyntaxTextArea(FileUtils.toString(file));
 						textArea.setSyntaxEditingStyle(getSyntax(lowPath));
 						textArea.setBorder(Settings.EMPTY_BORDER);
 						textArea.setCodeFoldingEnabled(true);
 						textArea.setEditable(true);
 						textArea.getDocument().addDocumentListener(new TextAreaDocumentListener());
 						applyTheme(textArea);
-						KeyStroke key = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK);
-						textArea.getInputMap().put(key, new AbstractAction() {
+						InputMap map = textArea.getInputMap();
+						map.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK), new AbstractAction() {
 							private static final long serialVersionUID = -3016470783134782605L;
 
 							@Override
@@ -175,18 +199,20 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 								}
 							}
 						});
+						map.put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK), new FilterAction(textArea));
 						area = textArea;
 
 						Dimension size = contentView.getPreferredSize();
 						pane.remove(contentView);
-						contentView = new RTextScrollPane(textArea);
+						RTextScrollPane textScrollPane = new RTextScrollPane(textArea);
+						textScrollPane.setBorder(Settings.EMPTY_BORDER);
+						contentView = new ContentPanel(textScrollPane);
 						contentView.setPreferredSize(size);
 					}
 				}
 
 				((JComponent) contentView).setBorder(Settings.EMPTY_BORDER);
 				pane.setRightComponent(contentView);
-
 				pane.setDividerLocation(dividerLocation);
 				pane.validate();
 				pane.repaint();
@@ -290,6 +316,10 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 	void setDividerLocation(int dividerLocation) {
 		this.dividerLocation = dividerLocation;
+	}
+
+	int getDividerLocation() {
+		return dividerLocation;
 	}
 
 }

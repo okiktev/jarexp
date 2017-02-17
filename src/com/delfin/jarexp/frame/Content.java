@@ -243,23 +243,24 @@ public class Content extends JPanel {
 				statusBar.disableProgress();
 			}
 
-			private JSplitPane getSplitPane() {
-				Content current = (Content) frame.getContentPane();
-				for (Component comp : current.getComponents()) {
-					if (comp instanceof ImgPanel) {
-						frame.remove(comp);
-						JSplitPane pane = new JSplitPane();
-						pane.setRightComponent(new JScrollPane());
-						frame.add(pane);
-						return pane;
-					}
-					if (comp instanceof JSplitPane) {
-						return (JSplitPane) comp;
-					}
-				}
-				throw new JarexpException("Couldn't find split pane on frame");
-			}
 		}.execute();
+	}
+
+	static JSplitPane getSplitPane() {
+		Content current = (Content) frame.getContentPane();
+		for (Component comp : current.getComponents()) {
+			if (comp instanceof ImgPanel) {
+				frame.remove(comp);
+				JSplitPane pane = new JSplitPane();
+				pane.setRightComponent(new JScrollPane());
+				frame.add(pane);
+				return pane;
+			}
+			if (comp instanceof JSplitPane) {
+				return (JSplitPane) comp;
+			}
+		}
+		throw new JarexpException("Couldn't find split pane on frame");
 	}
 
 }
