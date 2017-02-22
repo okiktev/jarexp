@@ -69,10 +69,10 @@
 		<delete dir="${jar.dir}/META-INF" />
 
 		<copy todir="${jar.dir}">
-			<fileset dir="${resources.dir}" excludes="**/license.txt" />
+			<fileset dir="${resources.dir}" excludes="**/LICENSE" />
 		</copy>
 		<copy todir="${jar.dir}">
-			<fileset dir="${resources.dir}" includes="**/license.txt" />
+			<fileset dir="${resources.dir}" includes="**/LICENSE" />
 			<filterset>
 				<filter token="COPYRIGHT" value="${copyright}" />
 			</filterset>
