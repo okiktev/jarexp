@@ -83,7 +83,7 @@ class JarNode extends DefaultMutableTreeNode {
 
 	boolean isArchive() {
 		String lowName = name.toLowerCase();
-		return lowName.endsWith(".jar") || lowName.endsWith(".war") || lowName.endsWith(".ear") || lowName.endsWith(".zip");
+		return lowName.endsWith(".jar") || lowName.endsWith(".war") || lowName.endsWith(".ear") || lowName.endsWith(".zip") || lowName.endsWith(".apk");
 	}
 
 	void unzip(File file) {

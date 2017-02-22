@@ -1,0 +1,6 @@
+1) pdf recognizing
+2) fix defect with drag and drop leaf
+3) apk supporting
+4) for folder render details of content
+5) search functionality ... done. can be improved
+6) copyright bug
