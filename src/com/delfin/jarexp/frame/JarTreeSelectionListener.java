@@ -6,6 +6,7 @@ import java.awt.Event;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,6 +23,7 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -39,6 +41,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.Version;
+import com.delfin.jarexp.icon.Ico;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
@@ -167,6 +170,17 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						contentView = new JScrollPane(new ImgPanel(image));
 					} catch (IOException e) {
 						throw new JarexpException("Couldn't read file " + file + " as image", e);
+					}
+				} else if (lowPath.endsWith(".ico")) {
+					try {
+						pane.remove(contentView);
+						JPanel pnl = new JPanel();
+				        for (BufferedImage icon : Ico.read(file)) {
+				        	pnl.add(new ImgPanel(icon));
+				        }
+						contentView = new JScrollPane(pnl);
+					} catch (IOException e) {
+						throw new JarexpException("Couldn't read file " + file + " as ico", e);
 					}
 				} else {
 					if (!file.isDirectory()) {
