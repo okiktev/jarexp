@@ -103,8 +103,11 @@ class JarTreeDropTargetListener implements DropTargetListener {
 					statusBar.disableProgress();
 				};
 			}.execute();
+		} else {
+			dtde.dropComplete(true);
+			jarTree.setDragging(false);
+			jarTree.setPacking(false);
 		}
-
 	}
 
 	private static List<File> getDroppedFiles(DropTargetDropEvent dtde) {

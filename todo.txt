@@ -3,10 +3,10 @@ apk supporting ... done.
 search functionality ... done. can be improved
 copyright bug ... done.
 supports ico files ... done. can be improved
+bug with replacement ... done.
+fix defect with drag and drop leaf ... done.
 
 
-bug with replacement
-fix defect with drag and drop leaf
 
 
 pdf recognizing
