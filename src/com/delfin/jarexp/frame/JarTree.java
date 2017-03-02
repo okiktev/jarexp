@@ -205,7 +205,9 @@ class JarTree extends JTree {
 			if (child.isArchive()) {
 				archiveLoader.load(child);
 			}
-			node.add(child);
+			if (!isExist(node, f)) {
+				node.add(child);
+			}
 			if (isDir) {
 				put(child, Arrays.asList(f.listFiles()));
 			}
@@ -227,6 +229,15 @@ class JarTree extends JTree {
 
 	void setDragging(boolean isDragging) {
 		this.isDragging = isDragging;
+	}
+
+	private static boolean isExist(JarNode node, File file) {
+		for (Enumeration<?> children = node.children(); children.hasMoreElements();) {
+			if (((JarNode) children.nextElement()).name.equals(file.getName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static void addIntoNode(JarEntry entry, JarNode node, File archive) throws IOException {
