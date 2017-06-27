@@ -249,6 +249,7 @@ class JarTree extends JTree {
 			for (Enumeration<?> children = node.children(); children.hasMoreElements();) {
 				JarNode child = (JarNode) children.nextElement();
 				if (child.name.equals(files[i])) {
+					//child.grab(entry);
 					node = child;
 					isExist = true;
 					break;
@@ -260,12 +261,14 @@ class JarTree extends JTree {
 			}
 			if (!isExist) {
 				JarNode child = new JarNode(files[i], calcPath(files, i), archive, true);
+				child.grab(entry);
 				node.add(child);
 				node = child;
 			}
 		}
 		if (name != null) {
 			JarNode child = new JarNode(name, path, archive, entry.isDirectory());
+			child.grab(entry);
 			if (child.isArchive()) {
 				archiveLoader.load(child);
 			}

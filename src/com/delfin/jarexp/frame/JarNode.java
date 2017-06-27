@@ -1,9 +1,15 @@
 package com.delfin.jarexp.frame;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.attribute.FileTime;
+import java.security.CodeSigner;
+import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
 
 import javax.swing.JMenuItem;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -119,6 +125,36 @@ class JarNode extends DefaultMutableTreeNode {
 			}
 		}
 		return true;
+	}
+
+	Attributes attrs;
+	long time;
+	Certificate[] certs;
+	CodeSigner[] signers;
+	String comment;
+	long compSize;
+	long crc;
+	FileTime creationTime;
+	byte[] extra;
+	FileTime lastAccessTime;
+	FileTime lastModTime;
+	int method;
+	long size;
+
+	void grab(JarEntry entry) throws IOException {
+		attrs = entry.getAttributes();
+		time = entry.getTime();
+		certs = entry.getCertificates();
+		signers = entry.getCodeSigners();
+		comment = entry.getComment();
+		compSize = entry.getCompressedSize();
+		crc = entry.getCrc();
+		creationTime = entry.getCreationTime();
+		extra = entry.getExtra();
+		lastAccessTime = entry.getLastAccessTime();
+		lastModTime = entry.getLastModifiedTime();
+		method = entry.getMethod();
+		size = entry.getSize();
 	}
 
 }

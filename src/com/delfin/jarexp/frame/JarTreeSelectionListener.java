@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
@@ -41,9 +42,11 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.Version;
+import com.delfin.jarexp.frame.Content.PreLoadAction;
 import com.delfin.jarexp.icon.Ico;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
+
 
 class JarTreeSelectionListener implements TreeSelectionListener {
 
@@ -123,7 +126,30 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					}
 				}
 				node = (JarNode) jarTree.getLastSelectedPathComponent();
-				if (node == null || !node.isLeaf() || node.isDirectory) {
+				if (node == null) {
+					return;
+				}
+				if (!node.isLeaf() || node.isDirectory) {
+					Content.preLoadArchive(node, new PreLoadAction() {
+						@Override
+						public void perform() {
+							Content current = (Content) frame.getContentPane();
+							JSplitPane pane = (JSplitPane) current.getComponent(1);
+							Component contentView = pane.getRightComponent();
+
+						    JTable table = new JTable(new JarNodeTableModel(node));
+					        table.setFillsViewportHeight(true);
+					        table.setAutoCreateRowSorter(true);
+
+					        contentView = new JScrollPane(table);
+
+							((JComponent) contentView).setBorder(Settings.EMPTY_BORDER);
+							pane.setRightComponent(contentView);
+							pane.setDividerLocation(dividerLocation);
+							pane.validate();
+							pane.repaint();
+						}
+					});
 					return;
 				}
 

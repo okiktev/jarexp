@@ -49,35 +49,7 @@ public class Content extends JPanel {
 
 		@Override
 		public void treeExpanded(TreeExpansionEvent event) {
-			final JarNode node = (JarNode) event.getPath().getLastPathComponent();
-			if (node == null) {
-				return;
-			}
-			boolean isNeedToFill = false;
-			for (Enumeration<?> childred = node.children(); childred.hasMoreElements();) {
-				JarNode child = (JarNode) childred.nextElement();
-				if (Settings.NAME_PLACEHOLDER.equals(child.path)) {
-					isNeedToFill = true;
-					node.removeAllChildren();
-					break;
-				}
-			}
-			if (isNeedToFill) {
-				new Executor() {
-					@Override
-					protected void perform() {
-						statusBar.enableProgress("Loading...");
-						File dst = new File(Resources.createTmpDir(), node.name);
-						Zip.unzip(node.path, node.archive, dst);
-						jarTree.addArchive(dst, node);
-						jarTree.update(node);
-					}
-					@Override
-					protected void doFinally() {
-						statusBar.disableProgress();
-					}
-				}.execute();
-			}
+			preLoadArchive((JarNode) event.getPath().getLastPathComponent(), null);
 		}
 
 		@Override
@@ -86,6 +58,10 @@ public class Content extends JPanel {
 		}
 
 	};
+	
+	static interface PreLoadAction {
+		void perform();
+	}
 
 	private static JFrame frame;
 	private static JarTree jarTree;
@@ -102,6 +78,41 @@ public class Content extends JPanel {
 		add(statusBar = new StatusBar(this), BorderLayout.SOUTH);
 	}
 
+	static void preLoadArchive(final JarNode node, final PreLoadAction action) {
+		if (node == null) {
+			return;
+		}
+
+		new Executor() {
+			@Override
+			protected void perform() {
+				boolean isNotInitiated = false;
+				for (Enumeration<?> childred = node.children(); childred.hasMoreElements();) {
+					JarNode child = (JarNode) childred.nextElement();
+					if (Settings.NAME_PLACEHOLDER.equals(child.path)) {
+						node.removeAllChildren();
+						isNotInitiated = true;
+						break;
+					}
+				}
+				if (isNotInitiated) {
+					statusBar.enableProgress("Loading...");
+					File dst = new File(Resources.createTmpDir(), node.name);
+					Zip.unzip(node.path, node.archive, dst);
+					jarTree.addArchive(dst, node);
+					jarTree.update(node);
+				}
+				if (action != null) {
+					action.perform();
+				}
+			}
+			@Override
+			protected void doFinally() {
+				statusBar.disableProgress();
+			}
+		}.execute();
+	}
+	
 	/**
 	 * Create the GUI and show it. For thread safety, this method should be
 	 * invoked from the event-dispatching thread.
