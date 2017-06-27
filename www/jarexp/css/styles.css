@@ -83,13 +83,13 @@ text-align:center;
 #home{
 }
 #home .left{
-	width: 70%;
+	width:60%;
 	float:left;
 /*  	background-color: blue;  */
 }
 #home .left .content{padding-right:10px;}
 #home .right{
-width: 30%;
+width:40%;
 float:right;
 /*  	background-color: maroon;  */
 }
