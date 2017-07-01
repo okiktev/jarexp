@@ -89,6 +89,15 @@
 		</exec>
 	</target>
 
+	<target name="generate-build-site-num">
+		<echo message="Generating new build site number" />
+
+		<exec executable="cmd" dir="${build.num.dir}" failonerror="true">
+			<arg value="/c" />
+			<arg value="gen_build_site_num.bat" />
+		</exec>
+	</target>
+
 	<target name="jar" depends="assembly">
 		<echo message="Making jar file into ${artifacts.dir}" />
 
@@ -146,6 +155,8 @@
 	</target>
 
 	<target name="site">
+		<antcall target="generate-build-site-num" />
+
 		<property name="site.dir" value="${artifacts.dir}/site" />
 		<delete dir="${artifacts.dir}/site"  file="${site.dir}" />
 		<mkdir dir="${site.dir}" />
@@ -170,6 +181,17 @@
 				<exclude name="**/*.htm" />
 			</fileset>
 		</copy>
+
+		<loadfile srcfile="${build.num.site.file}" property="build.site">
+			<filterchain>
+				<tokenfilter>
+					<filetokenizer />
+					<replacestring from=" " to="" />
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
+		<property name="full.site.version" value="${version.site}.${build.site}" />
+
 		<copy todir="${jarexp.dir}" encoding="cp1251">
 			<fileset dir="${basedir}/www/jarexp">
 				<include name="**/*.html" />
@@ -178,6 +200,7 @@
 			<filterset>
 				<filter token="COPYRIGHT" value="${copyright}" />
 				<filter token="DOWNLOAD_FILE" value="${download.zip}" />
+				<filter token="SITE_VER" value="${full.site.version}" />
 			</filterset>
 		</copy>
 
@@ -189,6 +212,7 @@
 			<filterset>
 				<filter token="COPYRIGHT" value="${copyright}" />
 				<filter token="DOWNLOAD_FILE" value="${download.zip}" />
+				<filter token="SITE_VER" value="${full.site.version}" />
 			</filterset>
 		</copy>
 		<copy todir="${jarexp.dir}/downloads">
@@ -200,6 +224,3 @@
 	</target>
 
 </project>
-
-
-
