@@ -2,7 +2,9 @@ package com.delfin.jarexp.frame;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipException;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import com.delfin.jarexp.JarexpException;
@@ -40,6 +42,14 @@ abstract class Executor {
 	}
 
 	protected void doCatch(Exception e) {
+		Throwable exception = e.getCause();
+		Throwable cause = exception.getCause();
+		if (cause instanceof ZipException && "error in opening zip file".equals(cause.getMessage())) {
+			JOptionPane.showConfirmDialog(null, "Unknown archive format", "Error", JOptionPane.DEFAULT_OPTION,
+			        JOptionPane.ERROR_MESSAGE);
+		} else {
+			ErrorDlg.showException("Error", exception);
+		}
 		String msg = "Unhandled error occurred";
 		log.log(Level.SEVERE, msg, e);
 		throw new JarexpException(msg, e);
@@ -48,4 +58,5 @@ abstract class Executor {
 	void execute() {
 		worker.execute();
 	}
+
 }

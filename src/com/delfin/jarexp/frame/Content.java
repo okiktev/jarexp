@@ -213,21 +213,22 @@ public class Content extends JPanel {
 
 	protected static void loadJarFile(final File f) {
 		log.fine("Loading file " + f);
-		
+
 		new Executor() {
 			@Override
 			protected void perform() {
 				statusBar.enableProgress("Loading...");
 
-				final JSplitPane pane = getSplitPane();
-				pane.setBorder(Settings.EMPTY_BORDER);
-				Component treeView = pane.getLeftComponent();
-				pane.remove(treeView);
-
 				jarTree = new JarTree(treeExpansionListener, statusBar, frame);
 				jarTree.addTreeSelectionListener(jarTreeSelectionListener = new JarTreeSelectionListener(jarTree, statusBar, frame));
 				jarTree.load(f);
 				jarTree.setBorder(Settings.EMPTY_BORDER);
+				
+				final JSplitPane pane = getSplitPane();
+				pane.setBorder(Settings.EMPTY_BORDER);
+				Component treeView = pane.getLeftComponent();
+				pane.remove(treeView);	
+				
 				treeView = new JScrollPane(jarTree);
 				((JComponent) treeView).setBorder(Settings.EMPTY_BORDER);
 
