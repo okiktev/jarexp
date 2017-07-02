@@ -48,7 +48,7 @@ abstract class Executor {
 			JOptionPane.showConfirmDialog(null, "Unknown archive format", "Error", JOptionPane.DEFAULT_OPTION,
 			        JOptionPane.ERROR_MESSAGE);
 		} else {
-			ErrorDlg.showException("Error", exception);
+			ErrorDlg.showException("An expected error occurred. Press the button to see details.", exception);
 		}
 		String msg = "Unhandled error occurred";
 		log.log(Level.SEVERE, msg, e);

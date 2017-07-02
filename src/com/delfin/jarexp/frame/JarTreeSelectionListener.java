@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -294,6 +295,14 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 	}
 
 	private void saveChanges() throws IOException {
+		List<JarNode> path = node.getPathList();
+		JarNode root = path.get(path.size() - 1);
+		File f = new File(root.name);
+		if (!FileUtils.isUnlocked(f)) {
+			JOptionPane.showConfirmDialog(frame, "Cannot save the file " + f + " because it is being used by another process.", "Error saving...", JOptionPane.DEFAULT_OPTION,
+			        JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 		int reply = JOptionPane.showConfirmDialog(frame,
 		        "File " + node.path + " was changed. Do you want to keep changes?", "Change confirmation",
 		        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);

@@ -99,5 +99,12 @@ public class FileUtils {
 //		srcStream.close();
 //		dstStream.close();
 	}
+	
+	
+
+	public static boolean isUnlocked(File file) {
+		return file.renameTo(file); 
+
+    }
 
 }
