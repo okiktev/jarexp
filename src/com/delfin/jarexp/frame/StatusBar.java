@@ -29,12 +29,14 @@ class StatusBar extends JStatusBar {
 	private final Content content;
 	private final JLabel path = new JLabel("");
 	private final JLabel compJava = new JLabel("");
+	private final JLabel children = new JLabel("");
 
 	StatusBar(Content content) {
 		super();
 		this.content = content;
 		
 		compJava.setToolTipText("Version of Java which was class compiled with");
+		children.setToolTipText("Number of all objects placed in current folder/archive");
 
 		progressBar.setStringPainted(true);
 		progressBar.setVisible(false);
@@ -44,28 +46,33 @@ class StatusBar extends JStatusBar {
 		JPanel panel = new JPanel(new GridLayout(1, 1));
 		panel.add(progressBar);
 
+		add(new StatusBarItem("children", children, "20"));
 		add(new StatusBarItem("comp_java", compJava, "20"));
 		add(new StatusBarItem("place_holder", path, "*"));
 		add(new StatusBarItem("progress_bar", panel, "80"));
 	}
 
-	public void enableProgress(String msg) {
+	void enableProgress(String msg) {
 		content.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		progressBar.setString(msg);
 		progressBar.setIndeterminate(true);
 		progressBar.setVisible(true);
 	}
 
-	public void disableProgress() {
+	void disableProgress() {
 		content.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		progressBar.setVisible(false);
 	}
 
-	public void setCompiledVersion(String ver) {
+	void setCompiledVersion(String ver) {
 		this.compJava.setText(ver);
 	}
-	
-	public void setPath(String path) {
+
+	void setChildren(String count) {
+		this.children.setText(count);
+	}
+
+	void setPath(String path) {
 		this.path.setText(path);
 	}
 

@@ -6,20 +6,18 @@ supports ico files ... done. can be improved
 bug with replacement ... done.
 fix defect with drag and drop leaf ... done.
 for folder render details of content ... done. can be improved
-site version ... done.
-bug error while opening not archive file... done. can be improved
-bug with unpacking sun from rt.jar of java 7 ... could not reproduced
-bug with save editing while archive is open ... done
+site version ... done.                                                01Jul2017
+bug error while opening not archive file... done. can be improved     01Jul2017
+bug with unpacking sun from rt.jar of java 7 ... could not reproduced 02Jul2017
+bug with save editing while archive is open ... done                  02Jul2017
 
 
-long window message when add a lot files
-
-
-
+imp long window message when add a lot files
 imp when click on folder/archive - the count of files should be reflected in status bar
+
 imp when click on exit - need status reflected for big jars (rt.jar for example)
-pdf recognizing
-read chm files?
+imp pdf recognizing
+imp read chm files?
 imp localization
 check war, jar is alive after editing
 bug with shifting split panel when click on folder

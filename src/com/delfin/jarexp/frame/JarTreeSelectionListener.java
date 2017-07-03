@@ -138,7 +138,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							JSplitPane pane = (JSplitPane) current.getComponent(1);
 							Component contentView = pane.getRightComponent();
 
-						    JTable table = new JTable(new JarNodeTableModel(node));
+						    JTable table = new JTable(new JarNodeTableModel(node, statusBar));
 					        table.setFillsViewportHeight(true);
 					        table.setAutoCreateRowSorter(true);
 
@@ -163,6 +163,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				statusBar.enableProgress("Loading...");
 				statusBar.setPath(node.path);
 				statusBar.setCompiledVersion("");
+				statusBar.setChildren("");
 
 				Zip.unzip(node.path, node.archive, file);
 				String lowPath = node.path.toLowerCase();

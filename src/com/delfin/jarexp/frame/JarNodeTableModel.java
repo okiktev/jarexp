@@ -20,10 +20,12 @@ class JarNodeTableModel extends AbstractTableModel {
 			"Method", "Comment", "Attributes", "Certificates", "Code Signers", "CRC",
     		"Extra"};
 
-    private Object[][] data;
+    private final Object[][] data;
 
-	JarNodeTableModel(JarNode node) {
-		data = new Object[node.getChildCount()][];
+	JarNodeTableModel(JarNode node, StatusBar statusBar) {
+		int count = node.getChildCount();
+		data = new Object[count][];
+		statusBar.setChildren(Integer.toString(count));
 
 		int i = 0;
 		for (Enumeration<?> children = node.children(); children.hasMoreElements(); ++i) {
