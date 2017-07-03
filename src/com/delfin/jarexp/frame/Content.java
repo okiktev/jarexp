@@ -126,11 +126,33 @@ public class Content extends JPanel {
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
-				try {
-					delete(Settings.getTmpDir());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				final boolean[] isDeleted = { false };
+				new Executor() {
+					@Override
+					protected void perform() {
+						statusBar.enableProgress("Exiting...");
+						try {
+							delete(Settings.getTmpDir());
+							isDeleted[0] = true;
+						} catch (IOException e) {
+							throw new JarexpException(e);
+						}
+					}
+
+					@Override
+					protected void doFinally() {
+						statusBar.disableProgress();
+					}
+				}.execute();
+				while (true) {
+					if (isDeleted[0]) {
+						break;
+					}
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						throw new JarexpException(e);
+					}
 				}
 			}
 

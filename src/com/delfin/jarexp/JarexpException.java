@@ -12,4 +12,8 @@ public class JarexpException extends RuntimeException {
 		super(message, cause);
 	}
 
+	public JarexpException(Throwable e) {
+		super(e);
+	}
+
 }
