@@ -6,12 +6,13 @@ supports ico files ... done. can be improved
 bug with replacement ... done.
 fix defect with drag and drop leaf ... done.
 for folder render details of content ... done. can be improved
-site version ... done.                                                						01Jul2017
-bug error while opening not archive file... done. can be improved     						01Jul2017
-bug with unpacking sun from rt.jar of java 7 ... could not reproduced 						02Jul2017
-bug with save editing while archive is open ... done                  						02Jul2017
-imp when click on folder/archive - the count of files should be reflected in status bar		03Jul2017
-imp when click on exit - need status reflected for big jars (rt.jar for example)			03Jul2017
+site version ... done..............................................................................01Jul2017
+bug error while opening not archive file... done. can be improved..................................01Jul2017
+bug with unpacking sun from rt.jar of java 7 ... could not reproduced..............................02Jul2017
+bug with save editing while archive is open ... done...............................................02Jul2017
+imp when click on folder/archive - the count of files should be reflected in status bar ... done...03Jul2017
+imp when click on exit - need status reflected for big jars (rt.jar for example) ... done .........03Jul2017
+imp github link to about ... done .................................................................04Jul2017
 
 
 imp long window message when add a lot files
@@ -23,5 +24,4 @@ imp localization
 check war, jar is alive after editing
 bug with shifting split panel when click on folder
 refactor code
-imp github link to about
 bug d&d unpacking rt.jar
