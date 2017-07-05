@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.dlg.message.Msg;
 
 class JarTreeDropTargetListener implements DropTargetListener {
 
@@ -81,9 +82,8 @@ class JarTreeDropTargetListener implements DropTargetListener {
 			dtde.dropComplete(true);
 			return;
 		}
-		int reply = JOptionPane.showConfirmDialog(frame,
-		        "Do you want to add files " + droppedFiles + " into " + node.name, "Adding files confirmation",
-		        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		int reply = Msg.showList("Adding files confirmation", 
+				"Do you want to add into\n" + node.name + "\nfollowing files:", droppedFiles);
 		if (reply == JOptionPane.YES_OPTION) {
 			new Executor() {
 

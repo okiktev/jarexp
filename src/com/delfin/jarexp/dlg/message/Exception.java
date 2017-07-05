@@ -1,4 +1,4 @@
-package com.delfin.jarexp.frame;
+package com.delfin.jarexp.dlg.message;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -20,7 +20,9 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
-class ErrorDlg extends JDialog {
+import com.delfin.jarexp.frame.resources.Resources;
+
+class Exception extends JDialog {
 
 	private static final long serialVersionUID = -4584183009890746807L;
 
@@ -32,20 +34,26 @@ class ErrorDlg extends JDialog {
 
 	private boolean isShown;
 
-	static void showException(String errMsg, Throwable e) {
-		new ErrorDlg(errMsg, e);
-	}
+	Exception(String errMsg, Throwable e) {
+		setIconImage(Resources.getInstance().getLogoImage());
 
-	private ErrorDlg(String errMsg, Throwable e) {
 		setModal(true);
 
 		setTitle("Error");
 		setSize(width, height);
+		Msg.centerDlg(this, width, height);
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		final JScrollPane pane = new JScrollPane(new JTextArea(toString(e)));
-		pane.setPreferredSize(new Dimension(width - 50, stHeight));
+		JTextArea area = new JTextArea(toString(e));
+		area.setFont(Msg.defaultFont);
+		
+		EmptyBorder emptyBoder = new EmptyBorder(new Insets(0, 0, 0, 0));
+		area.setBorder(emptyBoder);
+		area.setOpaque(false);
+		final JScrollPane pane = new JScrollPane(area);
+		pane.setPreferredSize(new Dimension(width, stHeight));
+		pane.setBorder(emptyBoder);
 
 		final JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.add(getIconLabel(), BorderLayout.WEST);
@@ -53,7 +61,7 @@ class ErrorDlg extends JDialog {
 
 		add(topPanel);
 
-		final JButton okButton = new JButton("OK");
+		JButton okButton = new JButton("OK");
 		final JButton viewButton = new JButton("View Error");
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		buttonPanel.add(okButton);
@@ -73,12 +81,12 @@ class ErrorDlg extends JDialog {
 				if (isShown) {
 					viewButton.setText("View Error");
 					topPanel.remove(pane);
-					ErrorDlg.this.setSize(width, height);
+					Exception.this.setSize(width, height);
 					isShown = false;
 				} else {
 					viewButton.setText("Hide Error");
 					topPanel.add(pane, BorderLayout.SOUTH);
-					ErrorDlg.this.setSize(width, height + stHeight);
+					Exception.this.setSize(width, height + stHeight);
 					isShown = true;
 				}
 				topPanel.revalidate();

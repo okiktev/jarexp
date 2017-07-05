@@ -13,9 +13,10 @@ bug with save editing while archive is open ... done............................
 imp when click on folder/archive - the count of files should be reflected in status bar ... done...03Jul2017
 imp when click on exit - need status reflected for big jars (rt.jar for example) ... done .........03Jul2017
 imp github link to about ... done .................................................................04Jul2017
+imp long window message when add a lot files ... done .............................................05Jul2017
 
 
-imp long window message when add a lot files
+
 
 
 imp pdf recognizing
@@ -25,3 +26,5 @@ check war, jar is alive after editing
 bug with shifting split panel when click on folder
 refactor code
 bug d&d unpacking rt.jar
+imp multiply delete
+imp all option dlgs should be custom

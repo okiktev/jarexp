@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.dlg.message.Msg;
 
 abstract class Executor {
 
@@ -48,7 +49,7 @@ abstract class Executor {
 			JOptionPane.showConfirmDialog(null, "Unknown archive format", "Error", JOptionPane.DEFAULT_OPTION,
 			        JOptionPane.ERROR_MESSAGE);
 		} else {
-			ErrorDlg.showException("An expected error occurred. Press the button to see details.", exception);
+			Msg.showException("An expected error occurred. Press the button to see details.", exception);
 		}
 		String msg = "Unhandled error occurred";
 		log.log(Level.SEVERE, msg, e);
