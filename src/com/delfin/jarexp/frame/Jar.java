@@ -82,7 +82,7 @@ abstract class Jar {
 		}
 	}
 
-	static void delete(JarNode node) {
+	static void delete(JarNode node, boolean withCopy) {
 		try {
 			List<JarNode> path = node.getPathList();
 
@@ -104,11 +104,17 @@ abstract class Jar {
 				files.add(arc.getCurrentArchive());
 				currNode = arc;
 			}
-			JarNode root = path.get(path.size() - 1);
-			FileUtils.copy(root.archive, new File(root.name));
+			if (withCopy) {
+				JarNode root = path.get(path.size() - 1);
+				FileUtils.copy(root.archive, new File(root.name));
+			}
 		} catch (IOException e) {
 			throw new JarexpException("An error occurred while deleting node " + node.path, e);
 		}
+	}
+
+	static void delete(JarNode node) {
+		delete(node, true);
 	}
 
 	protected abstract void process(JarEntry entry) throws IOException;

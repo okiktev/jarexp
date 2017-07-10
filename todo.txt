@@ -14,17 +14,25 @@ imp when click on folder/archive - the count of files should be reflected in sta
 imp when click on exit - need status reflected for big jars (rt.jar for example) ... done .........03Jul2017
 imp github link to about ... done .................................................................04Jul2017
 imp long window message when add a lot files ... done .............................................05Jul2017
+bug when working with file on disk c (Exception: java.nio.file.AccessDeniedException) ...done .....10Jul2017
+
+
+
+check war, jar is alive after editing
+bug unpacking issue
 
 
 
 
-
+bug hot keys do not work
 imp pdf recognizing
 imp read chm files?
 imp localization
-check war, jar is alive after editing
 bug with shifting split panel when click on folder
 refactor code
 bug d&d unpacking rt.jar
 imp multiply delete
 imp all option dlgs should be custom
+imp when delete file clear preview and context panel
+
+

@@ -1,5 +1,5 @@
 @echo off
-set LOGFILE=%TEMP%\jar-exporer.console.txt
+set LOGFILE=%TEMP%\jarexp-console.txt
 set URL=file:///%LOGFILE:\=/%
 echo %date% %time% Starting... >> %LOGFILE%
 call java -jar "%~dp0\lib\@FILENAME@" "%~1" >> %LOGFILE% 2>&1

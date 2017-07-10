@@ -88,7 +88,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 	private final JFrame frame;
 
-	private boolean wasEdited;
+	private boolean isEdited;
 
 	private JTextArea area;
 
@@ -113,18 +113,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 			@Override
 			protected void perform() {
 				isLocked = true;
-				if (wasEdited) {
-					try {
-						statusBar.enableProgress("Saving...");
-						saveChanges();
-					} catch (IOException e) {
-						throw new JarexpException("An error occurred while saving changes", e);
-					} finally {
-						wasEdited = false;
-						node = null;
-						area = null;
-						statusBar.disableProgress();
-					}
+				if (isEdited()) {
+					saveChanges();
 				}
 				node = (JarNode) jarTree.getLastSelectedPathComponent();
 				if (node == null) {
@@ -226,19 +216,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 							@Override
 							public void actionPerformed(ActionEvent event) {
-								if (wasEdited) {
-									try {
-										statusBar.enableProgress("Saving...");
-										saveChanges();
-									} catch (IOException e) {
-										wasEdited = false;
-										node = null;
-										area = null;
-										throw new JarexpException("An error occurred while saving changes", e);
-									} finally {
-										statusBar.disableProgress();
-									}
-								}
+								saveChanges();
 							}
 						});
 						map.put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK), new FilterAction(textArea));
@@ -291,45 +269,63 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				}
 				return syntax;
 			}
-
 		}.execute();
 	}
 
-	private void saveChanges() throws IOException {
-		List<JarNode> path = node.getPathList();
-		JarNode root = path.get(path.size() - 1);
-		File f = new File(root.name);
-		if (!FileUtils.isUnlocked(f)) {
-			JOptionPane.showConfirmDialog(frame, "Cannot save the file " + f + " because it is being used by another process.", "Error saving...", JOptionPane.DEFAULT_OPTION,
-			        JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		int reply = JOptionPane.showConfirmDialog(frame,
-		        "File " + node.path + " was changed. Do you want to keep changes?", "Change confirmation",
-		        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+	private void saveChanges() {
+		try {
+			statusBar.enableProgress("Saving...");
+			if (!isEdited()) {
+				return;
+			}
+			int reply = JOptionPane.showConfirmDialog(frame,
+			        "File " + node.path + " was changed. Do you want to keep changes?", "Change confirmation",
+			        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-		if (reply == JOptionPane.YES_OPTION) {
-			File tmp = File.createTempFile("edit", node.name, Settings.getTmpDir());
-			String content = area.getText();
-			if (node.path.toLowerCase().endsWith(".mf")) {
-				try {
-					InputStream is = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-					new Manifest(is).write(new FileOutputStream(tmp));
-				} catch (IOException e) {
-					JOptionPane.showConfirmDialog(frame, "Failed to save manifest.\nCause: " + e.getMessage(), "Error",
-					        JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+			if (reply == JOptionPane.YES_OPTION) {
+
+				List<JarNode> path = node.getPathList();
+				JarNode root = path.get(path.size() - 1);
+				File f = new File(root.name);
+				if (!FileUtils.isUnlocked(f)) {
+					JOptionPane.showConfirmDialog(frame,
+					        "Cannot save the file " + f + " because it is being used by another process.",
+					        "Error saving...", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-			} else {
-				FileUtils.toFile(tmp, content);
+				File tmp = File.createTempFile("edit", node.name, Settings.getTmpDir());
+				String content = area.getText();
+				if (node.path.toLowerCase().endsWith(".mf")) {
+					try {
+						InputStream is = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+						new Manifest(is).write(new FileOutputStream(tmp));
+					} catch (IOException e) {
+						JOptionPane.showConfirmDialog(frame, "Failed to save manifest.\nCause: " + e.getMessage(),
+						        "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+				} else {
+					FileUtils.toFile(tmp, content);
+				}
+				Jar.delete(node, false);
+				Jar.pack(node, tmp);
 			}
-			Jar.delete(node);
-			Jar.pack(node, tmp);
-
-			wasEdited = false;
+		} catch (Exception e) {
+			throw new JarexpException("An error occurred while saving changes", e);
+		} finally {
+			setEdited(false);
 			node = null;
 			area = null;
+			statusBar.disableProgress();
 		}
+	}
+	
+	boolean isEdited() {
+		return isEdited;
+	}
+	
+	void setEdited(boolean isEdited) {
+		this.isEdited = isEdited;
 	}
 
 	private static void applyTheme(RSyntaxTextArea textArea) {
@@ -356,13 +352,17 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 		@Override
 		public void changedUpdate(DocumentEvent e) {
-			wasEdited = true;
+			if (!isEdited()) {
+				setEdited(true);
+			}
 		}
 	}
 
 	boolean isLocked() {
 		return isLocked;
 	}
+	
+	
 
 	void setDividerLocation(int dividerLocation) {
 		this.dividerLocation = dividerLocation;
