@@ -14,25 +14,50 @@ imp when click on folder/archive - the count of files should be reflected in sta
 imp when click on exit - need status reflected for big jars (rt.jar for example) ... done .........03Jul2017
 imp github link to about ... done .................................................................04Jul2017
 imp long window message when add a lot files ... done .............................................05Jul2017
-bug when working with file on disk c (Exception: java.nio.file.AccessDeniedException) ...done .....10Jul2017
+bug when working with file on disk c (Exception: java.nio.file.AccessDeniedException) ... done ....10Jul2017
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 30_jul_2017
 
 
 
-check war, jar is alive after editing
 bug unpacking issue
+bug d&d unpacking rt.jar
 
 
 
-
-bug hot keys do not work
+bug with shifting split panel when click on folder
+imp multiply delete
+imp when delete file clear preview and context panel
+imp all option dlgs should be custom
 imp pdf recognizing
 imp read chm files?
 imp localization
-bug with shifting split panel when click on folder
 refactor code
-bug d&d unpacking rt.jar
-imp multiply delete
-imp all option dlgs should be custom
-imp when delete file clear preview and context panel
+imp add supporting separate class to open
+
+
+
+
+com.delfin.jarexp.JarexpException: An error occurred while copying file C:\Users\OLEH~1.KIK\AppData\Local\Temp\jarexp1499713915267\1499713927388\C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\sample\WEB-INF\lib\rsso-agent-all.jar into C:\Users\OLEH~1.KIK\AppData\Local\Temp\jarexp1499713915267\1499713930557\rsso-agent-all.jar
+	at com.delfin.jarexp.utils.FileUtils.copy(FileUtils.java:127)
+	at com.delfin.jarexp.frame.JarTree.load(JarTree.java:171)
+	at com.delfin.jarexp.frame.Content$7.perform(Content.java:246)
+	at com.delfin.jarexp.frame.Executor$1.doInBackground(Executor.java:23)
+	at com.delfin.jarexp.frame.Executor$1.doInBackground(Executor.java:20)
+	at javax.swing.SwingWorker$1.call(Unknown Source)
+	at java.util.concurrent.FutureTask.run(Unknown Source)
+	at javax.swing.SwingWorker.run(Unknown Source)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.lang.Thread.run(Unknown Source)
+Caused by: java.nio.file.InvalidPathException: Illegal char <:> at index 74: C:\Users\OLEH~1.KIK\AppData\Local\Temp\jarexp1499713915267\1499713927388\C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\sample\WEB-INF\lib\rsso-agent-all.jar
+	at sun.nio.fs.WindowsPathParser.normalize(Unknown Source)
+	at sun.nio.fs.WindowsPathParser.parse(Unknown Source)
+	at sun.nio.fs.WindowsPathParser.parse(Unknown Source)
+	at sun.nio.fs.WindowsPath.parse(Unknown Source)
+	at sun.nio.fs.WindowsFileSystem.getPath(Unknown Source)
+	at java.io.File.toPath(Unknown Source)
+	at com.delfin.jarexp.utils.FileUtils.copy(FileUtils.java:115)
+	... 10 more
+
 
 

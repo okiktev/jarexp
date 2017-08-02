@@ -47,7 +47,9 @@ public class Main {
 		if (args != null && args.length != 0) {
 			File file = new File(args[0]);
 			if (!file.exists()) {
-				log.warning("Passed file " + file + " does not exist");
+			    String msg = "Passed file " + file + " is not exist";
+			    System.err.println(msg);
+				log.warning(msg);
 			} else {
 				return file;
 			}
