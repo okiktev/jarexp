@@ -18,21 +18,22 @@ bug when working with file on disk c (Exception: java.nio.file.AccessDeniedExcep
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 30_jul_2017
 
 
-
+imp multiply delete
 bug unpacking issue
 bug d&d unpacking rt.jar
 
 
-
+imp add supporting separate class to open
 bug with shifting split panel when click on folder
-imp multiply delete
 imp when delete file clear preview and context panel
 imp all option dlgs should be custom
-imp pdf recognizing
-imp read chm files?
+site imp rolling news
+site secured archive
+
 imp localization
+imp read chm files?
+imp pdf recognizing
 refactor code
-imp add supporting separate class to open
 
 
 
