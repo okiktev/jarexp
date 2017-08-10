@@ -6,7 +6,6 @@ import java.nio.file.attribute.FileTime;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -16,6 +15,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.utils.Enumerator;
 import com.delfin.jarexp.utils.Zip;
 
 class JarNode extends DefaultMutableTreeNode {
@@ -92,16 +92,19 @@ class JarNode extends DefaultMutableTreeNode {
 		return lowName.endsWith(".jar") || lowName.endsWith(".war") || lowName.endsWith(".ear") || lowName.endsWith(".zip") || lowName.endsWith(".apk");
 	}
 
-	void unzip(File file) {
+	@SuppressWarnings("unchecked")
+    void unzip(final File file) {
 		if (getParent() == null) {
 			return;
 		}
 		if (isDirectory) {
 			file.mkdir();
-			for (Enumeration<?> children = children(); children.hasMoreElements();) {
-				JarNode child = (JarNode) children.nextElement();
-				child.unzip(new File(file, child.name));
-			}
+			new Enumerator<JarNode>(children()) {
+                @Override
+                protected void doAction(JarNode child) {
+                    child.unzip(new File(file, child.name));
+                }
+            };
 		} else {
 			Zip.unzip(path, archive, file);
 		}

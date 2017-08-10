@@ -60,7 +60,9 @@ class JarTreeNodeTransferHandler extends TransferHandler {
 				for (JarNode node : nodes) {
 					File file = getFile(node);
 					if (file == null) {
-						final File f = file = new File(Resources.createTmpDir(), node.name);
+						final File f = file = node.getParent() == null 
+						        ? new File(node.name) 
+						        : new File(Resources.createTmpDir(), node.name);
 						final JarNode n = node;
 						new Executor() {
 							@Override

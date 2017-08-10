@@ -60,7 +60,7 @@ class JarTreeExtractNodeListener extends PopupMenuListener {
                     int res = JOptionPane.showConfirmDialog(frame, "File " + dst + " already exist. Do you want to replace one?", "Replace or skip file"
                             , JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                     if (res != JOptionPane.YES_OPTION) {
-                        return;
+                        continue;
                     }
                 }
                 new Executor() {

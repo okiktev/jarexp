@@ -19,13 +19,14 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 30_jul_2017
 site imp rolling news ... done ....................................................................03Aug2017
 site secured archive ... done .....................................................................03Aug2017
 imp multiply delete ... done ......................................................................10Aug2017
+bug unpacking issue ... was corrected status bar spinner while unpacking ..........................10Aug2017
+bug d&d unpacking rt.jar ... done. fixed exception while extracting root item .....................10Aug2017
 
 
 
-bug unpacking issue
-bug d&d unpacking rt.jar
 
 imp add supporting separate class to open
+
 bug with shifting split panel when click on folder
 imp when delete file clear preview and context panel
 imp all option dlgs should be custom
@@ -38,6 +39,15 @@ refactor code
 
 
 
+
+
+
+
+
+
+
+
+fixed at 10Aug2017:
 com.delfin.jarexp.JarexpException: An error occurred while copying file C:\Users\OLEH~1.KIK\AppData\Local\Temp\jarexp1499713915267\1499713927388\C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\sample\WEB-INF\lib\rsso-agent-all.jar into C:\Users\OLEH~1.KIK\AppData\Local\Temp\jarexp1499713915267\1499713930557\rsso-agent-all.jar
 	at com.delfin.jarexp.utils.FileUtils.copy(FileUtils.java:127)
 	at com.delfin.jarexp.frame.JarTree.load(JarTree.java:171)

@@ -33,33 +33,33 @@ class JarTreeUnpackNodeListener extends PopupMenuListener {
 
     @Override
     protected void doAction(ActionEvent e) {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setDialogTitle("Select directory for unpack");
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        if (file != null) {
-            chooser.setCurrentDirectory(file);
-        }
-        if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-            final File f = file = chooser.getSelectedFile();
-            if (!f.isDirectory()) {
-                errorDlg("File " + f + " is not a folder");
-                return;
-            }
-            if (!f.exists()) {
-                f.mkdirs();
-            } else {
-                int res = JOptionPane.showConfirmDialog(frame,
-                        "Folder " + f + " already exist. Do you want to replace all data inside?",
-                        "Replace or skip data", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (res != JOptionPane.YES_OPTION) {
-                    return;
+        JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
+        final JarNode node = (JarNode) item.path.getLastPathComponent();
+        new Executor() {
+            @Override
+            protected void perform() {
+                final JFileChooser chooser = new JFileChooser();
+                chooser.setDialogTitle("Select directory for unpack");
+                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                if (file != null) {
+                    chooser.setCurrentDirectory(file);
                 }
-            }
-            JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
-            final JarNode node = (JarNode) item.path.getLastPathComponent();
-            new Executor() {
-                @Override
-                protected void perform() {
+                if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+                    final File f = file = chooser.getSelectedFile();
+                    if (!f.isDirectory()) {
+                        errorDlg("File " + f + " is not a folder");
+                        return;
+                    }
+                    if (!f.exists()) {
+                        f.mkdirs();
+                    } else {
+                        int res = JOptionPane.showConfirmDialog(frame,
+                                "Folder " + f + " already exist. Do you want to replace all data inside?",
+                                "Replace or skip data", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                        if (res != JOptionPane.YES_OPTION) {
+                            return;
+                        }
+                    }
                     statusBar.enableProgress("Unpacking...");
                     if (log.isLoggable(Level.FINE)) {
                         log.fine("Unpacking file " + node.path);
@@ -68,13 +68,13 @@ class JarTreeUnpackNodeListener extends PopupMenuListener {
                     node.unzip(tmp);
                     Zip.unzip(tmp, f);
                 }
+            }
 
-                @Override
-                protected void doFinally() {
-                    statusBar.disableProgress();
-                }
-            }.execute();
-        }
+            @Override
+            protected void doFinally() {
+                statusBar.disableProgress();
+            }
+        }.execute();
     }
 
 }
