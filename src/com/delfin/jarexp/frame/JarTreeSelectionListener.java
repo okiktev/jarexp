@@ -34,6 +34,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -44,6 +45,7 @@ import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.Version;
 import com.delfin.jarexp.frame.Content.PreLoadAction;
+import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 import com.delfin.jarexp.icon.Ico;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
@@ -106,6 +108,16 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 	@Override
 	public void valueChanged(TreeSelectionEvent event) {
+	    TreePath[] path = JarTreeClickSelection.getNodes();
+	    if (path != null) {
+	        jarTree.setSelectionPaths(path);
+	    }
+	    path = jarTree.getSelectionPaths();
+	    JarTreeClickSelection.setNodes(path);
+	    if (path != null && path.length > 1) {
+	        return;
+	    }
+
 		if (jarTree.isDragging()) {
 			return;
 		}

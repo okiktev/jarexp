@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.utils.Enumerator;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
@@ -82,39 +83,67 @@ abstract class Jar {
 		}
 	}
 
-	static void delete(JarNode node, boolean withCopy) {
+    static void delete(JarNode node, boolean withCopy) {
+        List<JarNode> nodes = new ArrayList<JarNode>(1);
+        nodes.add(node);
+        delete(nodes, withCopy);
+    }
+
+	static void delete(List<JarNode> nodes, boolean withCopy) {
 		try {
-			List<JarNode> path = node.getPathList();
+		    List<JarNode> path = null;
+		    JarNode root = null;
+		    for (JarNode node : nodes) {
+	            path = node.getPathList();
+	            JarNode currNode = path.get(0);
+	            if (currNode.archive == null) {
+	                continue;
+	            }
+	            root = path.get(path.size() - 1);
+	            String delPath = currNode.path;
+	            Zip.delete(currNode.path, currNode.archive);
 
-			JarNode currNode = path.get(0);
-			String delPath = currNode.path;
-			Zip.delete(currNode.path, currNode.archive);
+	            List<JarNode> archives = node.grabParentArchives();
+	            List<File> files = new ArrayList<File>();
+	            files.add(currNode.archive);
+                if (currNode.isArchive()) {
+                    File arch = currNode.archive;
+                    clearArchive(currNode);
+                    currNode.archive = arch;
+                }
+	            currNode = archives.get(0);
+	            for (int i = 1; i < archives.size(); ++i) {
+	                JarNode arc = archives.get(i);
+	                if (!currNode.path.equals(delPath)) {
+	                    Zip.add(currNode.path, arc.getCurrentArchive(), files);
+	                }
+	                files.clear();
+	                files.add(arc.getCurrentArchive());
+	                currNode = arc;
+	            }
+		    }
 
-			List<JarNode> archives = node.grabParentArchives();
-
-			List<File> files = new ArrayList<File>();
-			files.add(currNode.archive);
-			currNode = archives.get(0);
-			for (int i = 1; i < archives.size(); ++i) {
-				JarNode arc = archives.get(i);
-				if (!currNode.path.equals(delPath)) {
-					Zip.add(currNode.path, arc.getCurrentArchive(), files);
-				}
-				files.clear();
-				files.add(arc.getCurrentArchive());
-				currNode = arc;
-			}
 			if (withCopy) {
-				JarNode root = path.get(path.size() - 1);
 				FileUtils.copy(root.archive, new File(root.name));
 			}
-		} catch (IOException e) {
-			throw new JarexpException("An error occurred while deleting node " + node.path, e);
+		} catch (Exception e) {
+			throw new JarexpException("An error occurred while deleting node " + nodes, e);
 		}
 	}
 
-	static void delete(JarNode node) {
-		delete(node, true);
+	@SuppressWarnings("unchecked")
+    private static void clearArchive(JarNode node) {
+	    node.archive = null;
+	    new Enumerator<JarNode>(node.children()) {
+            @Override
+            protected void doAction(JarNode entity) {
+                clearArchive(entity);
+            }
+        };
+    }
+
+    static void delete(List<JarNode> nodes) {
+		delete(nodes, true);
 	}
 
 	protected abstract void process(JarEntry entry) throws IOException;

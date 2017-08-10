@@ -15,7 +15,7 @@ import com.delfin.jarexp.utils.Zip;
 
 public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 
-	private JarTreeDeleteNodeListener listener = new JarTreeDeleteNodeListener(jarTree, bar);
+	private JarTreeDeleteNodeListener listener = new JarTreeDeleteNodeListener(jarTree, bar, null);
 
 	@Test
 	public void testDelete_MetaInfFolderFromJstlJar() throws IOException {
@@ -23,7 +23,9 @@ public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 		JarNode node = getNode(jarTree, "bookstore-web.war/WEB-INF/lib/jstl.jar/META-INF");
 		List<JarNode> assertion = getAssertion(node);
 
-		listener.delFromJar(node);
+		List<JarNode> nodes = new ArrayList<JarNode>();
+		nodes.add(node);
+		listener.delFromJar(nodes);
 		List<JarNode> contentAfter = loadAfter();
 
 		xor(contentBefore, contentAfter);
@@ -39,7 +41,9 @@ public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 		JarNode node = getNode(jarTree, "bookstore-web.war/WEB-INF/lib/jstl.jar/META-INF/MANIFEST.MF");
 		List<JarNode> assertion = getAssertion(node);
 
-		listener.delFromJar(node);
+        List<JarNode> nodes = new ArrayList<JarNode>();
+        nodes.add(node);
+        listener.delFromJar(nodes);
 		List<JarNode> contentAfter = loadAfter();
 
 		xor(contentBefore, contentAfter);
@@ -55,7 +59,9 @@ public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 		JarNode node = getNode(jarTree, "META-INF");
 		List<JarNode> assertion = getAssertion(node);
 
-		listener.delFromJar(node);
+        List<JarNode> nodes = new ArrayList<JarNode>();
+        nodes.add(node);
+        listener.delFromJar(nodes);
 		List<JarNode> contentAfter = loadAfter();
 
 		xor(contentBefore, contentAfter);
@@ -71,7 +77,9 @@ public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 		JarNode node = getNode(jarTree, "META-INF/MANIFEST.MF");
 		List<JarNode> assertion = getAssertion(node);
 
-		listener.delFromJar(node);
+        List<JarNode> nodes = new ArrayList<JarNode>();
+        nodes.add(node);
+        listener.delFromJar(nodes);
 		List<JarNode> contentAfter = loadAfter();
 
 		xor(contentBefore, contentAfter);
@@ -87,7 +95,9 @@ public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 		JarNode node = getNode(jarTree, "bookstore-ejb.jar");
 		List<JarNode> assertion = getAssertion(node);
 
-		listener.delFromJar(node);
+        List<JarNode> nodes = new ArrayList<JarNode>();
+        nodes.add(node);
+        listener.delFromJar(nodes);
 		List<JarNode> contentAfter = loadAfter();
 
 		xor(contentBefore, contentAfter);
@@ -103,7 +113,9 @@ public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 		JarNode node = getNode(jarTree, "bookstore-ejb.jar/spring.jar/META-INF/spring.tld");
 		List<JarNode> assertion = getAssertion(node);
 
-		listener.delFromJar(node);
+        List<JarNode> nodes = new ArrayList<JarNode>();
+        nodes.add(node);
+        listener.delFromJar(nodes);
 		List<JarNode> contentAfter = loadAfter();
 
 		xor(contentBefore, contentAfter);
@@ -119,7 +131,9 @@ public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 		JarNode node = getNode(jarTree, "bookstore-ejb.jar/spring.jar/META-INF");
 		List<JarNode> assertion = getAssertion(node);
 
-		listener.delFromJar(node);
+        List<JarNode> nodes = new ArrayList<JarNode>();
+        nodes.add(node);
+        listener.delFromJar(nodes);
 		List<JarNode> contentAfter = loadAfter();
 
 		xor(contentBefore, contentAfter);
@@ -135,7 +149,9 @@ public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 		JarNode node = getNode(jarTree, "bookstore-ejb.jar/spring.jar");
 		List<JarNode> assertion = getAssertion(node);
 
-		listener.delFromJar(node);
+        List<JarNode> nodes = new ArrayList<JarNode>();
+        nodes.add(node);
+        listener.delFromJar(nodes);
 		List<JarNode> contentAfter = loadAfter();
 
 		xor(contentBefore, contentAfter);
@@ -144,6 +160,30 @@ public class JarTreeDeleteNodeListenerUnitTest extends BaseUnitTest {
 		Assert.assertEquals(2160, contentBefore.size());
 		Assert.assertTrue(equals(contentBefore, assertion));
 	}
+
+    @Test
+    public void testDelete_MultiplyDeleting() throws IOException {
+        List<JarNode> contentBefore = loadBefore();
+
+        List<JarNode> deletes = new ArrayList<JarNode>();
+        JarNode metaInf = null, ejbJar = null;
+        deletes.add(getNode(jarTree, "META-INF/MANIFEST.MF"));
+        deletes.add(metaInf = getNode(jarTree, "META-INF"));
+        deletes.add(ejbJar = getNode(jarTree, "bookstore-ejb.jar"));
+        deletes.add(getNode(jarTree, "bookstore-ejb.jar/bookstore/ejb/LoggerBean.class"));
+        deletes.add(getNode(jarTree, "bookstore-ejb.jar/bookstore"));
+        List<JarNode> assertion = getAssertion(metaInf);
+        assertion.addAll(getAssertion(ejbJar));
+
+        listener.delFromJar(deletes);
+        List<JarNode> contentAfter = loadAfter();
+
+        xor(contentBefore, contentAfter);
+
+        Assert.assertTrue(contentAfter.isEmpty());
+        Assert.assertEquals(2183, contentBefore.size());
+        Assert.assertTrue(equals(contentBefore, assertion));
+    }
 
 	private List<JarNode> loadBefore() throws IOException {
 		jarTree = new JarTree(null, null, null);

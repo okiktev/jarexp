@@ -16,19 +16,19 @@ imp github link to about ... done ..............................................
 imp long window message when add a lot files ... done .............................................05Jul2017
 bug when working with file on disk c (Exception: java.nio.file.AccessDeniedException) ... done ....10Jul2017
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 30_jul_2017
+site imp rolling news ... done ....................................................................03Aug2017
+site secured archive ... done .....................................................................03Aug2017
+imp multiply delete ... done ......................................................................10Aug2017
 
 
-imp multiply delete
+
 bug unpacking issue
 bug d&d unpacking rt.jar
-
 
 imp add supporting separate class to open
 bug with shifting split panel when click on folder
 imp when delete file clear preview and context panel
 imp all option dlgs should be custom
-site imp rolling news
-site secured archive
 
 imp localization
 imp read chm files?

@@ -5,6 +5,10 @@
 bin/
 build/
 build_exe/bte/
+build_exe/copy_adm.bat
+build_exe/islocked_adm.bat
+build_exe/jarexp_admin.bat
+build_exe/jarexp_orig.bat
 lib/
 www/jarexp/.htaccess
 www/jarexp/downloads/*.zip
