@@ -223,6 +223,7 @@
 		<copy todir="${jarexp.dir}/downloads">
 			<fileset dir="${artifacts.dir}">
 				<include name="${download.zip}" />
+				<include name="JarsExplorer.${full.version}.zip" />
 			</fileset>
 		</copy>
 		<zip destfile="${artifacts.dir}/jarexp.zip" basedir="${jarexp.dir}" />

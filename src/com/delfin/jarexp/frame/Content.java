@@ -5,6 +5,7 @@ package com.delfin.jarexp.frame;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
@@ -31,6 +32,7 @@ import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
@@ -180,6 +182,7 @@ public class Content extends JPanel {
 				chooser.setDialogTitle("Select jar file to open");
 				FileFilter filter = new FileNameExtensionFilter("Jar Files (*.jar,*.war,*.ear,*.zip,*.apk)", "jar", "war", "ear", "zip", "apk");
 				chooser.addChoosableFileFilter(filter);
+				chooser.addChoosableFileFilter(new FileNameExtensionFilter("Class Files (*.class)", "class"));
 				chooser.setFileFilter(filter);
 				if (file != null) {
 					chooser.setCurrentDirectory(file.getParentFile());
@@ -270,6 +273,10 @@ public class Content extends JPanel {
 						}
 					}
 				});
+
+				if (jarTree.isSingleFileLoaded()) {
+				    jarTree.setSelectionPaths(new TreePath[] {new TreePath(jarTree.getRoot())});
+				}
 			}
 
 			@Override

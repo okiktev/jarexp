@@ -144,6 +144,7 @@ class JarTree extends JTree {
                         unpackNode.setEnabled(false);
                     }
                 }
+                deleteNode.setEnabled(!isSingleFileLoaded());
             } 
             JarTreeClickSelection.setNodes(null);
         }
@@ -161,7 +162,7 @@ class JarTree extends JTree {
 		}
 
 	}
-	
+
 	static class ArchiveLoader {
 		protected void load(JarNode node) {
 			node.add(new JarNode("", Settings.NAME_PLACEHOLDER, null, false));
@@ -169,7 +170,7 @@ class JarTree extends JTree {
 	}
 
 	static ArchiveLoader archiveLoader = new ArchiveLoader();
-	
+
 	private static final long serialVersionUID = 8627151048727365096L;
 
 	private JarNode root;
@@ -179,8 +180,11 @@ class JarTree extends JTree {
 	private boolean isDragging;
 
 	private boolean isPacking;
-	
+
+	private boolean isSingleFileLoaded;
+
 	StatusBar statusBar;
+
 	JFrame frame;
 
 	JarTree(TreeExpansionListener treeExpansionListener, StatusBar statusBar, JFrame frame) {
@@ -213,13 +217,22 @@ class JarTree extends JTree {
 		final File dst = new File(Resources.createTmpDir(), file.getName());
 		FileUtils.copy(file, dst);
 		root = new JarNode(file.getAbsolutePath(), "", dst, false);
-		new Jar(file) {
-			@Override
-			protected void process(JarEntry entry) throws IOException {
-				addIntoNode(entry, root, dst);
-			}
-		}.bypass();
+		
+		if (!file.getName().toLowerCase().endsWith(".class")) {
+	        new Jar(file) {
+	            @Override
+	            protected void process(JarEntry entry) throws IOException {
+	                addIntoNode(entry, root, dst);
+	            }
+	        }.bypass();
+		} else {
+		    isSingleFileLoaded = true;
+		}
 		setModel(model = new DefaultTreeModel(root, false));
+	}
+
+	boolean isSingleFileLoaded() {
+	    return isSingleFileLoaded;
 	}
 
 	void update(TreeNode node) {

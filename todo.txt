@@ -21,15 +21,16 @@ site secured archive ... done ..................................................
 imp multiply delete ... done ......................................................................10Aug2017
 bug unpacking issue ... was corrected status bar spinner while unpacking ..........................10Aug2017
 bug d&d unpacking rt.jar ... done. fixed exception while extracting root item .....................10Aug2017
+imp add supporting separate class to open ... done. can be improved by default loading for all ....14Aug2017
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 14_aug_2017
 
 
-
-
-imp add supporting separate class to open
 
 bug with shifting split panel when click on folder
 imp when delete file clear preview and context panel
 imp all option dlgs should be custom
+imp toLower for path when initiate nodes
+imp ribbon
 
 imp localization
 imp read chm files?

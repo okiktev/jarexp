@@ -155,9 +155,6 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					});
 					return;
 				}
-
-				File file = new File(node.archive.getParent(), node.path);
-
 				Content current = (Content) frame.getContentPane();
 				JSplitPane pane = (JSplitPane) current.getComponent(1);
 				Component contentView = pane.getRightComponent();
@@ -167,8 +164,18 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				statusBar.setCompiledVersion("");
 				statusBar.setChildren("");
 
-				Zip.unzip(node.path, node.archive, file);
-				String lowPath = node.path.toLowerCase();
+				String archName = null;
+				File file;
+				String lowPath;
+				if (node.getParent() == null && (archName = node.archive.getName().toLowerCase()).endsWith(".class")) {
+                    file = node.archive;
+                    lowPath = archName;
+				} else {
+	                file = new File(node.archive.getParent(), node.path);
+	                Zip.unzip(node.path, node.archive, file);
+	                lowPath = node.path.toLowerCase();
+				}
+
 				if (lowPath.endsWith(".class")) {
 					statusBar.enableProgress("Decompiling...");
 					statusBar.setCompiledVersion(Version.getCompiledJava(file));
