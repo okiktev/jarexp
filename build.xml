@@ -124,7 +124,10 @@
 
 	<target name="pack" depends="jar">
 		<copy todir="${artifacts.dir}">
-			<fileset dir="${build.exe.dir}" includes="jarexp.bat" />
+			<fileset dir="${build.exe.dir}" >
+				<include name="jarexp.bat" />
+				<include name="Jar Explorer.sh" />
+			</fileset>
 			<filterset>
 				<filter token="FILENAME" value="jar-explorer-${full.version}.jar" />
 			</filterset>
