@@ -23,9 +23,9 @@ bug unpacking issue ... was corrected status bar spinner while unpacking .......
 bug d&d unpacking rt.jar ... done. fixed exception while extracting root item .....................10Aug2017
 imp add supporting separate class to open ... done. can be improved by default loading for all ....14Aug2017
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 14_aug_2017
+bug splitter while deleting ... done ..............................................................19Aug2017
+bug with rendering table and file content ... done ................................................19Aug2017
 
-bug splitter while deleting
-bug with rendering table and file content
 site imp add demo onto home or index
 site imp Linux support. add .sh for running
 
