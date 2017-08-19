@@ -24,20 +24,22 @@ bug d&d unpacking rt.jar ... done. fixed exception while extracting root item ..
 imp add supporting separate class to open ... done. can be improved by default loading for all ....14Aug2017
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 14_aug_2017
 
+bug splitter while deleting
+bug with rendering table and file content
+site imp add demo onto home or index
+site imp Linux support. add .sh for running
+
+imp when delete file clear preview and context panel
+imp all option dlgs should be custom
 
 
 bug with shifting split panel when click on folder
-imp when delete file clear preview and context panel
-imp all option dlgs should be custom
 imp toLower for path when initiate nodes
 imp ribbon
-
 imp localization
 imp read chm files?
 imp pdf recognizing
 refactor code
-
-
 
 
 

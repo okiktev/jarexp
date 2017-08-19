@@ -117,7 +117,11 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 	    if (path != null && path.length > 1) {
 	        return;
 	    }
-
+	    try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            throw new JarexpException(e);
+        }
 		if (jarTree.isDragging()) {
 			return;
 		}

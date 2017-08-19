@@ -23,7 +23,7 @@ class JarTreeDeleteNodeListener extends PopupMenuListener {
 	}
 
     @Override
-    protected void doAction(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         final TreePath[] paths = jarTree.getSelectionPaths();
         new Executor() {
 
@@ -55,9 +55,58 @@ class JarTreeDeleteNodeListener extends PopupMenuListener {
 
             @Override
             protected void doFinally() {
+                clearNodeSelection();
                 statusBar.disableProgress();
             }
         }.execute();
     }
+	
+	
+//    @Override
+//    protected void doAction(ActionEvent e) {
+//        final TreePath[] paths = jarTree.getSelectionPaths();
+//        
+//        statusBar.enableProgress("Removing...");
+//        
+//        new Executor() {
+//
+//            @Override
+//            protected void perform() {
+//                statusBar.enableProgress("Removing...");
+//                try {
+//                    Thread.sleep(1000*10);
+//                } catch (InterruptedException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
+//                List<JarNode> nodes = getNodes();
+//                delFromJar(nodes);
+//                for (JarNode node : nodes) {
+//                    TreeNode parent = node.getParent();
+//                    jarTree.remove(node);
+//                    jarTree.update(parent);
+//                }
+//            }
+//
+//            private List<JarNode> getNodes() {
+//                List<JarNode> nodes = new ArrayList<JarNode>(paths.length);
+//                for (TreePath path : paths) {
+//                    nodes.add((JarNode)path.getLastPathComponent());
+//                }
+//                if (log.isLoggable(Level.FINE)) {
+//                    log.fine("Deleting files:");
+//                    for (JarNode n : nodes) {
+//                        log.fine("\t" + n.path);
+//                    }
+//                }
+//                return nodes;
+//            }
+//
+//            @Override
+//            protected void doFinally() {
+//                statusBar.disableProgress();
+//            }
+//        }.execute();
+//    }
 
 }

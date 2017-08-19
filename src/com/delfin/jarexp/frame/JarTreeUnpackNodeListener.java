@@ -32,7 +32,7 @@ class JarTreeUnpackNodeListener extends PopupMenuListener {
 	}
 
     @Override
-    protected void doAction(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
         final JarNode node = (JarNode) item.path.getLastPathComponent();
         new Executor() {
@@ -72,6 +72,7 @@ class JarTreeUnpackNodeListener extends PopupMenuListener {
 
             @Override
             protected void doFinally() {
+                clearNodeSelection();
                 statusBar.disableProgress();
             }
         }.execute();

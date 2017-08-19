@@ -24,7 +24,7 @@ class JarTreeAddNodeListener extends PopupMenuListener {
 	}
 
     @Override
-    protected void doAction(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Select files/folders to add");
         if (file != null) {
@@ -59,6 +59,7 @@ class JarTreeAddNodeListener extends PopupMenuListener {
 
                 @Override
                 protected void doFinally() {
+                    clearNodeSelection();
                     jarTree.setPacking(false);
                     statusBar.disableProgress();
                 };

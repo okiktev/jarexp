@@ -36,7 +36,7 @@ class JarTreeExtractNodeListener extends PopupMenuListener {
 	}
 
     @Override
-    protected void doAction(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Select directory for extract");
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -77,6 +77,7 @@ class JarTreeExtractNodeListener extends PopupMenuListener {
 
                     @Override
                     protected void doFinally() {
+                        clearNodeSelection();
                         statusBar.disableProgress();
                     }
                 }.execute();
