@@ -81,6 +81,7 @@ text-align:center;
 }
 
 #home{
+margin-bottom:10;
 }
 #home .left{
 	width:60%;
@@ -104,6 +105,14 @@ border-left-width:1px;
 border-left-style:double;
 border-left-color:black;
 padding-left:10px;
+}
+#home img{
+border:1px solid gray;
+width:798px;
+margin-top:10;
+margin-bottom:-15px;
+border-bottom:white;
+border-top:white;
 }
 .home .news_line{padding-bottom:10px}
 .news_line h3{font-weight:bold}

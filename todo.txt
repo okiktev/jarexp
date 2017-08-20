@@ -25,9 +25,10 @@ imp add supporting separate class to open ... done. can be improved by default l
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 14_aug_2017
 bug splitter while deleting ... done ..............................................................19Aug2017
 bug with rendering table and file content ... done ................................................19Aug2017
+site imp Linux support. add .sh for running ... done ..............................................19Aug2017
+site imp add demo onto home or index ... done .....................................................19Aug2017
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 19_aug_2017
 
-site imp add demo onto home or index
-site imp Linux support. add .sh for running
 
 imp when delete file clear preview and context panel
 imp all option dlgs should be custom
