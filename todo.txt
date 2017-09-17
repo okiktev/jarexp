@@ -28,8 +28,13 @@ bug with rendering table and file content ... done .............................
 site imp Linux support. add .sh for running ... done ..............................................19Aug2017
 site imp add demo onto home or index ... done .....................................................19Aug2017
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 19_aug_2017
+bug virus in 'Jar Explorer.jar' ... done ..........................................................17Sep2017
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 17_sep_2017
 
 
+
+
+imp full name to the node in status bar
 imp when delete file clear preview and context panel
 imp all option dlgs should be custom
 
@@ -41,8 +46,7 @@ imp localization
 imp read chm files?
 imp pdf recognizing
 refactor code
-
-
+imp command console
 
 
 
