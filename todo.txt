@@ -33,7 +33,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 17_sep_2017
 
 
 
-
+imp settings functional
 imp full name to the node in status bar
 imp when delete file clear preview and context panel
 imp all option dlgs should be custom

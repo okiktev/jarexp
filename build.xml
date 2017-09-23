@@ -130,13 +130,17 @@
 			</fileset>
 			<filterset>
 				<filter token="FILENAME" value="jar-explorer-${full.version}.jar" />
-				<filter token="ICOFILE" value="${build.exe.dir}/jarexp.ico" />
 			</filterset>
 		</copy>
 		<echo message="Making exe file in ${artifacts.dir}" />
-		<exec executable="cmd" failonerror="true" >
-			<arg value="/C" />
-			<arg value="&quot;${exe.maker.dir}/aB2Econv.exe&quot; ${artifacts.dir}/jarexp.bat ${artifacts.dir}/Jar Explorer.exe" />
+		<exec executable="${bte.dir}/BatToExeConverter.1.6.exe" dir="${bte.dir}" failonerror="true">
+			<arg value="-bat" />
+			<arg value="${artifacts.dir}/jarexp.bat" />
+			<arg value="-save" />
+			<arg value="${artifacts.dir}/Jar Explorer.exe" />
+			<arg value="-icon" />
+			<arg value="${build.exe.dir}/jarexp.ico" />
+			<arg value="-invisible" />
 		</exec>
 		<delete file="${artifacts.dir}/jarexp.bat" />
 		<mkdir dir="${artifacts.dir}/lib" />
