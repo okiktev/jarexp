@@ -132,6 +132,8 @@
 				<filter token="FILENAME" value="jar-explorer-${full.version}.jar" />
 			</filterset>
 		</copy>
+		<mkdir dir="${artifacts.dir}/lib" />
+		<move file="${artifacts.dir}/jar-explorer-${full.version}.jar" todir="${artifacts.dir}/lib" />
 		<echo message="Making exe file in ${artifacts.dir}" />
 		<exec executable="${bte.dir}/BatToExeConverter.1.6.exe" dir="${bte.dir}" failonerror="true">
 			<arg value="-bat" />
@@ -140,11 +142,11 @@
 			<arg value="${artifacts.dir}/Jar Explorer.exe" />
 			<arg value="-icon" />
 			<arg value="${build.exe.dir}/jarexp.ico" />
+			<arg value="-include" />
+			<arg value="${artifacts.dir}/lib/jar-explorer-${full.version}.jar" />
 			<arg value="-invisible" />
 		</exec>
 		<delete file="${artifacts.dir}/jarexp.bat" />
-		<mkdir dir="${artifacts.dir}/lib" />
-		<move file="${artifacts.dir}/jar-explorer-${full.version}.jar" todir="${artifacts.dir}/lib" />
 		<zip destfile="${artifacts.dir}/JarExplorer.${full.version}.zip" basedir="${artifacts.dir}" />
 		<exec executable="${7zip.dir}/7z.exe" dir="${7zip.dir}" failonerror="true">
 			<arg value="a" />
