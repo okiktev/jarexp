@@ -14,7 +14,6 @@ import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
@@ -50,7 +49,7 @@ public class FileUtils {
 
 	private static final Logger log = Logger.getLogger(FileUtils.class.getCanonicalName());
 
-	private static final String EOL = System.lineSeparator();
+	private static final String EOL = Settings.EOL;
 
 	public static String toString(File file) {
 		try {
@@ -115,7 +114,7 @@ public class FileUtils {
                 Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (Exception e) {
                 if (Settings.IS_WINDOWS) {
-                    if (e instanceof AccessDeniedException && dst.getAbsolutePath().equals(e.getMessage())) {
+                    if (e instanceof java.nio.file.AccessDeniedException && dst.getAbsolutePath().equals(e.getMessage())) {
                         try {
                             copyWithAdminPrivileges(src, dst);
                             return;

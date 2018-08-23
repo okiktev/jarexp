@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import com.delfin.jarexp.frame.Content;
 
@@ -24,14 +23,9 @@ public class Main {
 				} catch (IOException e) {
 					System.err.println("Could not setup logger configuration.");
 					e.printStackTrace(System.err);
-					throw new RuntimeException("Unable to initiate logger");
+					throw new RuntimeException("Unable to initiate logger", e);
 				}
-				String sysLookFeel = UIManager.getSystemLookAndFeelClassName();
-				try {
-					UIManager.setLookAndFeel(sysLookFeel);
-				} catch (Exception e) {
-					log.log(Level.WARNING, "Unable to set " + sysLookFeel + " as current. Using: " + UIManager.getLookAndFeel().getName(), e);
-				}
+				Settings.initLookAndFeel();
 				try {
 					Content.createAndShowGUI(getPassedFile(args));
 				} catch (Exception e) {
@@ -47,8 +41,8 @@ public class Main {
 		if (args != null && args.length != 0) {
 			File file = new File(args[0]);
 			if (!file.exists()) {
-			    String msg = "Passed file " + file + " is not exist";
-			    System.err.println(msg);
+				String msg = "Passed file " + file + " is not exist";
+				System.err.println(msg);
 				log.warning(msg);
 			} else {
 				return file;

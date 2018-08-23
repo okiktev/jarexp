@@ -30,24 +30,30 @@ site imp add demo onto home or index ... done ..................................
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 19_aug_2017
 bug virus in 'Jar Explorer.jar' ... done ..........................................................17Sep2017
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 17_sep_2017
+bug bad rendering tree for win 10 ... done ........................................................23Aug2018
 
 
+bug java entry was changed in Java 8 (creation time). app does not possible to run under java 6.
 
-imp settings functional
+imp ribbon
+imp decompile all classes
+imp search class in jar(s)
+imp search token in files
+imp command console
+imp full file path to opened jar in title
 imp full name to the node in status bar
 imp when delete file clear preview and context panel
 imp all option dlgs should be custom
 
-
+imp settings functional
 bug with shifting split panel when click on folder
 imp toLower for path when initiate nodes
-imp ribbon
 imp localization
 imp read chm files?
 imp pdf recognizing
-refactor code
-imp command console
+imp fix rendering icons for file chooser
 
+refactor code
 
 
 

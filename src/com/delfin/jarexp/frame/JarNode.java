@@ -152,12 +152,12 @@ class JarNode extends DefaultMutableTreeNode {
 		comment = entry.getComment();
 		compSize = entry.getCompressedSize();
 		crc = entry.getCrc();
-		creationTime = entry.getCreationTime();
 		extra = entry.getExtra();
-		lastAccessTime = entry.getLastAccessTime();
-		lastModTime = entry.getLastModifiedTime();
 		method = entry.getMethod();
 		size = entry.getSize();
+		creationTime = entry.getCreationTime();
+		lastAccessTime = entry.getLastAccessTime();
+		lastModTime = entry.getLastModifiedTime();
 	}
 
 }

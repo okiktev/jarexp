@@ -29,6 +29,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
+import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.utils.FileUtils;
 
@@ -205,8 +206,11 @@ class JarTree extends JTree {
 				new JarTreeExtractNodeListener(this, statusBar, frame),
 				new JarTreeUnpackNodeListener(this, statusBar, frame)
 				));
-		setCellRenderer(new JarTreeCellRenderer());
+		JarTreeCellRenderer jarTreeCellRenderer = new JarTreeCellRenderer();
+		setCellRenderer(jarTreeCellRenderer);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+
+		CropIconsBugResolver.getInstance().adaptTree(jarTreeCellRenderer, this);
 	}
 
 	void load(File file) {

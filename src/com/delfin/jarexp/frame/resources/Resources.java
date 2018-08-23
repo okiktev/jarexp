@@ -230,14 +230,19 @@ public class Resources {
 		if (res != null) {
 			return res;
 		}
-		File file = new File(TMP_DIR, "jarexp" + (ext.isEmpty() ? "" : "." + ext));
+		File file = new File(TMP_DIR, "jarexp" + (ext.isEmpty() ? "" : '.' + ext));
 		try {
 			file.createNewFile();
 		} catch (IOException e) {
 			throw new JarexpException("Couldn't create new file " + file, e);
 		}
 		file.deleteOnExit();
-		Icon icon = FileSystemView.getFileSystemView().getSystemIcon(file);
+
+		Icon icon = CropIconsBugResolver.getInstance().getIcon(file);
+		if (icon == null) {
+			icon = FileSystemView.getFileSystemView().getSystemIcon(file);
+		}
+
 		icons.put(ext, icon);
 		return icon;
 	}
@@ -248,7 +253,11 @@ public class Resources {
 			return res;
 		}
 
-		Icon icon = FileSystemView.getFileSystemView().getSystemIcon(TMP_DIR);
+		Icon icon = CropIconsBugResolver.getInstance().getIcon(TMP_DIR);
+		if (icon == null) {
+			icon = FileSystemView.getFileSystemView().getSystemIcon(TMP_DIR);
+		}
+		
 		icons.put(null, icon);
 		return icon;
 	}
