@@ -31,6 +31,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 19_aug_2017
 bug virus in 'Jar Explorer.jar' ... done ..........................................................17Sep2017
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 17_sep_2017
 bug bad rendering tree for win 10 ... done ........................................................23Aug2018
+imp updated RSyntaxTextArea to 3.0.0 ... done .....................................................23Aug2018
 
 
 bug java entry was changed in Java 8 (creation time). app does not possible to run under java 6.
