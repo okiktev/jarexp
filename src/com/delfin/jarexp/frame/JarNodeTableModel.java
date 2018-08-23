@@ -1,6 +1,5 @@
 package com.delfin.jarexp.frame;
 
-import java.nio.file.attribute.FileTime;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,11 +8,13 @@ import java.util.Enumeration;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
+import com.delfin.jarexp.Settings;
+
 class JarNodeTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 2259978843988964737L;
 
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMM-Y HH:mm");
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat(isJava6() ? "dd-MMM-yyyy HH:mm" : "dd-MMM-Y HH:mm");
 
 	private String[] columnNames = {"Name", "Size", "Compressed Size", 
 			"Time", "Last Modified Time", "Creation Time", "Last Access Time",
@@ -97,8 +98,8 @@ class JarNodeTableModel extends AbstractTableModel {
 		}
 	}
 
-	private static String formatTime(FileTime time) {
-		return time == null ? null : formatTime(time.toMillis());
+	private static String formatTime(Object time) {
+		return isJava6() || time == null ? null : formatTime(((java.nio.file.attribute.FileTime)time).toMillis());
 	}
 
 	private static String formatTime(long time) {
@@ -157,6 +158,10 @@ class JarNodeTableModel extends AbstractTableModel {
 				formatTime(n.time), formatTime(n.lastModTime), formatTime(n.creationTime), formatTime(n.lastAccessTime), 
 				formatMethod(n.method), n.comment, n.attrs, n.certs, n.signers, Long.toString(n.crc, 16),
 				formatExtra(n.extra)};
+	}
+
+	private static boolean isJava6() {
+		return Settings.JAVA_MAJOR_VER == 6;
 	}
 }
 

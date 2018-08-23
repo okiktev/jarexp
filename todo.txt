@@ -32,17 +32,17 @@ bug virus in 'Jar Explorer.jar' ... done .......................................
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 17_sep_2017
 bug bad rendering tree for win 10 ... done ........................................................23Aug2018
 imp updated RSyntaxTextArea to 3.0.0 ... done .....................................................23Aug2018
+bug app does not possible to run under java 6 or 7. ... done ......................................23Aug2018
 
 
-bug java entry was changed in Java 8 (creation time). app does not possible to run under java 6.
-
+imp full file path to opened jar in title
+imp full name to the node in status bar
 imp ribbon
 imp decompile all classes
 imp search class in jar(s)
 imp search token in files
 imp command console
-imp full file path to opened jar in title
-imp full name to the node in status bar
+
 imp when delete file clear preview and context panel
 imp all option dlgs should be custom
 

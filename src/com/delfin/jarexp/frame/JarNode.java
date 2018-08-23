@@ -2,7 +2,6 @@ package com.delfin.jarexp.frame;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.attribute.FileTime;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
@@ -15,6 +14,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.utils.Enumerator;
 import com.delfin.jarexp.utils.Zip;
 
@@ -137,12 +137,13 @@ class JarNode extends DefaultMutableTreeNode {
 	String comment;
 	long compSize;
 	long crc;
-	FileTime creationTime;
 	byte[] extra;
-	FileTime lastAccessTime;
-	FileTime lastModTime;
 	int method;
 	long size;
+	// to support for Java 6 (avoiding java.nio.file.attribute.FileTime)
+	Object creationTime;
+	Object lastAccessTime;
+	Object lastModTime;
 
 	void grab(JarEntry entry) throws IOException {
 		attrs = entry.getAttributes();
@@ -155,9 +156,11 @@ class JarNode extends DefaultMutableTreeNode {
 		extra = entry.getExtra();
 		method = entry.getMethod();
 		size = entry.getSize();
-		creationTime = entry.getCreationTime();
-		lastAccessTime = entry.getLastAccessTime();
-		lastModTime = entry.getLastModifiedTime();
+		if (Settings.JAVA_MAJOR_VER > 7) {
+			creationTime = entry.getCreationTime();
+			lastAccessTime = entry.getLastAccessTime();
+			lastModTime = entry.getLastModifiedTime();
+		}
 	}
 
 }

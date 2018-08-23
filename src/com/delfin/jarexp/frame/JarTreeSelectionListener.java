@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
@@ -320,7 +320,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				String content = area.getText();
 				if (node.path.toLowerCase().endsWith(".mf")) {
 					try {
-						InputStream is = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+						InputStream is = new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8")));
 						new Manifest(is).write(new FileOutputStream(tmp));
 					} catch (IOException e) {
 						JOptionPane.showConfirmDialog(frame, "Failed to save manifest.\nCause: " + e.getMessage(),

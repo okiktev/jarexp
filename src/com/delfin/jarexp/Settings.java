@@ -9,6 +9,8 @@ import javax.swing.BorderFactory;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
+
 public class Settings {
 
 	private static final Logger log = Logger.getLogger(Settings.class.getCanonicalName());
@@ -100,6 +102,7 @@ public class Settings {
 		String sysLookFeel = UIManager.getSystemLookAndFeelClassName();
 		try {
 			UIManager.setLookAndFeel(sysLookFeel);
+			CropIconsBugResolver.getInstance().fixOptionIcons();
 		} catch (Exception e) {
 			log.log(Level.WARNING, "Unable to set " + sysLookFeel + " as current. Using: " + UIManager.getLookAndFeel().getName(), e);
 		}

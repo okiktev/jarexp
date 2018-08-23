@@ -76,13 +76,31 @@ class Cmd {
 
 	}
 
+	static Result runWithJava6(File workingDir, String...command) {
+		ProcessBuilder processBuilder = new ProcessBuilder(command);
+		if (workingDir != null) {
+			processBuilder.directory(workingDir);
+		}
+		try {
+			return handle(processBuilder.start());
+		} catch (Exception e) {
+			throw new JarexpException("An exception occurred while running " + command, e);
+		}
+	}
+
 	static Result run(String[] command, File workingDir, String... envp) {
+		Runtime runtime = Runtime.getRuntime();
+		try {
+			return handle(runtime.exec(command, envp, workingDir));
+		} catch (Exception e) {
+			throw new JarexpException("An exception occurred while running " + command, e);
+		}
+	}
+
+	private static Result handle(Process process) throws InterruptedException {
 		InputStream out = null;
 		InputStream err = null;
 		try {
-			Runtime runtime = Runtime.getRuntime();
-			Process process = runtime.exec(command, envp, workingDir);
-
 			ConsoleReader stdout = new ConsoleReader(out = process.getInputStream());
 			ConsoleReader stderr = new ConsoleReader(err = process.getErrorStream());
 
@@ -90,8 +108,6 @@ class Cmd {
 			stderr.start();
 
 			return new Result(process.waitFor(), stdout, stderr);
-		} catch (Exception e) {
-			throw new JarexpException("An exception occurred while running " + command, e);
 		} finally {
 			if (out != null) {
 				try {

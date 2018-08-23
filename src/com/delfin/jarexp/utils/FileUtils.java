@@ -8,14 +8,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -110,37 +109,20 @@ public class FileUtils {
                 }
             }
         } else {
-            try {
-                Files.copy(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (Exception e) {
-                if (Settings.IS_WINDOWS) {
-                    if (e instanceof java.nio.file.AccessDeniedException && dst.getAbsolutePath().equals(e.getMessage())) {
-                        try {
-                            copyWithAdminPrivileges(src, dst);
-                            return;
-                        } catch (Exception ex) {
-                            throw new JarexpException("An error occurred while copying file " + src + " into " + dst, ex);
-                        }
-                    }
-                }
-                throw new JarexpException("An error occurred while copying file " + src + " into " + dst, e);
-            }
+        	copyFile(src, dst);
         }
 
 
-
-//		FileInputStream srcStream = new FileInputStream(src);
-//		FileOutputStream dstStream = new FileOutputStream(dst);
-//
-//		FileChannel srcChannel = srcStream.getChannel();
-//		FileChannel dstChannel = dstStream.getChannel();
-//		dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
-//
-//		srcStream.close();
-//		dstStream.close();
     }
 
-    private static void copyWithAdminPrivileges(File src, File dst) throws IOException {
+	/**
+	 * <a href="https://www.journaldev.com/861/java-copy-file">Java copy file</a>
+	 */
+    private static void copyFile(File src, File dst) {
+    	(Settings.JAVA_MAJOR_VER > 6 ? new Java7FileCopier() : new Java6FileCopier()).copy(src, dst);
+	}
+
+	private static void copyWithAdminPrivileges(File src, File dst) throws IOException {
         File bat = File.createTempFile("jarexp-", ".bat");
         bat.deleteOnExit();
         final File copyRes = new File(bat.getParentFile(), "jarexp-copyres");
@@ -256,7 +238,13 @@ public class FileUtils {
             outVbs.append("UAC.ShellExecute \"" + bat.getAbsolutePath() + "\", \"\", \"\", \"runas\", 0").append(EOL);
             toFile(vbs, outVbs.toString());
 
-            Result code = Cmd.run(new String[] { "cscript", vbs.getAbsolutePath(), "//B" }, null);
+            String [] command = { "cscript", vbs.getAbsolutePath(), "//B" };
+            Result code;
+            if (Settings.JAVA_MAJOR_VER == 6) {
+            	code = Cmd.runWithJava6(null, command);
+            } else {
+            	code = Cmd.run(command, null);
+            }
             if (!code.out.isEmpty() || !code.err.isEmpty()) {
                 throw new JarexpException("Unable to run file " + bat + " with admin privileges. See the logs for details. Result code:\n" + code);
             }
@@ -268,5 +256,75 @@ public class FileUtils {
             }
         }
     }
+    
+    private interface FileCopier {
+    	void copy(File src, File dst);
+    }
+    
+    private static class Java7FileCopier implements FileCopier {
 
+		@Override
+		public void copy(File src, File dst) {
+	        try {
+	        	java.nio.file.Files.copy(src.toPath(), dst.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+	        } catch (Exception e) {
+	            if (Settings.IS_WINDOWS) {
+	                if (e instanceof java.nio.file.AccessDeniedException && dst.getAbsolutePath().equals(e.getMessage())) {
+	                    try {
+	                        copyWithAdminPrivileges(src, dst);
+	                        return;
+	                    } catch (Exception ex) {
+	                        throw new JarexpException("An error occurred while copying file " + src + " into " + dst, ex);
+	                    }
+	                }
+	            }
+	            throw new JarexpException("An error occurred while copying file " + src + " into " + dst, e);
+	        }
+		}
+    	
+    }
+    
+    private static class Java6FileCopier implements FileCopier {
+
+		@Override
+		public void copy(File src, File dst) {
+			InputStream is = null;
+		    OutputStream os = null;
+		    try {
+		        is = new FileInputStream(src);
+		        os = new FileOutputStream(dst);
+		        byte[] buffer = new byte[1024];
+
+		        for (int length = is.read(buffer); length > 0; length = is.read(buffer)) {
+		        	os.write(buffer, 0, length);
+		        }
+		    } catch (Exception e) {
+		    	if (e instanceof java.io.FileNotFoundException && e.getMessage().contains("(Access is denied)")) {
+                    try {
+                        copyWithAdminPrivileges(src, dst);
+                        return;
+                    } catch (Exception ex) {
+                        throw new JarexpException("An error occurred while copying file " + src + " into " + dst, ex);
+                    }
+		    	}
+		    	throw new JarexpException("An error occurred while copying file " + src + " into " + dst, e);
+		    } finally {
+		    	if (is != null) {
+		    		try {
+						is.close();
+					} catch (IOException e) {
+						log.log(Level.WARNING, "Unable to close input stream for " + src.getAbsolutePath(), e);
+					}
+		    	}
+		    	if (os != null) {
+		    		try {
+						os.close();
+					} catch (IOException e) {
+						log.log(Level.WARNING, "Unable to close output stream for " + dst.getAbsolutePath(), e);
+					}
+		    	}
+		    }
+		}
+
+    }
 }
