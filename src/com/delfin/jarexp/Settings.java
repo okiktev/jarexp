@@ -1,7 +1,6 @@
 package com.delfin.jarexp;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +44,7 @@ public class Settings {
 	 * <tr><td>Windows 2000</td><td>5.0</td></tr>
 	 * </table>
 	 */
-	public static final BigDecimal OS_VER = BigDecimal.valueOf(Double.parseDouble(System.getProperty("os.version")));
+	public static final String OS_VER = System.getProperty("os.version");
 
 	public final static String NAME_PLACEHOLDER = ".$placehoder|\\";
 

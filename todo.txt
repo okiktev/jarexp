@@ -33,6 +33,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 17_sep_2017
 bug bad rendering tree for win 10 ... done ........................................................23Aug2018
 imp updated RSyntaxTextArea to 3.0.0 ... done .....................................................23Aug2018
 bug app does not possible to run under java 6 or 7. ... done ......................................23Aug2018
+bug fixed issue with running under the linux. ... done ............................................27Aug2018
 
 
 imp full file path to opened jar in title
