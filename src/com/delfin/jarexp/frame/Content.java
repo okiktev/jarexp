@@ -261,6 +261,8 @@ public class Content extends JPanel {
 				contentView.setBorder(Settings.EMPTY_BORDER);
 				pane.setRightComponent(contentView);
 
+				frame.setTitle(frame.getTitle() + " | " + file.getName());
+
 				frame.validate();
 				frame.repaint();
 				jarTreeSelectionListener.setDividerLocation(treeView.getWidth());
