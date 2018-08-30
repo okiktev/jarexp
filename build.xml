@@ -83,18 +83,26 @@
 	<target name="generate-build-num">
 		<echo message="Generating new build number" />
 
-		<exec executable="cmd" dir="${build.num.dir}" failonerror="true">
+		<exec executable="cmd" dir="${build.num.dir}" failonerror="true" osfamily="windows">
 			<arg value="/c" />
 			<arg value="gen_build_num.bat" />
+		</exec>
+		
+		<exec executable="sh" dir="${build.num.dir}" failonerror="true" osfamily="unix">
+			<arg value="gen_build_num.sh" />
 		</exec>
 	</target>
 
 	<target name="generate-build-site-num">
 		<echo message="Generating new build site number" />
 
-		<exec executable="cmd" dir="${build.num.dir}" failonerror="true">
+		<exec executable="cmd" dir="${build.num.dir}" failonerror="true" osfamily="windows">
 			<arg value="/c" />
 			<arg value="gen_build_site_num.bat" />
+		</exec>
+
+		<exec executable="sh" dir="${build.num.dir}" failonerror="true" osfamily="unix">
+			<arg value="gen_build_site_num.sh" />
 		</exec>
 	</target>
 
@@ -125,36 +133,32 @@
 	<target name="pack" depends="jar">
 		<copy todir="${artifacts.dir}">
 			<fileset dir="${build.exe.dir}" >
-				<include name="jarexp.bat" />
+				<include name="jarexp.xml" />
 				<include name="Jar Explorer.sh" />
 			</fileset>
 			<filterset>
-				<filter token="FILENAME" value="jar-explorer-${full.version}.jar" />
+				<filter token="ARTIFACTS_DIR" value="${artifacts.dir}" />
+				<filter token="JARNAME" value="jar-explorer-${full.version}.jar" />
+				<filter token="BUILD_EXE_DIR" value="${build.exe.dir}" />
 			</filterset>
 		</copy>
-		<mkdir dir="${artifacts.dir}/lib" />
-		<move file="${artifacts.dir}/jar-explorer-${full.version}.jar" todir="${artifacts.dir}/lib" />
+		<property name="jar.lib.dir" value="${artifacts.dir}/lib"/>
+		<mkdir dir="${jar.lib.dir}" />
+		<move file="${artifacts.dir}/jar-explorer-${full.version}.jar" todir="${jar.lib.dir}" />
 		<echo message="Making exe file in ${artifacts.dir}" />
-		<exec executable="${bte.dir}/BatToExeConverter.1.6.exe" dir="${bte.dir}" failonerror="true">
-			<arg value="-bat" />
-			<arg value="${artifacts.dir}/jarexp.bat" />
-			<arg value="-save" />
-			<arg value="${artifacts.dir}/Jar Explorer.exe" />
-			<arg value="-icon" />
-			<arg value="${build.exe.dir}/jarexp.ico" />
-			<arg value="-include" />
-			<arg value="${artifacts.dir}/lib/jar-explorer-${full.version}.jar" />
-			<arg value="-invisible" />
+		<exec executable="${launch4j.exe.name}" failonerror="true">
+			<arg value="${artifacts.dir}/jarexp.xml" />
 		</exec>
-		<delete file="${artifacts.dir}/jarexp.bat" />
+		<delete file="${artifacts.dir}/jarexp.xml" />
 		<zip destfile="${artifacts.dir}/JarExplorer.${full.version}.zip" basedir="${artifacts.dir}" />
-		<exec executable="${7zip.dir}/7z.exe" dir="${7zip.dir}" failonerror="true">
+		<exec executable="${7zip.exe.name}" failonerror="true" >
 			<arg value="a" />
 			<arg value="-tzip" />
 			<arg value="-p***" />
 			<arg value="${artifacts.dir}/JarsExplorer.${full.version}.zip" />
 			<arg value="${artifacts.dir}/lib" />
 			<arg value="${artifacts.dir}/Jar Explorer.exe" />
+			<arg value="${artifacts.dir}/Jar Explorer.sh" />
 		</exec>
 	</target>
 

@@ -1,2 +1,2 @@
 #!/bin/sh
-java -jar "./lib/@FILENAME@" "$1"
+java -jar "./lib/@JARNAME@" "$1"

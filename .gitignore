@@ -9,6 +9,7 @@ build_exe/copy_adm.bat
 build_exe/islocked_adm.bat
 build_exe/jarexp_admin.bat
 build_exe/jarexp_orig.bat
+build_exe/launch4j
 lib/
 www/jarexp/.htaccess
 www/jarexp/downloads/*.zip
