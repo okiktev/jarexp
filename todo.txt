@@ -40,13 +40,14 @@ imp full name to the node in status bar. ... done ..............................
 
 
 imp add item to context menu for copy full path to clipboard
-imp ribbon
-imp decompile all classes
 imp search class in jar(s)
 imp search token in files
 imp command console
+imp ribbon
+imp decompile all classes
 
-imp when delete file clear preview and context panel
+
+imp when delete file clear preview and ontext panel
 imp all option dlgs should be custom
 
 imp settings functional
