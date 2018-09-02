@@ -64,6 +64,7 @@ public class Content extends JPanel {
 		void perform();
 	}
 
+	private static String title;
 	private static JFrame frame;
 	private static JarTree jarTree;
 	private static File file;
@@ -261,7 +262,7 @@ public class Content extends JPanel {
 				contentView.setBorder(Settings.EMPTY_BORDER);
 				pane.setRightComponent(contentView);
 
-				frame.setTitle(frame.getTitle() + " | " + file.getName());
+				frame.setTitle((title == null ? title = frame.getTitle() : title) + " | " + file.getName());
 
 				frame.validate();
 				frame.repaint();

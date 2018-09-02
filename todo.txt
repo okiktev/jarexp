@@ -36,9 +36,10 @@ bug app does not possible to run under java 6 or 7. ... done ...................
 bug fixed issue with running under the linux. ... done ............................................27Aug2018
 bug fixed issues with building application under unix platform. ... done ..........................30Aug2018
 imp file name of opened jar in title. ... done ....................................................30Aug2018
+imp full name to the node in status bar. ... done .................................................02Sep2018
 
 
-imp full name to the node in status bar
+imp add item to context menu for copy full path to clipboard
 imp ribbon
 imp decompile all classes
 imp search class in jar(s)

@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.List;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
@@ -137,6 +138,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					return;
 				}
 				if (!node.isLeaf() || node.isDirectory) {
+					statusBar.setPath("");
+					statusBar.setCompiledVersion("");
 					Content.preLoadArchive(node, new PreLoadAction() {
 						@Override
 						public void perform() {
@@ -164,7 +167,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				Component contentView = pane.getRightComponent();
 
 				statusBar.enableProgress("Loading...");
-				statusBar.setPath(node.path);
+				statusBar.setPath(pathToList(node.getPathList()));
 				statusBar.setCompiledVersion("");
 				statusBar.setChildren("");
 
@@ -259,6 +262,21 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				pane.setDividerLocation(dividerLocation);
 				pane.validate();
 				pane.repaint();
+			}
+
+			private String pathToList(List<JarNode> list) {
+				StringBuilder out = new StringBuilder();
+				Collections.reverse(list);
+				for (JarNode node : list) {
+					if (node.isDirectory || node.getParent() == null) {
+						continue;
+					}
+					out.append('/').append(node.path);
+					if (node.isArchive()) {
+						out.append('!');
+					}
+				}
+				return out.toString();
 			}
 
 			@Override
