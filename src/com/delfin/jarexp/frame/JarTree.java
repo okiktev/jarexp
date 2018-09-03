@@ -2,8 +2,12 @@ package com.delfin.jarexp.frame;
 
 import java.awt.Component;
 import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -79,6 +83,17 @@ class JarTree extends JTree {
 
         private final ActionListener unpackActionListener;
 
+        private final ActionListener copyPathActionListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+		        JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
+		        JarNode node = (JarNode) item.path.getLastPathComponent();
+		        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		        clipboard.setContents(new StringSelection(node.getFullPath()), null);
+			}
+		};
+
 		JarTreeMouseListener(ActionListener deleteActionListener, ActionListener addActionListener
 				, ActionListener extractActionListener, ActionListener unpackActionListener) {
 			this.deleteActionListener = deleteActionListener;
@@ -112,11 +127,15 @@ class JarTree extends JTree {
 				JarNodeMenuItem unpackNode = new JarNodeMenuItem("Unpack", path);
 				unpackNode.setIcon(Resources.getInstance().getUnpackIcon());
 				unpackNode.addActionListener(unpackActionListener);
+				JarNodeMenuItem copyPath = new JarNodeMenuItem("Copy Path", path);
+				copyPath.setIcon(Resources.getInstance().getCopyIcon());
+				copyPath.addActionListener(copyPathActionListener);
 
 				popupMenu.add(extNode);
 				popupMenu.add(addNode);
 				popupMenu.add(deleteNode);
 				popupMenu.add(unpackNode);
+				popupMenu.add(copyPath);
 				popupMenu.show(JarTree.this, e.getX(), e.getY());
 
                 popupMenu.addPopupMenuListener(new PopupMenuListener() {

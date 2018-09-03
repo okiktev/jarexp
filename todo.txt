@@ -37,11 +37,12 @@ bug fixed issue with running under the linux. ... done .........................
 bug fixed issues with building application under unix platform. ... done ..........................30Aug2018
 imp file name of opened jar in title. ... done ....................................................30Aug2018
 imp full name to the node in status bar. ... done .................................................02Sep2018
+imp add item to context menu for copy full path to clipboard. ... done ............................03Sep2018
 
 
-imp add item to context menu for copy full path to clipboard
 imp search class in jar(s)
 imp search token in files
+imp get all depended classes in the jar
 imp command console
 imp ribbon
 imp decompile all classes

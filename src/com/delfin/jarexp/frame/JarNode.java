@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -73,6 +74,25 @@ class JarNode extends DefaultMutableTreeNode {
 			node = (JarNode) node.getParent();
 		} while (node != null);
 		return path;
+	}
+
+	String getFullPath() {
+		if (getParent() == null) {
+			return name;
+		}
+		List<JarNode> nodes = getPathList();
+		Collections.reverse(nodes);
+		StringBuilder out = new StringBuilder();
+		for (JarNode node : nodes) {
+			if (node.getParent() == null) {
+				continue;
+			}
+			out.append('/').append(node.name);
+			if (node.isArchive()) {
+				out.append('!');
+			}
+		}
+		return out.toString();
 	}
 
 	List<JarNode> grabParentArchives() {

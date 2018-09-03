@@ -52,6 +52,8 @@ public class Resources {
 
 	private Icon unpackIcon;
 
+	private Icon copyIcon;
+
 	private Icon addIcon;
 
 	private Icon extIcon;
@@ -142,6 +144,17 @@ public class Resources {
 			return unpackIcon = new ImageIcon(loadImage("unpack.png"));
 		} catch (IOException e) {
 			throw new ResourcesException("Unable to load unpack menu icon from class path", e);
+		}
+	}
+
+	public Icon getCopyIcon() {
+		if (copyIcon != null) {
+			return copyIcon;
+		}
+		try {
+			return copyIcon = new ImageIcon(loadImage("copy.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load copy menu icon from class path", e);
 		}
 	}
 
