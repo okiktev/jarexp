@@ -5,6 +5,7 @@
 		Builds Jar Explorer application.
 	</description>
 
+	<property file="${basedir}/local.properties" />
 	<property file="${basedir}/build.properties" />
 
 	<target name="clean">
@@ -149,6 +150,9 @@
 		<exec executable="${launch4j.exe.name}" failonerror="true">
 			<arg value="${artifacts.dir}/jarexp.xml" />
 		</exec>
+		<waitfor maxwait="30" maxwaitunit="second">
+		    <available file="${artifacts.dir}/Jar Explorer.exe"/>
+		</waitfor>
 		<delete file="${artifacts.dir}/jarexp.xml" />
 		<zip destfile="${artifacts.dir}/JarExplorer.${full.version}.zip" basedir="${artifacts.dir}" />
 		<exec executable="${7zip.exe.name}" failonerror="true" >

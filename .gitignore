@@ -13,6 +13,7 @@ build_exe/launch4j
 lib/
 www/jarexp/.htaccess
 www/jarexp/downloads/*.zip
+local.properties
 
 
 
