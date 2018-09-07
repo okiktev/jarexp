@@ -178,7 +178,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
                     lowPath = archName;
 				} else {
 	                file = new File(node.archive.getParent(), node.path);
-	                Zip.unzip(node.path, node.archive, file);
+	                Zip.unzip(node.getFullPath(), node.path, node.archive, file);
 	                lowPath = node.path.toLowerCase();
 				}
 

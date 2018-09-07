@@ -11,6 +11,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -24,6 +26,8 @@ import com.delfin.jarexp.JarexpException;
 public class Zip {
 	
 	private static final Logger log = Logger.getLogger(Zip.class.getCanonicalName());
+	
+	private static final Map<String, File> unpacked = new ConcurrentHashMap<String, File>();
 
 	// private static final int BUFFER_SIZE = 4096;
 
@@ -51,7 +55,11 @@ public class Zip {
 //	}
 
 	
-	 public static void unzip(String path, File archive, File dst) {
+	 public static void unzip(String fullPath, String path, File archive, File dst) {
+		 if (unpacked.containsKey(fullPath)) {
+			 return;
+		 }
+
 		 makeParentDirs(dst);
 		 
 		 //System.out.println("unzipping " + path + " from " + archive + " into " + dst);
@@ -74,6 +82,8 @@ public class Zip {
 	           if (nBytes <= 0) break;
 	           out.write(buffer, 0, nBytes);
 	         }
+	         
+	         unpacked.put(fullPath, dst);
 	         
 	         out.flush();
 	         st.close();
