@@ -100,7 +100,7 @@ public class Content extends JPanel {
 				if (isNotInitiated) {
 					statusBar.enableProgress("Loading...");
 					File dst = new File(Resources.createTmpDir(), node.name);
-					Zip.unzip(node.getFullPath(), node.path, node.archive, dst);
+					dst = Zip.unzip(node.getFullPath(), node.path, node.archive, dst);
 					jarTree.addArchive(dst, node);
 					jarTree.update(node);
 				}

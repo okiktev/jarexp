@@ -54,10 +54,17 @@ public class Zip {
 //		zipIn.close();
 //	}
 
-	
-	 public static void unzip(String fullPath, String path, File archive, File dst) {
-		 if (unpacked.containsKey(fullPath)) {
-			 return;
+	/**
+	 * 
+	 * @param fullPath - string representation of the full path to resource.
+	 * @param path - path of resource in the archive.
+	 * @param archive - existing archive file where <code>path</code> specified.
+	 * @param dst - file where will be extracted resource.
+	 */
+	 public static File unzip(String fullPath, String path, File archive, File dst) {
+		 File cached = unpacked.get(fullPath);
+		 if (cached != null) {
+			 return cached;
 		 }
 
 		 makeParentDirs(dst);
@@ -94,6 +101,7 @@ public class Zip {
 	        catch (Exception e) {
 	         e.printStackTrace();
 	       }
+	     return dst;
 	 }
 	
 	private static void extractFile(ZipInputStream zipIn, File file) throws IOException {
@@ -176,7 +184,7 @@ public class Zip {
 	    }
 		
 		
-		
+		unpacked.clear();
 	}
 	
 	
@@ -242,7 +250,7 @@ public class Zip {
 	        //System.out.println(srcJarFile.getAbsolutePath() + " updated.");
 	    }
 		
-		
+		unpacked.clear();
 		
 	}
 
