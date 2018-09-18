@@ -1,5 +1,7 @@
 package com.delfin.jarexp.frame.about;
 
+import static com.delfin.jarexp.Settings.DLG_TEXT_FONT;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
@@ -53,10 +55,10 @@ class General extends JPanel {
 			}
 		});
 
-		version.setFont(Dialog.textFont);
-		author.setFont(Dialog.textFont);
-		github.setFont(Dialog.textFont);
-		copyright.setFont(Dialog.textFont);
+		version.setFont(DLG_TEXT_FONT);
+		author.setFont(DLG_TEXT_FONT);
+		github.setFont(DLG_TEXT_FONT);
+		copyright.setFont(DLG_TEXT_FONT);
 		
 		add(getAppName(), 
 				new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(5, 10, 0, 0), 0, 0));
@@ -71,15 +73,14 @@ class General extends JPanel {
 	
 	private static JLabel getAppName() {
 		JLabel appNameLb = new JLabel("Jar Explorer");
-		Font f = Dialog.textFont;
-		appNameLb.setFont(new Font(f.getName(), f.getStyle(), 21));
+		appNameLb.setFont(new Font(DLG_TEXT_FONT.getName(), DLG_TEXT_FONT.getStyle(), 21));
 		appNameLb.setForeground(Color.DARK_GRAY);
 		return appNameLb;
 	}
 	
 	private static JLabel getAbout() {
 		JLabel lb = new JLabel("<html>The Jar Explorer allows to browse content of Java library files known as JARs.");
-		lb.setFont(Dialog.textFont);
+		lb.setFont(DLG_TEXT_FONT);
 		return lb;
 	}
 	

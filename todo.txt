@@ -38,18 +38,21 @@ bug fixed issues with building application under unix platform. ... done .......
 imp file name of opened jar in title. ... done ....................................................30Aug2018
 imp full name to the node in status bar. ... done .................................................02Sep2018
 imp add item to context menu for copy full path to clipboard. ... done ............................03Sep2018
+imp search class in jar(s). ... done ..............................................................18Sep2018
 
-
-imp search class in jar(s)
 imp search token in files
+imp render the types of the files inside the jar
+imp find file duplicates 
 imp get all depended classes in the jar
+imp decompile all classes
 imp command console
 imp ribbon
-imp decompile all classes
 
-
-imp when delete file clear preview and ontext panel
+imp remember last state
+imp when delete file clear preview and context panel
+bug table data is not updated after replacing file
 imp all option dlgs should be custom
+bug when delete several times the exception related to jave compiled version
 
 imp settings functional
 bug with shifting split panel when click on folder

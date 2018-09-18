@@ -1,5 +1,6 @@
 package com.delfin.jarexp;
 
+import java.awt.Font;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,6 +56,8 @@ public class Settings {
 	private static File tmpDir = new File(System.getProperty("java.io.tmpdir"), "jarexp" + System.currentTimeMillis());
 
 	public static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
+	
+	public static final Font DLG_TEXT_FONT = new Font("Consolas", Font.PLAIN, 10);
 
 	public static final long ADMIN_WAIT_TIMEOUT = Long.getLong("jarexp.admin.wait.timeout", 10000L);
 

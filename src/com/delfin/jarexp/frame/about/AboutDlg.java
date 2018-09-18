@@ -2,7 +2,6 @@ package com.delfin.jarexp.frame.about;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
@@ -18,13 +17,11 @@ import com.delfin.jarexp.frame.resources.Resources;
 
 
 
-public class Dialog extends JDialog {
+public class AboutDlg extends JDialog {
 	
 	private static final long serialVersionUID = -6727320015620479794L;
 
-	static final Font textFont = new Font("Consolas", Font.PLAIN, 10);
-
-    public Dialog(Component parent) throws HeadlessException {
+    public AboutDlg(Component parent) throws HeadlessException {
 	    super();
 	    setModal(true);
 		setTitle("About Jar Explorer");
@@ -60,7 +57,7 @@ public class Dialog extends JDialog {
 		}
 		
 		
-	    new Dialog(null);
+	    new AboutDlg(null);
     }
 	
 }

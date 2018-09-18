@@ -11,6 +11,8 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
@@ -24,6 +26,7 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -35,9 +38,11 @@ import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
-import com.delfin.jarexp.frame.about.Dialog;
+import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
+import com.delfin.jarexp.frame.about.AboutDlg;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
+import com.delfin.jarexp.frame.search.SearchDlg;
 import com.delfin.jarexp.utils.Zip;
 
 public class Content extends JPanel {
@@ -164,12 +169,12 @@ public class Content extends JPanel {
 						try {
 							delete(c);
 						} catch (Exception e) {
-							
+							throw new JarexpException("An error occurred while deleting the file " + f.getAbsolutePath());
 						}
 					}
 				}
 				if (!f.delete()) {
-					//throw new FileNotFoundException("Failed to delete file: " + f);
+					throw new JarexpException("Could not delete file " + f.getAbsolutePath());
 				}
 			}
 		});
@@ -187,19 +192,95 @@ public class Content extends JPanel {
 				if (file != null) {
 					chooser.setCurrentDirectory(file.getParentFile());
 				}
-
 				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
 					File f = chooser.getSelectedFile();
 					if (!f.exists()) {
-						// TODO show error message;
+						JOptionPane.showMessageDialog(frame, "Specified file does not exist.", "Wrong input", JOptionPane.ERROR_MESSAGE);
+					} else {
+						loadJarFile(file = f);
 					}
-					loadJarFile(file = f);
 				}
 			}
 		}, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new Dialog(frame);
+				if (file == null) {
+					JOptionPane.showMessageDialog(frame, "Archive is not loaded.", "Wrong input", JOptionPane.WARNING_MESSAGE);
+					return;
+				} else {
+					new SearchDlg(file) {
+						private static final long serialVersionUID = -838103554183752603L;						
+						@Override
+						protected void initComponents() {
+							super.initComponents();
+							tResult.addMouseListener(new MouseAdapter() {
+								public void mousePressed(MouseEvent e) {
+									if (e.getClickCount() != 2) {
+										return;
+									}
+									int row = tResult.getSelectedRow();
+									if (row != -1) {
+										String fullPath = (String) tResult.getModel().getValueAt(row, 0);
+										JarNode node = jarTree.getRoot();
+										String [] items = fullPath.split("/");
+										for (int i = 0; i < items.length; ++i) {
+											String el = items[i];
+											if (el.isEmpty()) {
+												continue;
+											}
+											if (i == items.length - 1) {
+												jarTree.expandPath(new TreePath(node.getPath()));
+												Enumeration<?> children = node.children();
+												while(children.hasMoreElements()) {
+													JarNode child = (JarNode) children.nextElement();
+													if (child.name.equals(el)) {
+														JarTreeClickSelection.setNodes(null);
+														TreePath path = new TreePath(child.getPath());
+														jarTree.setSelectionPath(path);
+														jarTree.scrollPathToVisible(path);
+														break;
+													}
+												}
+												break;
+											}
+											boolean isArchive = false;
+											if (el.charAt(el.length() - 1) == '!') {
+												el = el.replace("!", "");
+												isArchive = true;
+											}
+											Enumeration<?> children = node.children();
+											while(children.hasMoreElements()) {
+												JarNode child = (JarNode) children.nextElement();
+												if (child.name.equals(el)) {
+													if (isArchive) {
+														jarTree.expandPath(new TreePath(child.getPath()));
+														while (true) {
+															try {
+																Thread.sleep(50);
+															} catch (InterruptedException ex) {
+																throw new JarexpException("Error happens while waiting for archive leaf is loaded.", ex);
+															}
+															if (!Settings.NAME_PLACEHOLDER.equals(((JarNode)child.getLastChild()).name)) {
+																break;
+															}
+														}
+													}
+													node = child;
+													break;
+												}
+											}
+										}
+									}
+								}
+							});
+						};
+					};
+				}
+			}
+		}, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new AboutDlg(frame);
 			}
 		}));
 

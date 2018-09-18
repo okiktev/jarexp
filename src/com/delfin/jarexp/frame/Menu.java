@@ -17,7 +17,7 @@ class Menu extends JMenuBar {
 
 	private static final long serialVersionUID = 6283256126265026307L;
 	
-	Menu(ActionListener openListener, ActionListener aboutListener) throws ResourcesException {
+	Menu(ActionListener openListener, ActionListener searchListener, ActionListener aboutListener) throws ResourcesException {
 
 		JMenuItem menuItem;
 
@@ -42,6 +42,16 @@ class Menu extends JMenuBar {
 		menuItem.setIcon(Resources.getInstance().getExitIcon());
 		file.add(menuItem);
 		add(file);
+		
+		JMenu tools = new JMenu("Tools");
+		tools.setMnemonic(KeyEvent.VK_T);
+		menuItem = new JMenuItem("Search", KeyEvent.VK_S);
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+		menuItem.addActionListener(searchListener);
+		menuItem.setIcon(Resources.getInstance().getSearchIcon());
+		tools.add(menuItem);
+		add(tools);
+		
 
 		JMenu help = new JMenu("Help");
 		help.setMnemonic(KeyEvent.VK_H);

@@ -15,17 +15,17 @@ import com.delfin.jarexp.utils.Enumerator;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
-abstract class Jar {
+public abstract class Jar {
 
 	private static final Logger log = Logger.getLogger(Jar.class.getCanonicalName());
 
 	private final File file;
 
-	Jar(File file) {
+	public Jar(File file) {
 		this.file = file;
 	}
 
-	void bypass() {
+	public void bypass() {
 		JarFile jarFile = null;
 		try {
 			jarFile = new JarFile(file);

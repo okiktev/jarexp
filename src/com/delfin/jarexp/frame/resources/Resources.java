@@ -46,8 +46,6 @@ public class Resources {
 
 	private Icon exitIcon;
 
-	private Icon infoIcon;
-
 	private Icon delIcon;
 
 	private Icon unpackIcon;
@@ -58,7 +56,13 @@ public class Resources {
 
 	private Icon extIcon;
 
+	private Icon infoIcon;
+
 	private Image infoImage;
+
+	private Image searchImage;
+
+	private Icon searchIcon;
 
 	private String licenseText;
 
@@ -111,17 +115,6 @@ public class Resources {
 			return exitIcon = new ImageIcon(loadImage("exit.png"));
 		} catch (IOException e) {
 			throw new ResourcesException("Unable to load exit menu icon from class path", e);
-		}
-	}
-
-	public Icon getInfoIcon() throws ResourcesException {
-		if (infoIcon != null) {
-			return infoIcon;
-		}
-		try {
-			return infoIcon = new ImageIcon(loadImage("info.png"));
-		} catch (IOException e) {
-			throw new ResourcesException("Unable to load info menu icon from class path", e);
 		}
 	}
 
@@ -283,6 +276,39 @@ public class Resources {
 			return infoImage = loadImage("info.png");
 		} catch (IOException e) {
 			throw new ResourcesException("Unable to load info image from class path", e);
+		}
+	}
+
+	public Icon getInfoIcon() throws ResourcesException {
+		if (infoIcon != null) {
+			return infoIcon;
+		}
+		try {
+			return infoIcon = new ImageIcon(loadImage("info.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load info menu icon from class path", e);
+		}
+	}
+
+	public Image getSearchImage() {
+		if (searchImage != null) {
+			return searchImage;
+		}
+		try {
+			return searchImage = loadImage("srch.png");
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load search image from class path", e);
+		}
+	}
+
+	public Icon getSearchIcon() {
+		if (searchIcon != null) {
+			return searchIcon;
+		}
+		try {
+			return searchIcon = new ImageIcon(loadImage("srch.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load search menu icon from class path", e);
 		}
 	}
 

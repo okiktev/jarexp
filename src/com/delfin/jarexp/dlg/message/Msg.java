@@ -13,7 +13,7 @@ public class Msg {
 
 	static Font defaultFont = UIManager.getDefaults().getFont("Label.font");
 
-	static void centerDlg(Window win, int width, int height) {
+	public static void centerDlg(Window win, int width, int height) {
 		JFrame parent = null;
 		for (Window window : JDialog.getWindows()) {
 			if (window instanceof JFrame && ((JFrame) window).getTitle().startsWith("Jar Explorer")) {
