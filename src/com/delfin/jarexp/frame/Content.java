@@ -119,13 +119,7 @@ public class Content extends JPanel {
 			}
 		}.execute();
 	}
-	
-	/**
-	 * Create the GUI and show it. For thread safety, this method should be
-	 * invoked from the event-dispatching thread.
-	 * @param passedFile 
-	 * @throws ResourcesException 
-	 */
+
 	public static void createAndShowGUI(File passedFile) throws ResourcesException {
 		// Create and set up the window.
 		frame = new JFrame("Jar Explorer " + Settings.getInstance().getVersion());

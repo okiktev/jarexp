@@ -4,6 +4,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.jar.Attributes;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
@@ -14,7 +17,7 @@ class JarNodeTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 2259978843988964737L;
 
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat(isJava6() ? "dd-MMM-yyyy HH:mm" : "dd-MMM-Y HH:mm");
+	static final DateFormat TIME_FORMAT = new SimpleDateFormat(isJava6() ? "dd-MMM-yyyy HH:mm:ss.S" : "dd-MMM-Y HH:mm:ss.S");
 
 	private String[] columnNames = {"Name", "Size", "Compressed Size", 
 			"Time", "Last Modified Time", "Creation Time", "Last Access Time",
@@ -85,7 +88,7 @@ class JarNodeTableModel extends AbstractTableModel {
 
 	}
 
-	private static String formatMethod(int method) {
+	static String formatMethod(int method) {
 		switch (method) {
 		case 0:
 			return "Store";
@@ -98,15 +101,15 @@ class JarNodeTableModel extends AbstractTableModel {
 		}
 	}
 
-	private static String formatTime(Object time) {
+	static String formatTime(Object time) {
 		return isJava6() || time == null ? null : formatTime(((java.nio.file.attribute.FileTime)time).toMillis());
 	}
 
-	private static String formatTime(long time) {
-		return DATE_FORMAT.format(new Date(time));
+	static String formatTime(long time) {
+		return TIME_FORMAT.format(new Date(time));
 	}
 
-	private static String formatExtra(byte[] data) {
+	static String formatExtra(byte[] data) {
 		if (data == null) {
 			return null;
 		}
@@ -156,8 +159,26 @@ class JarNodeTableModel extends AbstractTableModel {
 
 		return new Object[] {n.name, size, compSize,
 				formatTime(n.time), formatTime(n.lastModTime), formatTime(n.creationTime), formatTime(n.lastAccessTime), 
-				formatMethod(n.method), n.comment, n.attrs, n.certs, n.signers, Long.toString(n.crc, 16),
+				formatMethod(n.method), n.comment, formatAttributes(n.attrs), n.certs, n.signers, Long.toString(n.crc, 16),
 				formatExtra(n.extra)};
+	}
+
+	static String formatAttributes(Attributes attrs) {
+		if (attrs == null) {
+			return null;
+		}
+		Set<Entry<Object, Object>> entries = attrs.entrySet();
+		StringBuilder out = new StringBuilder();
+		int i = 0;
+		int size = entries.size();
+		for (Entry<Object, Object> entry : entries) {
+			out.append(entry.getKey()).append('=').append(entry.getValue());
+			if (i != size - 1) {
+				out.append(',');
+			}
+			++i;
+		}
+		return out.toString();
 	}
 
 	private static boolean isJava6() {

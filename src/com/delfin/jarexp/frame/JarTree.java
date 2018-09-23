@@ -84,13 +84,17 @@ class JarTree extends JTree {
         private final ActionListener unpackActionListener;
 
         private final ActionListener copyPathActionListener = new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-		        JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
-		        JarNode node = (JarNode) item.path.getLastPathComponent();
 		        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		        clipboard.setContents(new StringSelection(node.getFullPath()), null);
+		        clipboard.setContents(new StringSelection(getNode(e).getFullPath()), null);
+			}
+		};
+
+        private final ActionListener informationActionListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new InfoDlg(getNode(e));
 			}
 		};
 
@@ -116,26 +120,31 @@ class JarTree extends JTree {
 				setSelectionPath(path);
 				JPopupMenu popupMenu = new JPopupMenu();
 				JarNodeMenuItem deleteNode = new JarNodeMenuItem("Delete", path);
-				deleteNode.setIcon(Resources.getInstance().getDelIcon());
+				Resources resources = Resources.getInstance();
+				deleteNode.setIcon(resources.getDelIcon());
 				deleteNode.addActionListener(deleteActionListener);
 				JarNodeMenuItem addNode = new JarNodeMenuItem("Add", path);
-				addNode.setIcon(Resources.getInstance().getAddIcon());
+				addNode.setIcon(resources.getAddIcon());
 				addNode.addActionListener(addActionListener);
 				JarNodeMenuItem extNode = new JarNodeMenuItem("Extract", path);
-				extNode.setIcon(Resources.getInstance().getExtIcon());
+				extNode.setIcon(resources.getExtIcon());
 				extNode.addActionListener(extractActionListener);
 				JarNodeMenuItem unpackNode = new JarNodeMenuItem("Unpack", path);
-				unpackNode.setIcon(Resources.getInstance().getUnpackIcon());
+				unpackNode.setIcon(resources.getUnpackIcon());
 				unpackNode.addActionListener(unpackActionListener);
 				JarNodeMenuItem copyPath = new JarNodeMenuItem("Copy Path", path);
-				copyPath.setIcon(Resources.getInstance().getCopyIcon());
+				copyPath.setIcon(resources.getCopyIcon());
 				copyPath.addActionListener(copyPathActionListener);
+				JarNodeMenuItem info = new JarNodeMenuItem("Information", path);
+				info.setIcon(resources.getInfoIcon());
+				info.addActionListener(informationActionListener);
 
 				popupMenu.add(extNode);
 				popupMenu.add(addNode);
 				popupMenu.add(deleteNode);
 				popupMenu.add(unpackNode);
 				popupMenu.add(copyPath);
+				popupMenu.add(info);
 				popupMenu.show(JarTree.this, e.getX(), e.getY());
 
                 popupMenu.addPopupMenuListener(new PopupMenuListener() {
@@ -310,6 +319,11 @@ class JarTree extends JTree {
 		this.isDragging = isDragging;
 	}
 
+	private static JarNode getNode(ActionEvent e) {
+		JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
+		return (JarNode) item.path.getLastPathComponent();
+	}
+
 	private static boolean isExist(JarNode node, File file) {
 		for (Enumeration<?> children = node.children(); children.hasMoreElements();) {
 			if (((JarNode) children.nextElement()).name.equals(file.getName())) {
@@ -349,6 +363,7 @@ class JarTree extends JTree {
 			JarNode child = new JarNode(name, path, archive, entry.isDirectory());
 			child.grab(entry);
 			if (child.isArchive()) {
+				child.grab(entry);
 				archiveLoader.load(child);
 			}
 			node.add(child);

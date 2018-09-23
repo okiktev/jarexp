@@ -51,7 +51,7 @@ class JarNode extends DefaultMutableTreeNode {
 		this.isDirectory = isDirectory;
 	}
 
-	public JarNode() {
+	JarNode() {
 	}
 
 	@Override

@@ -39,9 +39,9 @@ imp file name of opened jar in title. ... done .................................
 imp full name to the node in status bar. ... done .................................................02Sep2018
 imp add item to context menu for copy full path to clipboard. ... done ............................03Sep2018
 imp search class in jar(s). ... done ..............................................................18Sep2018
+imp properties of files. ... done .................................................................23Sep2018
 
 imp search token in files
-imp render the types of the files inside the jar
 imp find file duplicates 
 imp get all depended classes in the jar
 imp decompile all classes
