@@ -8,9 +8,9 @@ class ClassFileSearchResultTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 2838930607781355845L;
 
-	private List<ClassFileSearcher.SearchResult> data;
+	private List<SearchResult> data;
 
-	ClassFileSearchResultTableModel(List<ClassFileSearcher.SearchResult> data) {
+	ClassFileSearchResultTableModel(List<SearchResult> data) {
 		this.data = data;
 	}
 
@@ -26,7 +26,7 @@ class ClassFileSearchResultTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		return data.get(rowIndex).fullPath;
+		return data.get(rowIndex);
 	}
 
 }

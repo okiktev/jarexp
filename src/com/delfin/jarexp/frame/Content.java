@@ -30,11 +30,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.TableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Highlighter;
 import javax.swing.tree.TreePath;
+
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
@@ -43,6 +49,7 @@ import com.delfin.jarexp.frame.about.AboutDlg;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
 import com.delfin.jarexp.frame.search.SearchDlg;
+import com.delfin.jarexp.frame.search.SearchResult;
 import com.delfin.jarexp.utils.Zip;
 
 public class Content extends JPanel {
@@ -214,54 +221,97 @@ public class Content extends JPanel {
 									}
 									int row = tResult.getSelectedRow();
 									if (row != -1) {
-										String fullPath = (String) tResult.getModel().getValueAt(row, 0);
-										JarNode node = jarTree.getRoot();
-										String [] items = fullPath.split("/");
-										for (int i = 0; i < items.length; ++i) {
-											String el = items[i];
-											if (el.isEmpty()) {
-												continue;
-											}
-											if (i == items.length - 1) {
-												jarTree.expandPath(new TreePath(node.getPath()));
-												Enumeration<?> children = node.children();
-												while(children.hasMoreElements()) {
-													JarNode child = (JarNode) children.nextElement();
-													if (child.name.equals(el)) {
-														JarTreeClickSelection.setNodes(null);
-														TreePath path = new TreePath(child.getPath());
-														jarTree.setSelectionPath(path);
-														jarTree.scrollPathToVisible(path);
-														break;
-													}
-												}
+										TableModel tableModel = tResult.getModel();
+										final SearchResult searchResult = (SearchResult) tableModel.getValueAt(row, 0);
+										switch (searchResult.position) {
+										case -1: expandTreeLeaf(searchResult.line); break;
+										case -2: JOptionPane.showMessageDialog(frame, searchResult.line, "Information", JOptionPane.INFORMATION_MESSAGE); break;
+										default:
+											if (searchResult.position < -1) {
+												JOptionPane.showMessageDialog(frame, "Unknown result code: " + searchResult.line, "Error", JOptionPane.ERROR_MESSAGE);
 												break;
 											}
-											boolean isArchive = false;
-											if (el.charAt(el.length() - 1) == '!') {
-												el = el.replace("!", "");
-												isArchive = true;
+											while (row != -1) {
+												SearchResult fileSearch = (SearchResult) tableModel.getValueAt(--row, 0);
+												if (fileSearch.position == -1) {
+													expandTreeLeaf(fileSearch.line);
+													break;
+												}
 											}
+											while(jarTreeSelectionListener.isLocked()) {
+												try {
+													Thread.sleep(50);
+												} catch (InterruptedException ex) {
+													throw new JarexpException(ex);
+												}
+											}
+											try {
+												Thread.sleep(100);
+											} catch (InterruptedException ex) {
+												throw new JarexpException(ex);
+											}
+											try {
+												JTextArea area = jarTreeSelectionListener.area;
+												int position = searchResult.position;
+												area.scrollRectToVisible(area.modelToView(position));
+
+												Highlighter hilit = new RSyntaxTextAreaHighlighter();
+												area.setHighlighter(hilit);
+												hilit.addHighlight(position, position + tfFind.getText().length(), FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
+											} catch (BadLocationException ex) {
+												throw new JarexpException("Could not scroll to found index.", ex);
+											}
+										}
+									}
+								}
+
+								private void expandTreeLeaf(String fullPath) {
+									JarNode node = jarTree.getRoot();
+									String [] items = fullPath.split("/");
+									for (int i = 0; i < items.length; ++i) {
+										String el = items[i];
+										if (el.isEmpty()) {
+											continue;
+										}
+										if (i == items.length - 1) {
+											jarTree.expandPath(new TreePath(node.getPath()));
 											Enumeration<?> children = node.children();
 											while(children.hasMoreElements()) {
 												JarNode child = (JarNode) children.nextElement();
 												if (child.name.equals(el)) {
-													if (isArchive) {
-														jarTree.expandPath(new TreePath(child.getPath()));
-														while (true) {
-															try {
-																Thread.sleep(50);
-															} catch (InterruptedException ex) {
-																throw new JarexpException("Error happens while waiting for archive leaf is loaded.", ex);
-															}
-															if (!Settings.NAME_PLACEHOLDER.equals(((JarNode)child.getLastChild()).name)) {
-																break;
-															}
-														}
-													}
-													node = child;
+													JarTreeClickSelection.setNodes(null);
+													TreePath path = new TreePath(child.getPath());
+													jarTree.setSelectionPath(path);
+													jarTree.scrollPathToVisible(path);
 													break;
 												}
+											}
+											break;
+										}
+										boolean isArchive = false;
+										if (el.charAt(el.length() - 1) == '!') {
+											el = el.replace("!", "");
+											isArchive = true;
+										}
+										Enumeration<?> children = node.children();
+										while(children.hasMoreElements()) {
+											JarNode child = (JarNode) children.nextElement();
+											if (child.name.equals(el)) {
+												if (isArchive) {
+													jarTree.expandPath(new TreePath(child.getPath()));
+													while (true) {
+														try {
+															Thread.sleep(50);
+														} catch (InterruptedException ex) {
+															throw new JarexpException("Error happens while waiting for archive leaf is loaded.", ex);
+														}
+														if (!Settings.NAME_PLACEHOLDER.equals(((JarNode)child.getLastChild()).name)) {
+															break;
+														}
+													}
+												}
+												node = child;
+												break;
 											}
 										}
 									}

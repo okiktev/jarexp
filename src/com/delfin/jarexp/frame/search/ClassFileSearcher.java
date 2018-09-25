@@ -15,14 +15,6 @@ import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.utils.Zip;
 
 class ClassFileSearcher implements Searcher {
-	
-	static class SearchResult {
-		String fullPath;
-		
-		SearchResult(String fullPath) {
-			this.fullPath = fullPath;
-		}
-	}
 
 	private final File jarFile;
 
@@ -58,10 +50,6 @@ class ClassFileSearcher implements Searcher {
 				search("", jarFile, results, searchDlg);
 				long overall = System.currentTimeMillis() - start;
 				searchDlg.tResult.setModel(new ClassFileSearchResultTableModel(results));
-//				for (SearchResult res : results) {
-//					searchDlg.taResult
-//					// TODO searchDlg.taResult.append(new SearchResult(fullPath) + '\n');
-//				}
 				searchDlg.lbResult.setText("Result. Found " + results.size() + " results for " + overall + "ms:");
 			};
 		});

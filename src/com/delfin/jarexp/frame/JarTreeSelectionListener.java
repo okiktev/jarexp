@@ -92,7 +92,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 	private boolean isEdited;
 
-	private JTextArea area;
+	JTextArea area;
 
 	private JarNode node;
 
@@ -228,7 +228,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				} else {
 					if (!file.isDirectory()) {
 						statusBar.enableProgress("Reading...");
-						final RSyntaxTextArea textArea = new RSyntaxTextArea(FileUtils.toString(file));
+						RSyntaxTextArea textArea = new RSyntaxTextArea(FileUtils.toString(file));
 						textArea.setSyntaxEditingStyle(getSyntax(lowPath));
 						textArea.setBorder(Settings.EMPTY_BORDER);
 						textArea.setCodeFoldingEnabled(true);
@@ -261,6 +261,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				pane.setDividerLocation(dividerLocation);
 				pane.validate();
 				pane.repaint();
+
+				doFinally();
 			}
 
 			@Override

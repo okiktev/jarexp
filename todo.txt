@@ -40,20 +40,22 @@ imp full name to the node in status bar. ... done ..............................
 imp add item to context menu for copy full path to clipboard. ... done ............................03Sep2018
 imp search class in jar(s). ... done ..............................................................18Sep2018
 imp properties of files. ... done .................................................................23Sep2018
+imp search token in files. ... done ...............................................................25Sep2018
 
-imp search token in files
-imp find file duplicates 
-imp get all depended classes in the jar
+imp next button in filter and scroll out to searched token
+imp find file duplicates
 imp decompile all classes
+imp get all depended classes in the jar
 imp command console
 imp ribbon
 
 imp remember last state
 imp when delete file clear preview and context panel
 bug table data is not updated after replacing file
-imp all option dlgs should be custom
-bug when delete several times the exception related to jave compiled version
+imp all option dialogs should be custom
+bug when delete several times the exception related to java compiled version
 
+imp search history
 imp settings functional
 bug with shifting split panel when click on folder
 imp toLower for path when initiate nodes
@@ -65,9 +67,24 @@ imp fix rendering icons for file chooser
 refactor code
 
 
-
-
-
+found 20 Sep while decompiling class:
+Exception in thread "Thread-0" com.delfin.jarexp.JarexpException: An error occurred while processing jar file C:\Users\Oleh_Kiktiev\Desktop\ybootstrap - Copy.jar
+	at com.delfin.jarexp.frame.Jar.bypass(Jar.java:37)
+	at com.delfin.jarexp.frame.search.FileContentSearcher.search(FileContentSearcher.java:193)
+	at com.delfin.jarexp.frame.search.FileContentSearcher.access$1(FileContentSearcher.java:111)
+	at com.delfin.jarexp.frame.search.FileContentSearcher$1.run(FileContentSearcher.java:79)
+	at java.base/java.lang.Thread.run(Thread.java:844)
+Caused by: com.delfin.jarexp.JarexpException: An error while decompiling file C:\Users\OLEH_K~1\AppData\Local\Temp\jarexp1537343098095\1537343112056\HanaBlobColumnNativeTypeDecorator.class
+	at com.delfin.jarexp.utils.Compiler.decompile(Compiler.java:50)
+	at com.delfin.jarexp.frame.search.FileContentSearcher$3.process(FileContentSearcher.java:131)
+	at com.delfin.jarexp.frame.Jar.bypass(Jar.java:34)
+	... 4 more
+Caused by: jd.core.process.deserializer.ClassFormatException: Invalid constant pool entry
+	at jd.core.process.deserializer.ClassFileDeserializer.DeserializeConstants(ClassFileDeserializer.java:226)
+	at jd.core.process.deserializer.ClassFileDeserializer.Deserialize(ClassFileDeserializer.java:143)
+	at jd.core.process.deserializer.ClassFileDeserializer.LoadSingleClass(ClassFileDeserializer.java:119)
+	at jd.core.process.deserializer.ClassFileDeserializer.Deserialize(ClassFileDeserializer.java:40)
+	at com.delfin.jarexp.utils.Compiler.decompile(Compiler.java:36)
 
 
 fixed at 10Aug2017:
@@ -92,6 +109,4 @@ Caused by: java.nio.file.InvalidPathException: Illegal char <:> at index 74: C:\
 	at java.io.File.toPath(Unknown Source)
 	at com.delfin.jarexp.utils.FileUtils.copy(FileUtils.java:115)
 	... 10 more
-
-
 

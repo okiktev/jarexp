@@ -27,6 +27,8 @@ class FilterPanel extends JPanel {
 
 	private static final Logger log = Logger.getLogger(FilterPanel.class.getCanonicalName());
 
+	static final DefaultHighlightPainter DEFAULT_HIGHLIGHT_PAINTER =  new DefaultHighlightPainter(Color.LIGHT_GRAY);
+
 	FilterPanel(final JarTreeSelectionListener listener, final RSyntaxTextArea textArea) {
 		super(new BorderLayout());
 
