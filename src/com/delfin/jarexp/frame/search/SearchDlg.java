@@ -1,5 +1,6 @@
 package com.delfin.jarexp.frame.search;
 
+import static com.delfin.jarexp.Settings.DLG_DIM;
 import static com.delfin.jarexp.Settings.DLG_TEXT_FONT;
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.EAST;
@@ -10,7 +11,6 @@ import static java.awt.GridBagConstraints.WEST;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -39,16 +39,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
 
-public class SearchDlg extends JDialog {
-
-	private static final Color COLOR_RED = new Color(215, 0, 0);
-
-	private static final Color COLOR_GREEN = new Color(0, 215, 0);
+public abstract class SearchDlg extends JDialog {
 
 	private static final long serialVersionUID = -5182515718022242086L;
 
-	protected JCheckBox cbMatchCase = new JCheckBox();
-	protected JCheckBox cbInAllSubArchives = new JCheckBox();
+	protected JCheckBox cbMatchCase = new JCheckBox("Match case");
+	protected JCheckBox cbInAllSubArchives = new JCheckBox("In all sub-archives");
 	protected JLabel lbResult = new JLabel("Result");
 	private JLabel lbFind = new JLabel("Find what:");
 	protected JTextField tfFind = new JTextField();
@@ -60,8 +56,6 @@ public class SearchDlg extends JDialog {
 	private JLabel lbFileFilter = new JLabel("File Filter:");
 	protected JTextField tfFileFilter = new JTextField("!.png,!.jpeg,!.jpg,!.bmp,!.gif,!.ico,!.exe");
 
-	private final int width = 360;
-	private final int height = 290;
 	protected boolean isFindClass = true;
 	protected final File jarFile;
 	private ChangeListener setFocusOnInput = new ChangeListener() {
@@ -87,10 +81,10 @@ public class SearchDlg extends JDialog {
 
 		setTitle("Search");
 		setIconImage(Resources.getInstance().getSearchImage());
-		setPreferredSize(new Dimension(width, height));
+		setPreferredSize(DLG_DIM);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		Msg.centerDlg(this, width, height);
+		Msg.centerDlg(this, DLG_DIM.width, DLG_DIM.height);
 
 		setVisible(true);
 		pack();
@@ -124,11 +118,9 @@ public class SearchDlg extends JDialog {
 		btnFind.setFont(DLG_TEXT_FONT);
 		lbResult.setFont(DLG_TEXT_FONT);
 
-		cbMatchCase.setText("Match case");
 		cbMatchCase.setMnemonic(KeyEvent.VK_M);
 		cbMatchCase.addChangeListener(setFocusOnInput);
 
-		cbInAllSubArchives.setText("In all sub-archives");
 		cbInAllSubArchives.setMnemonic(KeyEvent.VK_A);
 		cbInAllSubArchives.addChangeListener(setFocusOnInput);
 
@@ -174,11 +166,11 @@ public class SearchDlg extends JDialog {
 				if (!isSelected) {
 					int pos = searchResult.position;
 					if (pos >= 0) {
-						component.setBackground(Color.WHITE);
+						component.setBackground(SearchResult.COLOR_CONTENT);
 					} else if (pos == -1) {
-						component.setBackground(COLOR_GREEN);
+						component.setBackground(Color.WHITE);
 					} else if (pos == -2) {
-						component.setBackground(COLOR_RED);
+						component.setBackground(SearchResult.COLOR_ERROR);
 					}
 				}
 				setValue(searchResult.line);
@@ -202,7 +194,9 @@ public class SearchDlg extends JDialog {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		new SearchDlg(null);
+		new SearchDlg(null) {
+			private static final long serialVersionUID = -2883424465981010979L;
+		};
 	}
 
 }

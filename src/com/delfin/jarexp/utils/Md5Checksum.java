@@ -10,10 +10,9 @@ import java.util.logging.Logger;
 
 import com.delfin.jarexp.JarexpException;
 
-@Deprecated
-public class MD5Checksum {
+public class Md5Checksum {
 
-	private static final Logger log = Logger.getLogger(MD5Checksum.class.getCanonicalName());
+	private static final Logger log = Logger.getLogger(Md5Checksum.class.getCanonicalName());
 
 	public static String get(File file) {
 		byte[] bytes = getBytes(file);

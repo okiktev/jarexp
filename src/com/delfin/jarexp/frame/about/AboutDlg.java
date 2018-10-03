@@ -1,7 +1,6 @@
 package com.delfin.jarexp.frame.about;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
@@ -13,6 +12,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.frame.resources.Resources;
 
 
@@ -27,7 +27,7 @@ public class AboutDlg extends JDialog {
 		setTitle("About Jar Explorer");
 		setIconImage(Resources.getInstance().getInfoImage());
 		setResizable(false);
-		setSize(new Dimension(360, 290));
+		setSize(Settings.DLG_DIM);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setLayout(new GridBagLayout());
 		setLocationRelativeTo(parent);

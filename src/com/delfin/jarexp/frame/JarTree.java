@@ -31,6 +31,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
 import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
@@ -317,6 +318,58 @@ class JarTree extends JTree {
 
 	void setDragging(boolean isDragging) {
 		this.isDragging = isDragging;
+	}
+
+	void expandTreeLeaf(String fullPath) {
+		JarNode node = getRoot();
+		String [] items = fullPath.split("/");
+		for (int i = 0; i < items.length; ++i) {
+			String el = items[i];
+			if (el.isEmpty()) {
+				continue;
+			}
+			if (i == items.length - 1) {
+				expandPath(new TreePath(node.getPath()));
+				Enumeration<?> children = node.children();
+				while(children.hasMoreElements()) {
+					JarNode child = (JarNode) children.nextElement();
+					if (child.name.equals(el)) {
+						JarTreeClickSelection.setNodes(null);
+						TreePath path = new TreePath(child.getPath());
+						setSelectionPath(path);
+						scrollPathToVisible(path);
+						break;
+					}
+				}
+				break;
+			}
+			boolean isArchive = false;
+			if (el.charAt(el.length() - 1) == '!') {
+				el = el.replace("!", "");
+				isArchive = true;
+			}
+			Enumeration<?> children = node.children();
+			while(children.hasMoreElements()) {
+				JarNode child = (JarNode) children.nextElement();
+				if (child.name.equals(el)) {
+					if (isArchive) {
+						expandPath(new TreePath(child.getPath()));
+						while (true) {
+							try {
+								Thread.sleep(50);
+							} catch (InterruptedException e) {
+								throw new JarexpException("Error happens while waiting for archive leaf is loaded.", e);
+							}
+							if (!Settings.NAME_PLACEHOLDER.equals(((JarNode)child.getLastChild()).name)) {
+								break;
+							}
+						}
+					}
+					node = child;
+					break;
+				}
+			}
+		}
 	}
 
 	private static JarNode getNode(ActionEvent e) {

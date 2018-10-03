@@ -1,5 +1,6 @@
 package com.delfin.jarexp;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.io.File;
 import java.util.logging.Level;
@@ -58,6 +59,8 @@ public class Settings {
 	public static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
 	
 	public static final Font DLG_TEXT_FONT = new Font("Consolas", Font.PLAIN, 10);
+
+	public final static Dimension DLG_DIM = new Dimension(360, 290);
 
 	public static final long ADMIN_WAIT_TIMEOUT = Long.getLong("jarexp.admin.wait.timeout", 10000L);
 

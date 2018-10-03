@@ -21,8 +21,6 @@ import com.delfin.jarexp.utils.Zip;
 
 
 class FileContentSearcher implements Searcher {
-	
-	private static final Logger log = Logger.getLogger(FileContentSearcher.class.getCanonicalName());
 
 	private static class UnpackResult {
 		String fullPath;
@@ -32,6 +30,8 @@ class FileContentSearcher implements Searcher {
 			this.dst = dst;
 		}
 	}
+
+	private static final Logger log = Logger.getLogger(FileContentSearcher.class.getCanonicalName());
 
 	private Map<String, List<SearchResult>> searchResult = new LinkedHashMap<String, List<SearchResult>>();
 
@@ -117,6 +117,10 @@ class FileContentSearcher implements Searcher {
 			@Override
 			protected void process(JarEntry entry) throws IOException {
 				String path = entry.getName();
+				if (path.charAt(path.length() - 1) == '/') {
+					return;
+				}
+				dlg.lbResult.setText("Searching..." + path);
 				String fileName = path;
 				int i = path.lastIndexOf('/');
 				if (i != -1) {
@@ -124,7 +128,7 @@ class FileContentSearcher implements Searcher {
 				}
 				String ext = path.toLowerCase();
 				boolean isArchive = isArchive(ext);
-				if (!isArchive && isForSearch(ext) && !ext.endsWith("/")) {
+				if (!isArchive && isForSearch(ext)) {
 					UnpackResult res = unpack(fileName, path, archive);
 					Scanner scanner;
 					if (ext.endsWith(".class")) {
@@ -161,7 +165,6 @@ class FileContentSearcher implements Searcher {
 					UnpackResult res = unpack(fileName, path, archive);
 					search(res.fullPath + '!', res.dst, dlg);
 				}
-				dlg.lbResult.setText("Searching..." + entry.getName());
 			}
 
 			private UnpackResult unpack(String fileName, String path, File archive) {

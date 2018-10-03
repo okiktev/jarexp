@@ -68,13 +68,16 @@ class ClassFileSearcher implements Searcher {
 			@Override
 			protected void process(JarEntry entry) throws IOException {
 				String path = entry.getName();
+				if (path.charAt(path.length() - 1) == '/') {
+					return;
+				}
+				dlg.lbResult.setText("Searching..." + entry.getName());
 				String fileName = path;
 				int i = path.lastIndexOf('/');
 				if (i != -1) {
 					fileName = path.substring(i + 1);
 				}
-				String ext = path.toLowerCase();
-				if (ext.endsWith(".class")) {
+				if (!isArchive(path.toLowerCase())) {
 					fileName = fileName.substring(0, fileName.lastIndexOf('.'));
 					if (!isMatchCase) {
 						fileName = fileName.toLowerCase();
@@ -82,14 +85,17 @@ class ClassFileSearcher implements Searcher {
 					if (fileName.contains(className)) {
 						results.add(new SearchResult(getFullPath(path)));
 					}
-				} else if (isInAll && (ext.endsWith(".jar") || ext.endsWith(".war") || ext.endsWith(".ear") || ext.endsWith(".zip")
-						|| ext.endsWith(".apk"))) {
+				} else if (isInAll) {
 					File dst = new File(Resources.createTmpDir(), fileName);
 					String fullPath = getFullPath(path) + '!';
 					dst = Zip.unzip(fullPath, path, archive, dst);
 					search(fullPath, dst, results, dlg);
 				}
-				dlg.lbResult.setText("Searching..." + entry.getName());
+			}
+
+			private boolean isArchive(String ext) {
+				return ext.endsWith(".jar") || ext.endsWith(".war") || ext.endsWith(".ear") || ext.endsWith(".zip")
+						|| ext.endsWith(".apk");
 			}
 
 			private String getFullPath(String path) {

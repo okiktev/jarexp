@@ -62,7 +62,11 @@ public class Resources {
 
 	private Image searchImage;
 
+	private Image duplicatesImage;
+
 	private Icon searchIcon;
+
+	private Icon duplicatesIcon;
 
 	private String licenseText;
 
@@ -301,6 +305,17 @@ public class Resources {
 		}
 	}
 
+	public Image getDuplicatesImage() {
+		if (duplicatesImage != null) {
+			return duplicatesImage;
+		}
+		try {
+			return duplicatesImage = loadImage("dupl.png");
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load duplicates image from class path", e);
+		}
+	}
+
 	public Icon getSearchIcon() {
 		if (searchIcon != null) {
 			return searchIcon;
@@ -309,6 +324,17 @@ public class Resources {
 			return searchIcon = new ImageIcon(loadImage("srch.png"));
 		} catch (IOException e) {
 			throw new ResourcesException("Unable to load search menu icon from class path", e);
+		}
+	}
+	
+	public Icon getDuplicatesIcon() {
+		if (duplicatesIcon != null) {
+			return duplicatesIcon;
+		}
+		try {
+			return duplicatesIcon = new ImageIcon(loadImage("dupl.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load duplicates menu icon from class path", e);
 		}
 	}
 

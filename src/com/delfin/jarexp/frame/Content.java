@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
@@ -44,8 +45,8 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
-import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 import com.delfin.jarexp.frame.about.AboutDlg;
+import com.delfin.jarexp.frame.duplicates.DuplicatesDlg;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
 import com.delfin.jarexp.frame.search.SearchDlg;
@@ -170,12 +171,12 @@ public class Content extends JPanel {
 						try {
 							delete(c);
 						} catch (Exception e) {
-							throw new JarexpException("An error occurred while deleting the file " + f.getAbsolutePath());
+							log.log(Level.SEVERE, "An error occurred while deleting the file " + f.getAbsolutePath(), e);
 						}
 					}
 				}
 				if (!f.delete()) {
-					throw new JarexpException("Could not delete file " + f.getAbsolutePath());
+					log.log(Level.SEVERE, "Could not delete file " + f.getAbsolutePath());
 				}
 			}
 		});
@@ -202,126 +203,108 @@ public class Content extends JPanel {
 					}
 				}
 			}
-		}, new ActionListener() {
+		}
+		, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (file == null) {
-					JOptionPane.showMessageDialog(frame, "Archive is not loaded.", "Wrong input", JOptionPane.WARNING_MESSAGE);
+				if (isArchiveNotLoaded()) {
 					return;
-				} else {
-					new SearchDlg(file) {
-						private static final long serialVersionUID = -838103554183752603L;						
-						@Override
-						protected void initComponents() {
-							super.initComponents();
-							tResult.addMouseListener(new MouseAdapter() {
-								public void mousePressed(MouseEvent e) {
-									if (e.getClickCount() != 2) {
-										return;
-									}
-									int row = tResult.getSelectedRow();
-									if (row != -1) {
-										TableModel tableModel = tResult.getModel();
-										final SearchResult searchResult = (SearchResult) tableModel.getValueAt(row, 0);
-										switch (searchResult.position) {
-										case -1: expandTreeLeaf(searchResult.line); break;
-										case -2: JOptionPane.showMessageDialog(frame, searchResult.line, "Information", JOptionPane.INFORMATION_MESSAGE); break;
-										default:
-											if (searchResult.position < -1) {
-												JOptionPane.showMessageDialog(frame, "Unknown result code: " + searchResult.line, "Error", JOptionPane.ERROR_MESSAGE);
-												break;
-											}
-											while (row != -1) {
-												SearchResult fileSearch = (SearchResult) tableModel.getValueAt(--row, 0);
-												if (fileSearch.position == -1) {
-													expandTreeLeaf(fileSearch.line);
-													break;
-												}
-											}
-											while(jarTreeSelectionListener.isLocked()) {
-												try {
-													Thread.sleep(50);
-												} catch (InterruptedException ex) {
-													throw new JarexpException(ex);
-												}
-											}
-											try {
-												Thread.sleep(100);
-											} catch (InterruptedException ex) {
-												throw new JarexpException(ex);
-											}
-											try {
-												JTextArea area = jarTreeSelectionListener.area;
-												int position = searchResult.position;
-												area.scrollRectToVisible(area.modelToView(position));
-
-												Highlighter hilit = new RSyntaxTextAreaHighlighter();
-												area.setHighlighter(hilit);
-												hilit.addHighlight(position, position + tfFind.getText().length(), FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
-											} catch (BadLocationException ex) {
-												throw new JarexpException("Could not scroll to found index.", ex);
-											}
-										}
-									}
+				}
+				new SearchDlg(file) {
+					private static final long serialVersionUID = -838103554183752603L;						
+					@Override
+					protected void initComponents() {
+						super.initComponents();
+						tResult.addMouseListener(new MouseAdapter() {
+							public void mousePressed(MouseEvent e) {
+								if (e.getClickCount() != 2) {
+									return;
 								}
-
-								private void expandTreeLeaf(String fullPath) {
-									JarNode node = jarTree.getRoot();
-									String [] items = fullPath.split("/");
-									for (int i = 0; i < items.length; ++i) {
-										String el = items[i];
-										if (el.isEmpty()) {
-											continue;
-										}
-										if (i == items.length - 1) {
-											jarTree.expandPath(new TreePath(node.getPath()));
-											Enumeration<?> children = node.children();
-											while(children.hasMoreElements()) {
-												JarNode child = (JarNode) children.nextElement();
-												if (child.name.equals(el)) {
-													JarTreeClickSelection.setNodes(null);
-													TreePath path = new TreePath(child.getPath());
-													jarTree.setSelectionPath(path);
-													jarTree.scrollPathToVisible(path);
-													break;
-												}
-											}
+								int row = tResult.getSelectedRow();
+								if (row == -1) {
+									return;
+								}
+								TableModel tableModel = tResult.getModel();
+								final SearchResult searchResult = (SearchResult) tableModel.getValueAt(row, 0);
+								switch (searchResult.position) {
+								case -1: jarTree.expandTreeLeaf(searchResult.line); break;
+								case -2: JOptionPane.showMessageDialog(frame, searchResult.line, "Information", JOptionPane.INFORMATION_MESSAGE); break;
+								default:
+									if (searchResult.position < -1) {
+										JOptionPane.showMessageDialog(frame, "Unknown result code: " + searchResult.line, "Error", JOptionPane.ERROR_MESSAGE);
+										break;
+									}
+									while (row != -1) {
+										SearchResult fileSearch = (SearchResult) tableModel.getValueAt(--row, 0);
+										if (fileSearch.position == -1) {
+											jarTree.expandTreeLeaf(fileSearch.line);
 											break;
 										}
-										boolean isArchive = false;
-										if (el.charAt(el.length() - 1) == '!') {
-											el = el.replace("!", "");
-											isArchive = true;
-										}
-										Enumeration<?> children = node.children();
-										while(children.hasMoreElements()) {
-											JarNode child = (JarNode) children.nextElement();
-											if (child.name.equals(el)) {
-												if (isArchive) {
-													jarTree.expandPath(new TreePath(child.getPath()));
-													while (true) {
-														try {
-															Thread.sleep(50);
-														} catch (InterruptedException ex) {
-															throw new JarexpException("Error happens while waiting for archive leaf is loaded.", ex);
-														}
-														if (!Settings.NAME_PLACEHOLDER.equals(((JarNode)child.getLastChild()).name)) {
-															break;
-														}
-													}
-												}
-												node = child;
-												break;
-											}
+									}
+									while(jarTreeSelectionListener.isLocked()) {
+										try {
+											Thread.sleep(50);
+										} catch (InterruptedException ex) {
+											throw new JarexpException(ex);
 										}
 									}
+									try {
+										Thread.sleep(100);
+									} catch (InterruptedException ex) {
+										throw new JarexpException(ex);
+									}
+									try {
+										JTextArea area = jarTreeSelectionListener.area;
+										int position = searchResult.position;
+										area.scrollRectToVisible(area.modelToView(position));
+
+										Highlighter hilit = new RSyntaxTextAreaHighlighter();
+										area.setHighlighter(hilit);
+										hilit.addHighlight(position, position + tfFind.getText().length(), FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
+									} catch (BadLocationException ex) {
+										throw new JarexpException("Could not scroll to found index.", ex);
+									}
 								}
-							});
-						};
+							}
+						});
 					};
-				}
+				};
+
 			}
-		}, new ActionListener() {
+		}
+		, new ActionListener () {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (isArchiveNotLoaded()) {
+					return;
+				}
+				new DuplicatesDlg(file) {
+					private static final long serialVersionUID = 7499714177978424203L;
+					@Override
+					protected void initComponents() {
+						super.initComponents();
+						tResult.addMouseListener(new MouseAdapter() {
+							public void mousePressed(MouseEvent e) {
+								if (e.getClickCount() != 2) {
+									return;
+								}
+								int row = tResult.getSelectedRow();
+								if (row == -1) {
+									return;
+								}
+								TableModel tableModel = tResult.getModel();
+								SearchResult searchResult = (SearchResult) tableModel.getValueAt(row, 0);
+								switch (searchResult.position) {
+								case 1:
+								case 2: jarTree.expandTreeLeaf(searchResult.line); break;
+								}
+							}
+						});
+					}
+				};
+			}
+		}
+		, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new AboutDlg(frame);
@@ -359,6 +342,14 @@ public class Content extends JPanel {
 		if (passedFile != null) {
 			loadJarFile(file = passedFile);
 		}
+	}
+
+	private static boolean isArchiveNotLoaded() {
+		if (file == null) {
+			JOptionPane.showMessageDialog(frame, "Archive is not loaded.", "Wrong input", JOptionPane.WARNING_MESSAGE);
+			return true;
+		}
+		return false;
 	}
 
 	protected static void loadJarFile(final File f) {
