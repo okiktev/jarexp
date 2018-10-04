@@ -54,24 +54,21 @@ import com.delfin.jarexp.utils.Zip;
 class JarTreeSelectionListener implements TreeSelectionListener {
 
 	class FilterAction extends AbstractAction {
-		private static final long serialVersionUID = 2090916851645693410L;
-		private RSyntaxTextArea textArea;
-		FilterAction(RSyntaxTextArea textArea) {
-			this.textArea = textArea;
-		}
-
+		private static final long serialVersionUID = -5642316911788605567L;
 		@Override
 		public void actionPerformed(ActionEvent event) {
+			if (area == null) {
+				return;
+			}
 			JSplitPane pane = Content.getSplitPane();
-			pane.setRightComponent(new ContentPanel(
-					new FilterPanel(JarTreeSelectionListener.this, textArea),
-					((ContentPanel) pane.getRightComponent()).getContent()));
+			pane.setRightComponent(new ContentPanel(new FilterPanel(JarTreeSelectionListener.this),
+					pane.getRightComponent()));
 			pane.setDividerLocation(dividerLocation);
 			pane.validate();
 			pane.repaint();
 		}
 	}
-
+ 
 	private static final Logger log = Logger.getLogger(JarTreeDropTargetListener.class.getCanonicalName());
 
 	private static Theme theme;
@@ -191,7 +188,6 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					textArea.setBorder(Settings.EMPTY_BORDER);
 					textArea.setCodeFoldingEnabled(true);
 					textArea.setEditable(false);
-					textArea.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK), new FilterAction(textArea));
 					applyTheme(textArea);
 					area = textArea;
 
@@ -244,7 +240,6 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 								saveChanges();
 							}
 						});
-						map.put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK), new FilterAction(textArea));
 						area = textArea;
 
 						Dimension size = contentView.getPreferredSize();

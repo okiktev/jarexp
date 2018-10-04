@@ -42,9 +42,9 @@ imp search class in jar(s). ... done ...........................................
 imp properties of files. ... done .................................................................23Sep2018
 imp search token in files. ... done ...............................................................25Sep2018
 imp find file duplicates. ... done ................................................................03Oct2018
+imp next button in filter and scroll out to searched token. ... done ..............................04Oct2018
 
 bug when copying file inside archive
-imp next button in filter and scroll out to searched token
 imp decompile all classes
 imp get all depended classes in the jar
 imp command console

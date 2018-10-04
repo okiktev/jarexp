@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.filechooser.FileFilter;
@@ -391,6 +392,9 @@ public class Content extends JPanel {
 						}
 					}
 				});
+
+				frame.getRootPane().registerKeyboardAction(jarTreeSelectionListener.new FilterAction(),
+						KeyStroke.getKeyStroke("ctrl F"), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
 				if (jarTree.isSingleFileLoaded()) {
 				    jarTree.setSelectionPaths(new TreePath[] {new TreePath(jarTree.getRoot())});
