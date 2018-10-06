@@ -74,10 +74,10 @@ class FilterPanel extends JPanel {
 		setLayout(new GridBagLayout());
 
 		Insets insets = new Insets(0, 0, 0, 0);
-		add(btClose, new GridBagConstraints(0, 0, 1, 2, 0, 0, NORTH, NONE, insets, 0, 0));
+		add(btUp, new GridBagConstraints(0, 0, 1, 1, 0, 0, NORTH, NONE, insets, 0, 0));
+		add(btDown, new GridBagConstraints(0, 1, 1, 1, 0, 0, SOUTH, NONE, insets, 0, 0));
 		add(tfSearch, new GridBagConstraints(1, 0, 1, 2, 1, 1, WEST, BOTH, insets, 0, 0));
-		add(btUp, new GridBagConstraints(2, 0, 1, 1, 0, 0, NORTH, NONE, insets, 0, 0));
-		add(btDown, new GridBagConstraints(2, 1, 1, 1, 0, 0, SOUTH, NONE, insets, 0, 0));
+		add(btClose, new GridBagConstraints(2, 0, 1, 2, 0, 0, NORTH, NONE, insets, 0, 0));
 	}
 
 	private void initComponents() {

@@ -44,6 +44,7 @@ imp search token in files. ... done ............................................
 imp find file duplicates. ... done ................................................................03Oct2018
 imp next button in filter and scroll out to searched token. ... done ..............................04Oct2018
 imp changed mechanism of loading data from archive. ... done ......................................06Oct2018
+imp minor changes in filter panel. ... done .......................................................06Oct2018
 
 
 bug when copying file inside archive
