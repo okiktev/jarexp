@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -43,10 +45,11 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
-import com.delfin.jarexp.Version;
 import com.delfin.jarexp.frame.Content.PreLoadAction;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 import com.delfin.jarexp.icon.Ico;
+import com.delfin.jarexp.utils.Compiler;
+import com.delfin.jarexp.utils.Compiler.Decompiled;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
@@ -175,15 +178,15 @@ class JarTreeSelectionListener implements TreeSelectionListener {
                     lowPath = archName;
 				} else {
 	                file = new File(node.archive.getParent(), node.path);
-	                file = Zip.unzip(node.getFullPath(), node.path, node.archive, file);
 	                lowPath = node.path.toLowerCase();
 				}
 
 				if (lowPath.endsWith(".class")) {
 					statusBar.enableProgress("Decompiling...");
-					statusBar.setCompiledVersion(Version.getCompiledJava(file));
-
-					RSyntaxTextArea textArea = new RSyntaxTextArea(com.delfin.jarexp.utils.Compiler.decompile(file));
+					Decompiled decompiled = Compiler.decompile(node.archive, node.path);
+					statusBar.setCompiledVersion(decompiled.version);
+					String content = decompiled.content;
+					RSyntaxTextArea textArea = new RSyntaxTextArea(content);
 					textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
 					textArea.setBorder(Settings.EMPTY_BORDER);
 					textArea.setCodeFoldingEnabled(true);
@@ -198,8 +201,12 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					contentView = new ContentPanel(textScrollPane);
 					contentView.setPreferredSize(size);
 				} else if (isImgFile(lowPath)) {
+					ZipFile zip = null;
 					try {
-						Image image = ImageIO.read(file);
+						zip = new ZipFile(node.archive);
+						ZipEntry entry = zip.getEntry(node.path);
+						InputStream stream = zip.getInputStream(entry);
+						Image image = ImageIO.read(stream);
 						if (image == null) {
 							JOptionPane.showConfirmDialog(frame, "Could not read image " + node.path,
 							        "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
@@ -209,8 +216,17 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						contentView = new JScrollPane(new ImgPanel(image));
 					} catch (IOException e) {
 						throw new JarexpException("Couldn't read file " + file + " as image", e);
+					} finally {
+						if (zip != null) {
+							try {
+								zip.close();
+							} catch (IOException e) {
+								log.log(Level.WARNING, "Couldn't close zip file " + file, e);
+							}
+						}
 					}
 				} else if (lowPath.endsWith(".ico")) {
+					file = Zip.unzip(node.getFullPath(), node.path, node.archive, file);
 					try {
 						pane.remove(contentView);
 						JPanel pnl = new JPanel();
@@ -224,7 +240,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				} else {
 					if (!file.isDirectory()) {
 						statusBar.enableProgress("Reading...");
-						RSyntaxTextArea textArea = new RSyntaxTextArea(FileUtils.toString(file));
+						String content = Zip.unzip(node.archive, node.path);
+						RSyntaxTextArea textArea = new RSyntaxTextArea(content);
 						textArea.setSyntaxEditingStyle(getSyntax(lowPath));
 						textArea.setBorder(Settings.EMPTY_BORDER);
 						textArea.setCodeFoldingEnabled(true);

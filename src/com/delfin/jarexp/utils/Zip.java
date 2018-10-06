@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -19,6 +20,7 @@ import java.util.jar.JarOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import com.delfin.jarexp.JarexpException;
@@ -336,6 +338,22 @@ public class Zip {
 					log.log(Level.WARNING, "An error occurred while closing stream to archive " + archive, e);
 				}
 			}
+		}
+	}
+
+	public static String unzip(File archive, String path) {
+		try {
+	        ZipFile zip = new ZipFile(archive);
+	        Scanner scanner = new Scanner(zip.getInputStream(zip.getEntry(path)));
+	        StringBuilder out = new StringBuilder();
+	        while (scanner.hasNextLine()) {
+	        	out.append(scanner.nextLine()).append('\n');
+	        }
+	        scanner.close();
+	        zip.close();
+			return out.toString();
+		} catch (Exception e) {
+			throw new JarexpException("An error occurred while unpacking path " + path + " from archive " + archive, e);
 		}
 	}
 

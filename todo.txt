@@ -43,6 +43,8 @@ imp properties of files. ... done ..............................................
 imp search token in files. ... done ...............................................................25Sep2018
 imp find file duplicates. ... done ................................................................03Oct2018
 imp next button in filter and scroll out to searched token. ... done ..............................04Oct2018
+imp changed mechanism of loading data from archive. ... done ......................................06Oct2018
+
 
 bug when copying file inside archive
 imp decompile all classes
@@ -56,6 +58,7 @@ bug table data is not updated after replacing file
 imp all option dialogs should be custom
 bug when delete several times the exception related to java compiled version
 
+imp change loading ico from file to input stream
 imp search history
 imp settings functional
 bug with shifting split panel when click on folder
@@ -87,7 +90,28 @@ Caused by: jd.core.process.deserializer.ClassFormatException: Invalid constant p
 	at jd.core.process.deserializer.ClassFileDeserializer.Deserialize(ClassFileDeserializer.java:40)
 	at com.delfin.jarexp.utils.Compiler.decompile(Compiler.java:36)
 
-
+	
+found 6 Oct Searching $ files
+Exception in thread "Thread-2" com.delfin.jarexp.JarexpException: An error occurred while processing jar file /home/dfn/Desktop/jd-common-0.7.1.jar
+	at com.delfin.jarexp.frame.Jar.bypass(Jar.java:37)
+	at com.delfin.jarexp.frame.search.ClassFileSearcher.search(ClassFileSearcher.java:105)
+	at com.delfin.jarexp.frame.search.ClassFileSearcher.access$1(ClassFileSearcher.java:65)
+	at com.delfin.jarexp.frame.search.ClassFileSearcher$1.run(ClassFileSearcher.java:50)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: com.delfin.jarexp.JarexpException: An error occurred while processing jar file /tmp/jarexp1538819902765/1538819942613/app-release.1.7.apk
+	at com.delfin.jarexp.frame.Jar.bypass(Jar.java:37)
+	at com.delfin.jarexp.frame.search.ClassFileSearcher.search(ClassFileSearcher.java:105)
+	at com.delfin.jarexp.frame.search.ClassFileSearcher.access$1(ClassFileSearcher.java:65)
+	at com.delfin.jarexp.frame.search.ClassFileSearcher$3.process(ClassFileSearcher.java:92)
+	at com.delfin.jarexp.frame.Jar.bypass(Jar.java:34)
+	... 4 more
+Caused by: java.lang.StringIndexOutOfBoundsException: String index out of range: -1
+	at java.lang.String.substring(String.java:1967)
+	at com.delfin.jarexp.frame.search.ClassFileSearcher$3.process(ClassFileSearcher.java:81)
+	at com.delfin.jarexp.frame.Jar.bypass(Jar.java:34)
+	... 8 more
+	
+	
 fixed at 10Aug2017:
 com.delfin.jarexp.JarexpException: An error occurred while copying file C:\Users\OLEH~1.KIK\AppData\Local\Temp\jarexp1499713915267\1499713927388\C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\sample\WEB-INF\lib\rsso-agent-all.jar into C:\Users\OLEH~1.KIK\AppData\Local\Temp\jarexp1499713915267\1499713930557\rsso-agent-all.jar
 	at com.delfin.jarexp.utils.FileUtils.copy(FileUtils.java:127)
@@ -110,4 +134,4 @@ Caused by: java.nio.file.InvalidPathException: Illegal char <:> at index 74: C:\
 	at java.io.File.toPath(Unknown Source)
 	at com.delfin.jarexp.utils.FileUtils.copy(FileUtils.java:115)
 	... 10 more
-
+	
