@@ -78,7 +78,10 @@ class ClassFileSearcher implements Searcher {
 					fileName = path.substring(i + 1);
 				}
 				if (!isArchive(path.toLowerCase())) {
-					fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+					i = fileName.lastIndexOf('.');
+					if (i != -1) {
+						fileName = fileName.substring(0, i);
+					}
 					if (!isMatchCase) {
 						fileName = fileName.toLowerCase();
 					}
