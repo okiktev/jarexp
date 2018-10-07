@@ -357,4 +357,16 @@ public class Zip {
 		}
 	}
 
+	public static boolean isArchive(String path, boolean doLower) {
+		if (doLower) {
+			path = path.toLowerCase();
+		}
+		return path.endsWith(".jar") || path.endsWith(".war") || path.endsWith(".ear") || path.endsWith(".zip")
+				|| path.endsWith(".apk");
+	}
+
+	public static boolean isArchive(String path) {
+		return isArchive(path, false);
+	}
+
 }

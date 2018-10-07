@@ -58,6 +58,15 @@ public class FileUtils {
 		}
 	}
 
+	public static String getFileName(String path) {
+		String fileName = path;
+		int i = path.lastIndexOf('/');
+		if (i != -1) {
+			fileName = path.substring(i + 1);
+		}
+		return fileName;
+	}
+
 	public static String toString(URL url) throws IOException {
 		return read(url.openStream());
 	}

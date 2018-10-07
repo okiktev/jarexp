@@ -44,6 +44,8 @@ class JarNode extends DefaultMutableTreeNode {
 
 	boolean isDirectory;
 
+	private Boolean isArchive = null;
+
 	JarNode(String name, String path, File archive, boolean isDirectory) {
 		this.name = name;
 		this.path = path;
@@ -108,8 +110,10 @@ class JarNode extends DefaultMutableTreeNode {
 	}
 
 	boolean isArchive() {
-		String lowName = name.toLowerCase();
-		return lowName.endsWith(".jar") || lowName.endsWith(".war") || lowName.endsWith(".ear") || lowName.endsWith(".zip") || lowName.endsWith(".apk");
+		if (isArchive == null) {
+			isArchive = Zip.isArchive(name);
+		}
+		return isArchive.booleanValue();
 	}
 
 	@SuppressWarnings("unchecked")

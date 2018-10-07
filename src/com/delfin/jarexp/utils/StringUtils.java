@@ -2,6 +2,13 @@ package com.delfin.jarexp.utils;
 
 public final class StringUtils {
 
+	public static boolean isLast(String text, char ch) {
+		if (text == null || text.isEmpty()) {
+			throw new IndexOutOfBoundsException("Unable to get last character when string is null or empty.");
+		}
+		return text.charAt(text.length() - 1) == ch;
+	}
+
 	public static int indexOf(String text, String token) {
 		return indexOf(text, token, 0);
 	}

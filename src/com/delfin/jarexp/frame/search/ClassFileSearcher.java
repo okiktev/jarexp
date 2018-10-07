@@ -12,6 +12,8 @@ import javax.swing.JOptionPane;
 
 import com.delfin.jarexp.frame.Jar;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.utils.FileUtils;
+import com.delfin.jarexp.utils.StringUtils;
 import com.delfin.jarexp.utils.Zip;
 
 class ClassFileSearcher implements Searcher {
@@ -68,17 +70,13 @@ class ClassFileSearcher implements Searcher {
 			@Override
 			protected void process(JarEntry entry) throws IOException {
 				String path = entry.getName();
-				if (path.charAt(path.length() - 1) == '/') {
+				if (StringUtils.isLast(path, '/')) {
 					return;
 				}
 				dlg.lbResult.setText("Searching..." + entry.getName());
-				String fileName = path;
-				int i = path.lastIndexOf('/');
-				if (i != -1) {
-					fileName = path.substring(i + 1);
-				}
-				if (!isArchive(path.toLowerCase())) {
-					i = fileName.lastIndexOf('.');
+				String fileName = FileUtils.getFileName(path);
+				if (!Zip.isArchive(path)) {
+					int i = fileName.lastIndexOf('.');
 					if (i != -1) {
 						fileName = fileName.substring(0, i);
 					}
@@ -94,11 +92,6 @@ class ClassFileSearcher implements Searcher {
 					dst = Zip.unzip(fullPath, path, archive, dst);
 					search(fullPath, dst, results, dlg);
 				}
-			}
-
-			private boolean isArchive(String ext) {
-				return ext.endsWith(".jar") || ext.endsWith(".war") || ext.endsWith(".ear") || ext.endsWith(".zip")
-						|| ext.endsWith(".apk");
 			}
 
 			private String getFullPath(String path) {
