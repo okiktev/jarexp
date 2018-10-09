@@ -46,9 +46,9 @@ imp next button in filter and scroll out to searched token. ... done ...........
 imp changed mechanism of loading data from archive. ... done ......................................06Oct2018
 imp minor changes in filter panel. ... done .......................................................06Oct2018
 bug fixed minor issue with searching in files without extension. ... done .........................06Oct2018
-imp some improvement with loading data while search. minor refactoring. done ......................07Oct2018
+imp some improvement with loading data while search. minor refactoring. ... done ..................07Oct2018
+bug when copying file inside archive. ... done ....................................................09Oct2018
 
-bug when copying file inside archive
 imp decompile all classes
 imp get all depended classes in the jar
 imp command console
@@ -60,6 +60,9 @@ bug table data is not updated after replacing file
 imp all option dialogs should be custom
 bug when delete several times the exception related to java compiled version
 
+imp progress bar to search
+imp pause button to search
+imp output search result to clipboard or file
 imp make search in folder
 imp change loading ico from file to input stream
 imp search history
@@ -70,6 +73,7 @@ imp localization
 imp read chm files?
 imp pdf recognizing
 imp fix rendering icons for file chooser
+imp bundle of decompilers
 
 refactor code
 

@@ -6,7 +6,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.JarEntry;
-import java.util.zip.ZipFile;
 
 import com.delfin.jarexp.frame.Jar;
 import com.delfin.jarexp.frame.resources.Resources;
@@ -92,10 +90,7 @@ class OnFindBtnClickListener implements ActionListener {
 				dlg.lbResult.setText("Searching..." + path);
 				String key;
 				if (isUseMd5) {
-			        ZipFile zip = new ZipFile(archive);
-			        InputStream stream = zip.getInputStream(zip.getEntry(path));
-			        key = Md5Checksum.get(stream);
-					zip.close();
+			        key = Md5Checksum.get(archive, path);
 				} else {
 					key = entry.getName();
 				}

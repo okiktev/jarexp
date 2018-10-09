@@ -27,10 +27,26 @@ import com.delfin.jarexp.JarexpException;
 
 public class Zip {
 	
+	public static interface TempFileCreator {
+		File create(String prefix, String suffix) throws IOException;
+	}
+	
 	private static final Logger log = Logger.getLogger(Zip.class.getCanonicalName());
 	
 	private static final Map<String, File> unpacked = new ConcurrentHashMap<String, File>();
 
+	private static TempFileCreator tempFileCreator = new TempFileCreator() {
+		@Override
+		public File create(String prefix, String suffix) throws IOException {
+			return File.createTempFile(prefix, suffix, new File(System.getProperty("java.io.tmpdir")));
+		}
+	};
+	
+	public static void setTempFileCreator(TempFileCreator tempFileCreator) {
+		Zip.tempFileCreator = tempFileCreator;
+	}
+	
+	
 	// private static final int BUFFER_SIZE = 4096;
 
 //	@Deprecated
@@ -64,16 +80,39 @@ public class Zip {
 	 * @param dst - file where will be extracted resource.
 	 */
 	 public static File unzip(String fullPath, String path, File archive, File dst) {
-		 File cached = unpacked.get(fullPath);
-		 if (cached != null) {
-			 return cached;
-		 }
+		// System.out.println("unpacking file path " + path + " fullPath " + fullPath + " to " + dst);
+		File cached = unpacked.get(fullPath);
+		if (cached != null && cached.exists()) {
+			String cachedKey = Md5Checksum.get(cached);
+			String newKey;
+			try {
+				newKey = Md5Checksum.get(archive, path);
+			} catch (Exception e) {
+				log.log(Level.SEVERE, "Unable to get MD5 checksum for " + fullPath, e);
+				newKey = null;
+			}
+			if (cachedKey.equals(newKey)) {
+				// try {throw new RuntimeException();} catch (RuntimeException e) {e.printStackTrace(System.out);}
+				// System.out.println("returned from cache " + path);
+				System.out.println("returned from cache " + path + " file " + cached);
+				return cached;
+			}
 
-		 makeParentDirs(dst);
+		}
 		 
 		 //System.out.println("unzipping " + path + " from " + archive + " into " + dst);
 		 
 	     try {
+			 if (dst.exists()) {
+				dst = tempFileCreator.create(dst.getName(), "jarexp");
+				log.log(Level.WARNING, "File to unpack already exists '" + dst + "' path '" + path + "' full path '"
+						+ fullPath + "'. Unpacking into " + dst);
+
+				// System.out.println("new temp file for path " + path + " full path " + fullPath);
+			 }
+
+			 makeParentDirs(dst);
+	    	 
 
 	         JarFile jar = new JarFile(archive);
 	         ZipEntry entry = jar.getEntry(path);
@@ -184,9 +223,8 @@ public class Zip {
 	        tmpJarFile.renameTo(dst);
 	        //System.out.println(srcJarFile.getAbsolutePath() + " updated.");
 	    }
-		
-		
-		unpacked.clear();
+
+		reset();
 	}
 	
 	
@@ -252,7 +290,7 @@ public class Zip {
 	        //System.out.println(srcJarFile.getAbsolutePath() + " updated.");
 	    }
 		
-		unpacked.clear();
+		reset();
 		
 	}
 
@@ -369,4 +407,11 @@ public class Zip {
 		return isArchive(path, false);
 	}
 
+	public static File getUnpacked(String fullName) {
+		return unpacked.get(fullName);
+	}
+
+	public static void reset() {
+		unpacked.clear();
+	}
 }

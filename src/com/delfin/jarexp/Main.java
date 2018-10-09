@@ -10,6 +10,8 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import com.delfin.jarexp.frame.Content;
+import com.delfin.jarexp.utils.Zip;
+import com.delfin.jarexp.utils.Zip.TempFileCreator;
 
 public class Main {
 
@@ -26,6 +28,12 @@ public class Main {
 					throw new RuntimeException("Unable to initiate logger", e);
 				}
 				Settings.initLookAndFeel();
+				Zip.setTempFileCreator(new TempFileCreator() {
+					@Override
+					public File create(String prefix, String suffix) throws IOException {
+						return File.createTempFile(prefix, suffix, Settings.getTmpDir());
+					}
+				});
 				try {
 					Content.createAndShowGUI(getPassedFile(args));
 				} catch (Exception e) {

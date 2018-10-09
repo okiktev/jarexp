@@ -8,6 +8,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import com.delfin.jarexp.JarexpException;
 
@@ -33,7 +35,20 @@ public class Md5Checksum {
 		}
 	}
 
-	public static String get(InputStream stream) {
+	public static String get(File archive, String path) throws ZipException, IOException {
+		ZipFile zip = null;
+		try {
+	        zip = new ZipFile(archive);
+	        InputStream stream = zip.getInputStream(zip.getEntry(path));
+	        return Md5Checksum.get(stream);
+		} finally {
+			if (zip != null) {
+				zip.close();
+			}
+		}
+	}
+
+	private static String get(InputStream stream) {
 		try {
 			return generate(getBytes(stream));
 		} catch (Exception e) {

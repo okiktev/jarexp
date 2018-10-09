@@ -15,6 +15,7 @@ import javax.swing.TransferHandler;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.utils.Zip;
 
 class JarTreeNodeTransferHandler extends TransferHandler {
 
@@ -80,6 +81,7 @@ class JarTreeNodeTransferHandler extends TransferHandler {
 							};
 						}.execute();
 					}
+					file = Zip.getUnpacked(node.getFullPath());
 					map.add(new Pair(node, file));
 					files.add(file);
 				}
