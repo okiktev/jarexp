@@ -11,7 +11,7 @@ import java.util.jar.Attributes;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
-import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.Version;
 
 class JarNodeTableModel extends AbstractTableModel {
 
@@ -182,7 +182,7 @@ class JarNodeTableModel extends AbstractTableModel {
 	}
 
 	private static boolean isJava6() {
-		return Settings.JAVA_MAJOR_VER == 6;
+		return Version.JAVA_MAJOR_VER == 6;
 	}
 }
 

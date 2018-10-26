@@ -45,11 +45,12 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.decompiler.IDecompiler.Result;
+import com.delfin.jarexp.decompiler.Decompiler;
+import com.delfin.jarexp.decompiler.IDecompiler;
 import com.delfin.jarexp.frame.Content.PreLoadAction;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 import com.delfin.jarexp.icon.Ico;
-import com.delfin.jarexp.utils.Compiler;
-import com.delfin.jarexp.utils.Compiler.Decompiled;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
@@ -108,6 +109,10 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 	@Override
 	public void valueChanged(TreeSelectionEvent event) {
+		if (jarTree.isNotDraw) {
+			jarTree.isNotDraw = false;
+			return;
+		}
 	    TreePath[] path = JarTreeClickSelection.getNodes();
 	    if (path != null) {
 	        jarTree.setSelectionPaths(path);
@@ -183,7 +188,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 				if (lowPath.endsWith(".class")) {
 					statusBar.enableProgress("Decompiling...");
-					Decompiled decompiled = Compiler.decompile(node.archive, node.path);
+					Result decompiled = decompile(node);
 					statusBar.setCompiledVersion(decompiled.version);
 					String content = decompiled.content;
 					RSyntaxTextArea textArea = new RSyntaxTextArea(content);
@@ -277,6 +282,12 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				doFinally();
 			}
 
+			private Result decompile(JarNode node) {
+				IDecompiler decompiler = Decompiler.get();
+				return "".equals(node.path) ? decompiler.decompile(node.archive)
+						: decompiler.decompile(node.archive, node.path);
+			}
+
 			@Override
 			protected void doFinally() {
 				isLocked = false;
@@ -305,6 +316,12 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					syntax = SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL;
 				} else if (lowPath.endsWith(".java")) {
 					syntax = SyntaxConstants.SYNTAX_STYLE_JAVA;
+				} else if (lowPath.endsWith(".groovy")) {
+					syntax = SyntaxConstants.SYNTAX_STYLE_GROOVY;
+				} else if (lowPath.endsWith(".json")) {
+					syntax = SyntaxConstants.SYNTAX_STYLE_JSON_WITH_COMMENTS;
+				} else if (lowPath.endsWith(".yaml")) {
+					syntax = SyntaxConstants.SYNTAX_STYLE_YAML;
 				}
 				return syntax;
 			}

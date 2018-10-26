@@ -50,9 +50,10 @@ imp some improvement with loading data while search. minor refactoring. ... done
 bug when copying file inside archive. ... done ....................................................09Oct2018
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 11_oct_2018
 
+imp bundle of decompilers
 imp decompile all classes
-imp get all depended classes in the jar
 imp command console
+imp get all depended classes in the jar
 imp ribbon
 
 imp remember last state
@@ -61,6 +62,8 @@ bug table data is not updated after replacing file
 imp all option dialogs should be custom
 bug when delete several times the exception related to java compiled version
 
+imp do not do copy when open archive
+imp search files by types
 imp means to work with properties data (copy to clipboard etc.)
 imp progress bar to search
 imp pause button to search
@@ -75,7 +78,6 @@ imp localization
 imp read chm files?
 imp pdf recognizing
 imp fix rendering icons for file chooser
-imp bundle of decompilers
 
 refactor code
 

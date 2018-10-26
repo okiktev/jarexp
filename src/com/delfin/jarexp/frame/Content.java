@@ -46,6 +46,8 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
+import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 import com.delfin.jarexp.frame.about.AboutDlg;
 import com.delfin.jarexp.frame.duplicates.DuplicatesDlg;
 import com.delfin.jarexp.frame.resources.Resources;
@@ -308,6 +310,18 @@ public class Content extends JPanel {
 		, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				changeDecompiler(DecompilerType.JDCORE);
+			}
+		}
+		, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				changeDecompiler(DecompilerType.PROCYON);
+			}
+		}
+		, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				new AboutDlg(frame);
 			}
 		}));
@@ -343,6 +357,21 @@ public class Content extends JPanel {
 		if (passedFile != null) {
 			loadJarFile(file = passedFile);
 		}
+	}
+
+	protected static void changeDecompiler(DecompilerType type) {
+		Settings.setDecompilerType(type);
+		if (jarTree == null) {
+			return;
+		}
+		JarTreeClickSelection.setNodes(null);
+		JarNode node = (JarNode) jarTree.getLastSelectedPathComponent();
+		if (node == null) {
+			return;
+		}
+		jarTree.isNotDraw = true;
+		jarTree.clearSelection();
+		jarTree.setSelectionPath(new TreePath(node.getPath()));
 	}
 
 	private static boolean isArchiveNotLoaded() {

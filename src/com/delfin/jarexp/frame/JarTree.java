@@ -217,6 +217,8 @@ class JarTree extends JTree {
 
 	JFrame frame;
 
+	boolean isNotDraw;
+
 	JarTree(TreeExpansionListener treeExpansionListener, StatusBar statusBar, JFrame frame) {
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		//addTreeSelectionListener(treeSelectionListener);

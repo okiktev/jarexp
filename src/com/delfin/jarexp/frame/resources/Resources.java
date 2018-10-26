@@ -74,6 +74,10 @@ public class Resources {
 
 	private String syntaxText;
 
+	private Icon jdCoreIcon;
+
+	private Icon procyonIcon;
+
 	private static Map<String, Icon> icons = new HashMap<String, Icon>();
 
 	private static File TMP_DIR = Settings.getTmpDir();
@@ -393,6 +397,28 @@ public class Resources {
 
 		System.out.println(getExtension("dfafas.exe"));
 
+	}
+
+	public Icon getJdCoreIcon() {
+		if (jdCoreIcon != null) {
+			return jdCoreIcon;
+		}
+		try {
+			return jdCoreIcon = new ImageIcon(loadImage("jdco.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load jd core menu icon from class path", e);
+		}
+	}
+
+	public Icon getProcyonIcon() {
+		if (procyonIcon != null) {
+			return procyonIcon;
+		}
+		try {
+			return procyonIcon = new ImageIcon(loadImage("proc.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load rocyon menu icon from class path", e);
+		}
 	}
 
 }

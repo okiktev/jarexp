@@ -17,11 +17,10 @@ import java.util.zip.ZipFile;
 
 import javax.swing.JOptionPane;
 
+import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.frame.Jar;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.utils.Zip;
-
-import com.delfin.jarexp.utils.Compiler;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.StringUtils;
 
@@ -137,7 +136,7 @@ class FileContentSearcher implements Searcher {
 					Scanner scanner;
 					if (ext.endsWith(".class")) {
 						try {
-							scanner = new Scanner(Compiler.decompile(archive, path).content);
+							scanner = new Scanner(Decompiler.get().decompile(archive, path).content);
 						} catch (Exception e) {
 							log.log(Level.SEVERE, "An error occurred while decompiling file " + fullPath, e);
 							errors.put(fullPath, "ERROR. Unable to search in the class. Cause: " + e.getMessage());

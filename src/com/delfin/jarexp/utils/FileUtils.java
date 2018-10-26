@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.Version;
 import com.delfin.jarexp.utils.Cmd.Result;
 
 public class FileUtils {
@@ -128,7 +129,7 @@ public class FileUtils {
 	 * <a href="https://www.journaldev.com/861/java-copy-file">Java copy file</a>
 	 */
     private static void copyFile(File src, File dst) {
-    	(Settings.JAVA_MAJOR_VER > 6 ? new Java7FileCopier() : new Java6FileCopier()).copy(src, dst);
+    	(Version.JAVA_MAJOR_VER > 6 ? new Java7FileCopier() : new Java6FileCopier()).copy(src, dst);
 	}
 
 	private static void copyWithAdminPrivileges(File src, File dst) throws IOException {
@@ -185,7 +186,7 @@ public class FileUtils {
                 lock.release();
             }
         } catch (Exception e) {
-            if (Settings.IS_WINDOWS && e instanceof FileNotFoundException && e.getMessage().equals(file.getAbsolutePath() + " (Access is denied)")) {
+            if (Version.IS_WINDOWS && e instanceof FileNotFoundException && e.getMessage().equals(file.getAbsolutePath() + " (Access is denied)")) {
                 try {
                     return isUnlockedWithAdminPriviliges(file);
                 } catch (Exception ex) {
@@ -249,7 +250,7 @@ public class FileUtils {
 
             String [] command = { "cscript", vbs.getAbsolutePath(), "//B" };
             Result code;
-            if (Settings.JAVA_MAJOR_VER == 6) {
+            if (Version.JAVA_MAJOR_VER == 6) {
             	code = Cmd.runWithJava6(null, command);
             } else {
             	code = Cmd.run(command, null);
@@ -277,7 +278,7 @@ public class FileUtils {
 	        try {
 	        	java.nio.file.Files.copy(src.toPath(), dst.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 	        } catch (Exception e) {
-	            if (Settings.IS_WINDOWS) {
+	            if (Version.IS_WINDOWS) {
 	                if (e instanceof java.nio.file.AccessDeniedException && dst.getAbsolutePath().equals(e.getMessage())) {
 	                    try {
 	                        copyWithAdminPrivileges(src, dst);

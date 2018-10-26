@@ -22,9 +22,7 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import com.delfin.jarexp.Settings;
-
-import static com.delfin.jarexp.Settings.*;
+import static com.delfin.jarexp.Version.*;
 
 /**
  * For fixing nasty Swing bugs <a href=
@@ -47,7 +45,7 @@ public class CropIconsBugResolver {
 	private static final CropIconsBugResolver instance = new CropIconsBugResolver();
 
 	private static final boolean isApplied = IS_WINDOWS && JAVA_MAJOR_VER < 9
-			&& BigDecimal.valueOf(Double.parseDouble(Settings.OS_VER)).compareTo(BigDecimal.valueOf(6.1)) > 0;
+			&& BigDecimal.valueOf(Double.parseDouble(OS_VER)).compareTo(BigDecimal.valueOf(6.1)) > 0;
 
 	private static final String[][] optionIcons = { { "OptionPane.errorIcon", "65585" },
 			{ "OptionPane.warningIcon", "65581" }, { "OptionPane.questionIcon", "65583" },
