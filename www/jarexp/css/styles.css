@@ -128,7 +128,10 @@ padding-left:1.2em;
 padding-top:30px;
 text-align:justify;
 }
+
 #downloads .dbtn{padding-top:30px}
+
+/*
 #downloads .btn{
 cursor:pointer;
 color:black;
@@ -142,6 +145,44 @@ height:40px;
 font-size:1.8em;
 }
 #downloads .btn:hover{background-color:lime;}
+*/
+
+#downloads .dwbtn{
+background-image: URL(../img/wl.png);
+background-repeat: no-repeat;
+cursor:pointer;
+color:black;
+min-width:60px;
+text-align:center;
+padding:0px 10px 0px 10px;
+background-color:#c1e0ec;
+display:inline-block;
+text-decoration:none;
+height:40px;
+font-size:1.8em;
+padding-left: 45px;
+}
+#downloads .dwbtn:hover{background-color:lime;}
+
+#downloads .dlbtn{
+background-image: URL(../img/ll.png);
+background-repeat: no-repeat;
+cursor:pointer;
+color:black;
+min-width:60px;
+text-align:center;
+padding:0px 10px 0px 10px;
+background-color:#c1e0ec;
+display:inline-block;
+text-decoration:none;
+height:40px;
+font-size:1.8em;
+padding-left: 45px;
+}
+#downloads .dlbtn:hover{background-color:lime;}
+
+
+
 
 .info{padding-top:30px;padding-left:40px;}
 .info .img{

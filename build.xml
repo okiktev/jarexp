@@ -49,6 +49,7 @@
 					<file name="${dependency1}"/>
 					<file name="${dependency2}"/>
 					<file name="${dependency3}"/>
+					<file name="${dependency4}"/>
 				</filelist>
 			</classpath>
 		</javac>
@@ -61,12 +62,14 @@
 		<copy todir="${jar.dir}">
 			<fileset dir="${classes.dir}" />
 		</copy>
-		
+
 		<unjar src="${dependency1}" dest="${jar.dir}" />
 		<delete dir="${jar.dir}/META-INF" />
 		<unjar src="${dependency2}" dest="${jar.dir}" />
 		<delete dir="${jar.dir}/META-INF" />
 		<unjar src="${dependency3}" dest="${jar.dir}" />
+		<delete dir="${jar.dir}/META-INF" />
+		<unjar src="${dependency4}" dest="${jar.dir}" />
 		<delete dir="${jar.dir}/META-INF" />
 
 		<copy todir="${jar.dir}">
@@ -154,8 +157,23 @@
 		    <available file="${artifacts.dir}/Jar Explorer.exe"/>
 		</waitfor>
 		<delete file="${artifacts.dir}/jarexp.xml" />
-		<zip destfile="${artifacts.dir}/JarExplorer.${full.version}.zip" basedir="${artifacts.dir}" />
-		<exec executable="${7zip.exe.name}" failonerror="true" >
+		<property name="win.archive.name" value="JarExplorer.${full.version}.zip"/>
+		<property name="lin.archive.name" value="JarExplorer.${full.version}.tar.gz"/>
+		<zip destfile="${artifacts.dir}/${win.archive.name}" >
+			<fileset dir="${artifacts.dir}" >
+				<include name="Jar Explorer.exe" />
+			</fileset>
+		</zip>
+		<tar destfile="${artifacts.dir}/JarExplorer.${full.version}.tar" >
+			<fileset dir="${artifacts.dir}" >
+				<include name="Jar Explorer.sh" />
+				<include name="lib/**"/>
+			</fileset>
+		</tar>
+		<gzip destfile="${artifacts.dir}/${lin.archive.name}" src="${artifacts.dir}/JarExplorer.${full.version}.tar" />
+		<delete file="${artifacts.dir}/JarExplorer.${full.version}.tar" />
+		
+		<!--<exec executable="${7zip.exe.name}" failonerror="true" >
 			<arg value="a" />
 			<arg value="-tzip" />
 			<arg value="-p***" />
@@ -163,17 +181,15 @@
 			<arg value="${artifacts.dir}/lib" />
 			<arg value="${artifacts.dir}/Jar Explorer.exe" />
 			<arg value="${artifacts.dir}/Jar Explorer.sh" />
-		</exec>
+		</exec> -->
 	</target>
 
 	<target name="site">
-		<antcall target="generate-build-site-num" />
-
 		<property name="site.dir" value="${artifacts.dir}/site" />
-		<delete dir="${artifacts.dir}/site"  file="${site.dir}" />
+		<delete dir="${site.dir}" file="${site.dir}" />
 		<mkdir dir="${site.dir}" />
-
 		<property name="jarexp.dir" value="${site.dir}/jarexp" />
+
 		<loadfile srcfile="${build.num.file}" property="build">
 			<filterchain>
 				<tokenfilter>
@@ -183,7 +199,19 @@
 			</filterchain>
 		</loadfile>
 		<property name="full.version" value="${version}.${build}" />
-		<property name="download.zip" value="JarExplorer.${full.version}.zip" />
+		<echo message="The product version is: ${full.version}" />
+		<antcall target="generate-build-site-num" />
+		<loadfile srcfile="${build.num.site.file}" property="build.site">
+			<filterchain>
+				<tokenfilter>
+					<filetokenizer />
+					<replacestring from=" " to="" />
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
+		<property name="full.site.version" value="${version.site}.${build.site}" />
+		<echo message="The site version is: ${full.site.version}" />
+
 		<mkdir dir="${jarexp.dir}" />
 		<copy todir="${jarexp.dir}">
 			<fileset dir="${basedir}/www/jarexp">
@@ -194,15 +222,8 @@
 			</fileset>
 		</copy>
 
-		<loadfile srcfile="${build.num.site.file}" property="build.site">
-			<filterchain>
-				<tokenfilter>
-					<filetokenizer />
-					<replacestring from=" " to="" />
-				</tokenfilter>
-			</filterchain>
-		</loadfile>
-		<property name="full.site.version" value="${version.site}.${build.site}" />
+		<property name="win.archive.name" value="JarExplorer.${full.version}.zip"/>
+		<property name="lin.archive.name" value="JarExplorer.${full.version}.tar.gz"/>
 
 		<copy todir="${jarexp.dir}" encoding="cp1251">
 			<fileset dir="${basedir}/www/jarexp">
@@ -211,11 +232,11 @@
 			</fileset>
 			<filterset>
 				<filter token="COPYRIGHT" value="${copyright}" />
-				<filter token="DOWNLOAD_FILE" value="${download.zip}" />
+				<filter token="DOWNLOAD_WIN_ARCHIVE" value="${win.archive.name}" />
+				<filter token="DOWNLOAD_LIN_ARCHIVE" value="${lin.archive.name}" />
 				<filter token="SITE_VER" value="${full.site.version}" />
 			</filterset>
 		</copy>
-
 		<copy todir="${jarexp.dir}">
 			<fileset dir="${basedir}/www/jarexp">
 				<exclude name="**/*.zip" />
@@ -223,14 +244,15 @@
 			</fileset>
 			<filterset>
 				<filter token="COPYRIGHT" value="${copyright}" />
-				<filter token="DOWNLOAD_FILE" value="${download.zip}" />
+				<filter token="DOWNLOAD_WIN_ARCHIVE" value="${win.archive.name}" />
+				<filter token="DOWNLOAD_LIN_ARCHIVE" value="${lin.archive.name}" />
 				<filter token="SITE_VER" value="${full.site.version}" />
 			</filterset>
 		</copy>
 		<copy todir="${jarexp.dir}/downloads">
 			<fileset dir="${artifacts.dir}">
-				<include name="${download.zip}" />
-				<include name="JarsExplorer.${full.version}.zip" />
+				<include name="${win.archive.name}" />
+				<include name="${lin.archive.name}" />
 			</fileset>
 		</copy>
 		<zip destfile="${artifacts.dir}/jarexp.zip" basedir="${jarexp.dir}" />
