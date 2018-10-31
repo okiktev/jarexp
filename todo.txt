@@ -49,8 +49,8 @@ bug fixed minor issue with searching in files without extension. ... done ......
 imp some improvement with loading data while search. minor refactoring. ... done ..................07Oct2018
 bug when copying file inside archive. ... done ....................................................09Oct2018
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 11_oct_2018
-imp bundle of decompilers. ... done. can be improved by adding new decompilers ....................26Oct2018
-imp site was modified to support different binary builds for linux and windows ....................30Oct2018
+imp bundle of decompilers. ... done. can be improved by adding new decompilers. ...................26Oct2018
+imp site was modified to support different binary builds for linux and windows. ... done ..........30Oct2018
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 30_oct_2018
 
 bug sometime content panel is disappeared
