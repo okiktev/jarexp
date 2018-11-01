@@ -398,7 +398,7 @@ public class Content extends JPanel {
 				final JSplitPane pane = getSplitPane();
 				pane.setBorder(Settings.EMPTY_BORDER);
 				Component treeView = pane.getLeftComponent();
-				pane.remove(treeView);	
+				pane.remove(treeView);// TODO that is broken panel
 				
 				treeView = new JScrollPane(jarTree);
 				((JComponent) treeView).setBorder(Settings.EMPTY_BORDER);
@@ -426,7 +426,8 @@ public class Content extends JPanel {
 						KeyStroke.getKeyStroke("ctrl F"), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
 				if (jarTree.isSingleFileLoaded()) {
-				    jarTree.setSelectionPaths(new TreePath[] {new TreePath(jarTree.getRoot())});
+					JarTreeClickSelection.setNodes(null);
+					jarTree.setSelectionPath(new TreePath(jarTree.getRoot()));
 				}
 			}
 
