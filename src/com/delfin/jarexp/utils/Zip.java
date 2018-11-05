@@ -84,21 +84,18 @@ public class Zip {
 		File cached = unpacked.get(fullPath);
 		if (cached != null && cached.exists()) {
 			String cachedKey = Md5Checksum.get(cached);
-			String newKey;
 			try {
-				newKey = Md5Checksum.get(archive, path);
+				String newKey = Md5Checksum.get(archive, path);
+				if (cachedKey.equals(newKey)) {
+					// System.out.println("returned from cache " + path + " file " + cached);
+					return cached;
+				}
 			} catch (Exception e) {
 				log.log(Level.SEVERE, "Unable to get MD5 checksum for " + fullPath, e);
-				newKey = null;
 			}
-			if (cachedKey.equals(newKey)) {
-				// try {throw new RuntimeException();} catch (RuntimeException e) {e.printStackTrace(System.out);}
-				// System.out.println("returned from cache " + path);
-				System.out.println("returned from cache " + path + " file " + cached);
-				return cached;
-			}
-
 		}
+		
+		//try {throw new RuntimeException();} catch (RuntimeException e) {e.printStackTrace(System.out);}
 		 
 		 //System.out.println("unzipping " + path + " from " + archive + " into " + dst);
 		 

@@ -53,7 +53,9 @@ imp bundle of decompilers. ... done. can be improved by adding new decompilers. 
 imp site was modified to support different binary builds for linux and windows. ... done ..........30Oct2018
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 30_oct_2018
 bug unable to D&D new class if previous was open. ... done ........................................01Nov2018
+bug sometime user cannot drop(move) files inside an archive. ... done .............................05Nov2018
 
+bug unable to D&D folder inside archive(tree)
 bug sometime content panel is disappeared
 bug with shifting split panel when click on folder
 imp add info about env where application is run

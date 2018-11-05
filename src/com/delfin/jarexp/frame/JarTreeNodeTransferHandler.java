@@ -57,34 +57,44 @@ class JarTreeNodeTransferHandler extends TransferHandler {
 				throw new UnsupportedFlavorException(flavor);
 			}
 			List<File> files = new ArrayList<File>();
-			if (nodes != null) {
-				for (JarNode node : nodes) {
-					File file = getFile(node);
-					if (file == null) {
-						final File f = file = node.getParent() == null 
-						        ? new File(node.name) 
-						        : new File(Resources.createTmpDir(), node.name);
-						final JarNode n = node;
-						new Executor() {
-							@Override
-							protected void perform() {
-								statusBar.enableProgress("Extracting...");
-								if (log.isLoggable(Level.FINE)) {
-									log.fine("Extracting file " + n.path);
-								}
-								n.unzip(f);
+			if (nodes == null) {
+				return files;
+			}
+			for (JarNode node : nodes) {
+				File file = getFile(node);
+				if (file == null) {
+					final File f = file = node.getParent() == null 
+					        ? new File(node.name) 
+					        : new File(Resources.createTmpDir(), node.name);
+					final boolean[] extracting = new boolean[] { true };
+					final JarNode n = node;
+					new Executor() {
+						@Override
+						protected void perform() {
+							statusBar.enableProgress("Extracting...");
+							if (log.isLoggable(Level.FINE)) {
+								log.fine("Extracting file " + n.path);
 							}
+							n.unzip(f);
+							extracting[0] = false;
+						}
 
-							@Override
-							protected void doFinally() {
-								statusBar.disableProgress();
-							};
-						}.execute();
+						@Override
+						protected void doFinally() {
+							statusBar.disableProgress();
+						};
+					}.execute();
+					while(extracting[0]) {
+						try {
+							Thread.sleep(50);
+						} catch (InterruptedException e) {
+							log.log(Level.WARNING, "An error occurred while waiting for unzipping " + f, e);
+						}
 					}
-					file = Zip.getUnpacked(node.getFullPath());
-					map.add(new Pair(node, file));
-					files.add(file);
 				}
+				file = Zip.getUnpacked(node.getFullPath());
+				map.add(new Pair(node, file));
+				files.add(file);
 			}
 			return files;
 		}

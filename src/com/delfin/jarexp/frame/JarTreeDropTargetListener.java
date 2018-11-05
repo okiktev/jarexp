@@ -79,6 +79,8 @@ class JarTreeDropTargetListener implements DropTargetListener {
 		if (droppedFiles.isEmpty()) {
 			JOptionPane.showConfirmDialog(frame, "There is wrong dopped data format. Expected only files list.",
 			        "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+			jarTree.setDragging(false);
+			jarTree.setPacking(false);
 			dtde.dropComplete(true);
 			return;
 		}
@@ -86,7 +88,6 @@ class JarTreeDropTargetListener implements DropTargetListener {
 				"Do you want to add into\n" + node.name + "\nfollowing files:", droppedFiles);
 		if (reply == JOptionPane.YES_OPTION) {
 			new Executor() {
-
 				@Override
 				protected void perform() {
 					statusBar.enableProgress("Packing...");
@@ -94,7 +95,6 @@ class JarTreeDropTargetListener implements DropTargetListener {
 					packIntoJar(node, droppedFiles);
 					jarTree.update(node);
 				}
-
 				@Override
 				protected void doFinally() {
 					dtde.dropComplete(true);
@@ -112,18 +112,17 @@ class JarTreeDropTargetListener implements DropTargetListener {
 
 	private static List<File> getDroppedFiles(DropTargetDropEvent dtde) {
 		try {
-			List<File> res = new ArrayList<File>();
 			Transferable tr = dtde.getTransferable();
 			DataFlavor[] flavors = tr.getTransferDataFlavors();
 			if (flavors.length > 1) {
 				log.warning("There are " + flavors.length + " flavors found");
 			}
+			List<File> res = new ArrayList<File>(flavors.length);
 			for (int i = 0; i < flavors.length; i++) {
 				if (tr.isDataFlavorSupported(flavors[i])) {
 					dtde.acceptDrop(dtde.getDropAction());
 					Object obj = tr.getTransferData(flavors[i]);
 					if (obj instanceof List<?>) {
-						res.clear();
 						for (Object o : (List<?>) obj) {
 							if (o instanceof File) {
 								res.add((File) o);
