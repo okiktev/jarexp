@@ -73,7 +73,10 @@
 		<delete dir="${jar.dir}/META-INF" />
 
 		<copy todir="${jar.dir}">
-			<fileset dir="${resources.dir}" excludes="**/LICENSE" />
+			<fileset dir="${resources.dir}" >
+				<exclude name="**/LICENSE" />
+				<exclude name="**/logging*properties" />
+			</fileset>
 		</copy>
 		<copy todir="${jar.dir}">
 			<fileset dir="${resources.dir}" includes="**/LICENSE" />
@@ -81,7 +84,7 @@
 				<filter token="COPYRIGHT" value="${copyright}" />
 			</filterset>
 		</copy>
-
+		<copy file="${resources.dir}/logging-prod.properties" tofile="${jar.dir}/logging.properties" />
 	</target>
 
 	<target name="generate-build-num">
