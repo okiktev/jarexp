@@ -67,9 +67,9 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 			JSplitPane pane = Content.getSplitPane();
 			pane.setRightComponent(new ContentPanel(new FilterPanel(JarTreeSelectionListener.this),
 					pane.getRightComponent()));
-			pane.setDividerLocation(dividerLocation);
 			pane.validate();
 			pane.repaint();
+			setDividerLocation(pane);
 		}
 	}
  
@@ -122,11 +122,6 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 	    if (path != null && path.length > 1) {
 	        return;
 	    }
-	    try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-            throw new JarexpException(e);
-        }
 		if (jarTree.isDragging()) {
 			return;
 		}
@@ -159,9 +154,9 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 							((JComponent) contentView).setBorder(Settings.EMPTY_BORDER);
 							pane.setRightComponent(contentView);
-							pane.setDividerLocation(dividerLocation);
 							pane.validate();
 							pane.repaint();
+							setDividerLocation(pane);
 						}
 					});
 					return;
@@ -199,12 +194,10 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					applyTheme(textArea);
 					area = textArea;
 
-					Dimension size = contentView.getPreferredSize();
 					pane.remove(contentView);
 					RTextScrollPane textScrollPane = new RTextScrollPane(textArea);
 					textScrollPane.setBorder(Settings.EMPTY_BORDER);
 					contentView = new ContentPanel(textScrollPane);
-					contentView.setPreferredSize(size);
 				} else if (isImgFile(lowPath)) {
 					ZipFile zip = null;
 					try {
@@ -275,11 +268,9 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 				((JComponent) contentView).setBorder(Settings.EMPTY_BORDER);
 				pane.setRightComponent(contentView);
-				pane.setDividerLocation(dividerLocation);
 				pane.validate();
 				pane.repaint();
-
-				doFinally();
+				setDividerLocation(pane);
 			}
 
 			private Result decompile(JarNode node) {
@@ -414,11 +405,19 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 		}
 	}
 
+	private void setDividerLocation(JSplitPane pane) {
+		pane.setDividerLocation(dividerLocation);
+		try {
+			// wait something till changing divider event will being fired.
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			throw new JarexpException(e);
+		}
+	}
+
 	boolean isLocked() {
 		return isLocked;
 	}
-	
-	
 
 	void setDividerLocation(int dividerLocation) {
 		this.dividerLocation = dividerLocation;

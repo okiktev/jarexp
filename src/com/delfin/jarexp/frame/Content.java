@@ -398,7 +398,7 @@ public class Content extends JPanel {
 				final JSplitPane pane = getSplitPane();
 				pane.setBorder(Settings.EMPTY_BORDER);
 				Component treeView = pane.getLeftComponent();
-				pane.remove(treeView);// TODO that is broken panel
+				pane.remove(treeView);
 				
 				treeView = new JScrollPane(jarTree);
 				((JComponent) treeView).setBorder(Settings.EMPTY_BORDER);
@@ -417,7 +417,11 @@ public class Content extends JPanel {
 					@Override
 					public void propertyChange(PropertyChangeEvent evt) {
 						if (!jarTreeSelectionListener.isLocked()) {
-							jarTreeSelectionListener.setDividerLocation(pane.getDividerLocation());
+							int divLocation = pane.getDividerLocation();
+							if (log.isLoggable(Level.FINEST)) {
+								log.finest("Divider location = " + divLocation);
+							}
+							jarTreeSelectionListener.setDividerLocation(divLocation);
 						}
 					}
 				});
