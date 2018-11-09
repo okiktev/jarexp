@@ -57,10 +57,10 @@ bug sometime user cannot drop(move) files inside an archive. ... done ..........
 bug sometime content panel is disappeared. ... done ...............................................08Nov2018
 bug with shifting split panel when click on folder. ... done ......................................08Nov2018
 imp split logging configuration file for local and production use. ... done .......................09Nov2018
+bug when delete several times the exception related to java compiled version. ... not repr ........09Nov2018
 
 bug unable to D&D folder inside archive(tree)
 bug table data is not updated after replacing file
-bug when delete several times the exception related to java compiled version
 imp information window does not show files for folder
 imp add info about env where application is run
 imp add java version to build metainf
