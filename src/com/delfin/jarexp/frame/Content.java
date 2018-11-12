@@ -416,8 +416,8 @@ public class Content extends JPanel {
 				pane.addPropertyChangeListener(new PropertyChangeListener() {
 					@Override
 					public void propertyChange(PropertyChangeEvent evt) {
-						if (!jarTreeSelectionListener.isLocked()) {
-							int divLocation = pane.getDividerLocation();
+						int divLocation;
+						if (!jarTreeSelectionListener.isLocked() && (divLocation = pane.getDividerLocation()) != 25) {
 							if (log.isLoggable(Level.FINEST)) {
 								log.finest("Divider location = " + divLocation);
 							}
