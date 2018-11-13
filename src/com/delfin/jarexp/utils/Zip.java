@@ -72,6 +72,10 @@ public class Zip {
 //		zipIn.close();
 //	}
 
+	public static File unzip(String fullPath, String path, File archive, File dst) {
+		return unzip(fullPath, path, archive, dst, true);
+	}
+	
 	/**
 	 * 
 	 * @param fullPath - string representation of the full path to resource.
@@ -79,19 +83,21 @@ public class Zip {
 	 * @param archive - existing archive file where <code>path</code> specified.
 	 * @param dst - file where will be extracted resource.
 	 */
-	 public static File unzip(String fullPath, String path, File archive, File dst) {
+	 public static File unzip(String fullPath, String path, File archive, File dst, boolean keepCaching) {
 		// System.out.println("unpacking file path " + path + " fullPath " + fullPath + " to " + dst);
-		File cached = unpacked.get(fullPath);
-		if (cached != null && cached.exists()) {
-			String cachedKey = Md5Checksum.get(cached);
-			try {
-				String newKey = Md5Checksum.get(archive, path);
-				if (cachedKey.equals(newKey)) {
-					// System.out.println("returned from cache " + path + " file " + cached);
-					return cached;
+		if (keepCaching) {
+			File cached = unpacked.get(fullPath);
+			if (cached != null && cached.exists()) {
+				String cachedKey = Md5Checksum.get(cached);
+				try {
+					String newKey = Md5Checksum.get(archive, path);
+					if (cachedKey.equals(newKey)) {
+						// System.out.println("returned from cache " + path + " file " + cached);
+						return cached;
+					}
+				} catch (Exception e) {
+					log.log(Level.SEVERE, "Unable to get MD5 checksum for " + fullPath, e);
 				}
-			} catch (Exception e) {
-				log.log(Level.SEVERE, "Unable to get MD5 checksum for " + fullPath, e);
 			}
 		}
 		
@@ -127,9 +133,11 @@ public class Zip {
 	           if (nBytes <= 0) break;
 	           out.write(buffer, 0, nBytes);
 	         }
-	         
-	         unpacked.put(fullPath, dst);
-	         
+
+	         if (keepCaching) {
+	        	 unpacked.put(fullPath, dst);
+	         }
+
 	         out.flush();
 	         st.close();
 	         out.close();

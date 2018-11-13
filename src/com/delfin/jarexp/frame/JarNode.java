@@ -130,7 +130,7 @@ class JarNode extends DefaultMutableTreeNode {
                 }
             };
 		} else {
-			Zip.unzip(getFullPath(), path, archive, file);
+			Zip.unzip(getFullPath(), path, archive, file, false);
 		}
 	}
 

@@ -131,6 +131,7 @@
 			<manifest>
 				<attribute name="Built-By" value="delfin" />
 				<attribute name="Main-Class" value="com.delfin.jarexp.Main" />
+				<attribute name="Application-Version" value="${full.version}" />
 			</manifest>
 
 			<fileset dir="${jar.dir}" />
