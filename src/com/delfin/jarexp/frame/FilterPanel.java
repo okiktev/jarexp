@@ -118,9 +118,6 @@ class FilterPanel extends JPanel {
 
 		btClose.setPreferredSize(new Dimension(16, 16));
 		btClose.setBorder(BorderFactory.createEmptyBorder());
-		Font font = btClose.getFont();
-		btClose.setFont(new Font(font.getName(), font.getStyle(), 18));
-
 		btClose.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -134,7 +131,7 @@ class FilterPanel extends JPanel {
 			}
 		});
 
-		font = tfSearch.getFont();
+		Font font = tfSearch.getFont();
 		tfSearch.setFont(new Font(Settings.DLG_TEXT_FONT.getName(), font.getStyle(), 18));
 		tfSearch.addKeyListener(new KeyListener() {
 			@Override
