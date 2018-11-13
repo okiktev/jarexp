@@ -62,9 +62,9 @@ bug unable to D&D folder inside archive(tree). ... done ........................
 imp add java version to build metainf. ... already is .............................................13Nov2018
 imp add application version to metainf. ... done ..................................................13Nov2018
 bug x is not rendered on filter panel on Windows. ... done ........................................13Nov2018
+bug table data is not updated after replacing file. ... not repr ..................................13Nov2018
+imp folder table data can be decreased for empty columns. ... done ................................13Nov2018
 
-bug table data is not updated after replacing file
-imp folder table data can be decreased for empty columns
 imp information window does not show files for folder
 imp add info about env where application is run
 imp decompile all classes

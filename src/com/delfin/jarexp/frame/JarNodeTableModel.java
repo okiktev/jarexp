@@ -2,11 +2,15 @@ package com.delfin.jarexp.frame;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
@@ -17,14 +21,15 @@ class JarNodeTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 2259978843988964737L;
 
-	static final DateFormat TIME_FORMAT = new SimpleDateFormat(isJava6() ? "dd-MMM-yyyy HH:mm:ss.S" : "dd-MMM-Y HH:mm:ss.S");
+	private static final Logger log = Logger.getLogger(JarNodeTableModel.class.getCanonicalName());
 
-	private String[] columnNames = {"Name", "Size", "Compressed Size", 
-			"Time", "Last Modified Time", "Creation Time", "Last Access Time",
-			"Method", "Comment", "Attributes", "Certificates", "Code Signers", "CRC",
-    		"Extra"};
+	static final DateFormat TIME_FORMAT = new SimpleDateFormat(
+			isJava6() ? "dd-MMM-yyyy HH:mm:ss.S" : "dd-MMM-Y HH:mm:ss.S");
 
-    private final Object[][] data;
+	private String[] columnNames = { "Name", "Size", "Compressed Size", "Time", "Last Modified Time", "Creation Time",
+			"Last Access Time", "Method", "Comment", "Attributes", "Certificates", "Code Signers", "CRC", "Extra" };
+
+	private Object[][] data;
 
 	JarNodeTableModel(JarNode node, StatusBar statusBar) {
 		int count = node.getChildCount();
@@ -34,6 +39,40 @@ class JarNodeTableModel extends AbstractTableModel {
 		int i = 0;
 		for (Enumeration<?> children = node.children(); children.hasMoreElements(); ++i) {
 			data[i] = parseNode((JarNode) children.nextElement());
+		}
+		optimize();
+	}
+
+	private void optimize() {
+		try {
+			List<Integer> columnsToRemove = new ArrayList<Integer>();
+			for (int i = 0; i < columnNames.length; ++i) {
+				int j = 0;
+				while (j < data.length && data[j][i] == null) {
+					++j;
+				}
+				if (j == data.length) {
+					columnsToRemove.add(i);
+				}
+			}
+			int newLength = columnNames.length - columnsToRemove.size();
+			String[] newColumnNames = new String[newLength];
+			Object[][] newData = new Object[data.length][newLength];
+			int i = 0;
+			for (int j = 0; j < columnNames.length; ++j) {
+				if (columnsToRemove.contains(j)) {
+					continue;
+				}
+				for (int k = 0; k < data.length; ++k) {
+					newData[k][i] = data[k][j];
+				}
+				newColumnNames[i] = columnNames[j];
+				++i;
+			}
+			columnNames = newColumnNames;
+			data = newData;
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "An error while optimizing directory table.", e);
 		}
 	}
 
@@ -102,7 +141,7 @@ class JarNodeTableModel extends AbstractTableModel {
 	}
 
 	static String formatTime(Object time) {
-		return isJava6() || time == null ? null : formatTime(((java.nio.file.attribute.FileTime)time).toMillis());
+		return isJava6() || time == null ? null : formatTime(((java.nio.file.attribute.FileTime) time).toMillis());
 	}
 
 	static String formatTime(long time) {
@@ -157,10 +196,9 @@ class JarNodeTableModel extends AbstractTableModel {
 		long size = calcSize(0, n);
 		long compSize = calcCompSize(0, n);
 
-		return new Object[] {n.name, size, compSize,
-				formatTime(n.time), formatTime(n.lastModTime), formatTime(n.creationTime), formatTime(n.lastAccessTime), 
-				formatMethod(n.method), n.comment, formatAttributes(n.attrs), n.certs, n.signers, Long.toString(n.crc, 16),
-				formatExtra(n.extra)};
+		return new Object[] { n.name, size, compSize, formatTime(n.time), formatTime(n.lastModTime),
+				formatTime(n.creationTime), formatTime(n.lastAccessTime), formatMethod(n.method), n.comment,
+				formatAttributes(n.attrs), n.certs, n.signers, Long.toString(n.crc, 16), formatExtra(n.extra) };
 	}
 
 	static String formatAttributes(Attributes attrs) {
@@ -185,5 +223,3 @@ class JarNodeTableModel extends AbstractTableModel {
 		return Version.JAVA_MAJOR_VER == 6;
 	}
 }
-
-
