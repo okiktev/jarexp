@@ -3,7 +3,6 @@ package com.delfin.jarexp.frame.about;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.HeadlessException;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
 
@@ -21,7 +20,7 @@ public class AboutDlg extends JDialog {
 	
 	private static final long serialVersionUID = -6727320015620479794L;
 
-    public AboutDlg(Component parent) throws HeadlessException {
+    public AboutDlg(Component parent) {
 	    super();
 	    setModal(true);
 		setTitle("About Jar Explorer");

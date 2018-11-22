@@ -64,9 +64,9 @@ imp add application version to metainf. ... done ...............................
 bug x is not rendered on filter panel on Windows. ... done ........................................13Nov2018
 bug table data is not updated after replacing file. ... not repr ..................................13Nov2018
 imp folder table data can be decreased for empty columns. ... done ................................13Nov2018
+imp add info about env where application is run. ... done .........................................22Nov2018
 
 imp information window does not show files for folder
-imp add info about env where application is run
 imp decompile all classes
 imp command console
 imp get all depended classes in the jar
@@ -78,7 +78,7 @@ imp all option dialogs should be custom
 
 imp do not do copy when open archive
 imp search files by types
-imp means to work with properties data (copy to clipboard etc.)
+imp means to work with properties, environment and search results data (copy to clipboard etc.)
 imp progress bar to search
 imp pause button to search
 imp output search result to clipboard or file

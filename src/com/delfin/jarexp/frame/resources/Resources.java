@@ -64,6 +64,8 @@ public class Resources {
 
 	private Image duplicatesImage;
 
+	private Image environmentImage;
+
 	private Icon searchIcon;
 
 	private Icon duplicatesIcon;
@@ -77,6 +79,8 @@ public class Resources {
 	private Icon jdCoreIcon;
 
 	private Icon procyonIcon;
+
+	private Icon environmentIcon;
 
 	private static Map<String, Icon> icons = new HashMap<String, Icon>();
 
@@ -320,6 +324,17 @@ public class Resources {
 		}
 	}
 
+	public Image getEnvironmentImage() {
+		if (environmentImage != null) {
+			return environmentImage;
+		}
+		try {
+			return environmentImage = loadImage("env.png");
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load environment image from class path", e);
+		}
+	}
+
 	public Icon getSearchIcon() {
 		if (searchIcon != null) {
 			return searchIcon;
@@ -339,6 +354,17 @@ public class Resources {
 			return duplicatesIcon = new ImageIcon(loadImage("dupl.png"));
 		} catch (IOException e) {
 			throw new ResourcesException("Unable to load duplicates menu icon from class path", e);
+		}
+	}
+
+	public Icon getEnvironmentIcon() {
+		if (environmentIcon != null) {
+			return environmentIcon;
+		}
+		try {
+			return environmentIcon = new ImageIcon(loadImage("env.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load environment menu icon from class path", e);
 		}
 	}
 

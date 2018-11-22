@@ -1,11 +1,11 @@
 package com.delfin.jarexp.frame;
 
 import static com.delfin.jarexp.Settings.DLG_TEXT_FONT;
+import static com.delfin.jarexp.Settings.DLG_DIM;
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.NORTH;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -41,8 +41,6 @@ public class InfoDlg extends JDialog {
 	private JTextArea taResult = new JTextArea();
 	private JPanel panel = new JPanel();
 	private JScrollPane spResult = new JScrollPane(panel);
-	private final int width = 360;
-	private final int height = 290;
 	private final JarNode node;
 
 	public InfoDlg(JarNode node) {
@@ -55,10 +53,10 @@ public class InfoDlg extends JDialog {
 
 		setTitle("Information | " + node.getFullPath());
 		setIconImage(Resources.getInstance().getInfoImage());
-		setPreferredSize(new Dimension(width, height));
+		setPreferredSize(DLG_DIM);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		Msg.centerDlg(this, width, height);
+		Msg.centerDlg(this, DLG_DIM.width, DLG_DIM.height);
 
 		setVisible(true);
 		pack();

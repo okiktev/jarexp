@@ -49,6 +49,7 @@ import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 import com.delfin.jarexp.frame.about.AboutDlg;
+import com.delfin.jarexp.frame.about.EnvironmentDlg;
 import com.delfin.jarexp.frame.duplicates.DuplicatesDlg;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
@@ -317,6 +318,12 @@ public class Content extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				changeDecompiler(DecompilerType.PROCYON);
+			}
+		}
+		, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new EnvironmentDlg(frame);
 			}
 		}
 		, new ActionListener() {

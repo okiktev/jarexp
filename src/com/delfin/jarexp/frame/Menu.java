@@ -25,7 +25,7 @@ class Menu extends JMenuBar {
 	private static final Resources resources = Resources.getInstance();
 
 	Menu(ActionListener openListener, ActionListener searchListener, ActionListener duplicatesListener,
-			ActionListener jdCoreListener, ActionListener procyonListener, ActionListener aboutListener)
+			ActionListener jdCoreListener, ActionListener procyonListener, ActionListener environmentListener, ActionListener aboutListener)
 			throws ResourcesException {
 
 		JMenuItem item;
@@ -93,6 +93,11 @@ class Menu extends JMenuBar {
 
 		JMenu help = new JMenu("Help");
 		help.setMnemonic(KeyEvent.VK_H);
+		item = new JMenuItem("Java environment", KeyEvent.VK_E);
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
+		item.setIcon(resources.getEnvironmentIcon());
+		item.addActionListener(environmentListener);
+		help.add(item);
 		item = new JMenuItem("About", KeyEvent.VK_A);
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 		item.setIcon(resources.getInfoIcon());
