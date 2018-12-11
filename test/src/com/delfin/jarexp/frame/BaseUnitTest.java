@@ -178,7 +178,7 @@ public abstract class BaseUnitTest {
 			protected void load(JarNode node) {
 
 				File dst = new File(tmp, node.name);
-				dst = Zip.unzip(node.getFullPath(), node.path, node.archive, dst);
+				dst = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), dst);
 				try {
 					jarTree.addArchive(dst, node);
 				} catch (Exception e) {

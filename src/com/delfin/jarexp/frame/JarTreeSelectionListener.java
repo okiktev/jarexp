@@ -173,11 +173,11 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				String archName = null;
 				File file;
 				String lowPath;
-				if (node.getParent() == null && (archName = node.archive.getName().toLowerCase()).endsWith(".class")) {
-                    file = node.archive;
+				if (node.getParent() == null && (archName = node.origArch.getName().toLowerCase()).endsWith(".class")) {
+                    file = node.origArch;
                     lowPath = archName;
 				} else {
-	                file = new File(node.archive.getParent(), node.path);
+	                file = new File(node.origArch.getParent(), node.path);
 	                lowPath = node.path.toLowerCase();
 				}
 
@@ -201,7 +201,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				} else if (isImgFile(lowPath)) {
 					ZipFile zip = null;
 					try {
-						zip = new ZipFile(node.archive);
+						zip = new ZipFile(node.origArch);
 						ZipEntry entry = zip.getEntry(node.path);
 						InputStream stream = zip.getInputStream(entry);
 						Image image = ImageIO.read(stream);
@@ -224,7 +224,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						}
 					}
 				} else if (lowPath.endsWith(".ico")) {
-					file = Zip.unzip(node.getFullPath(), node.path, node.archive, file);
+					file = Zip.unzip(node.getFullPath(), node.path, node.origArch, file);
 					try {
 						pane.remove(contentView);
 						JPanel pnl = new JPanel();
@@ -238,7 +238,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				} else {
 					if (!file.isDirectory()) {
 						statusBar.enableProgress("Reading...");
-						String content = Zip.unzip(node.archive, node.path);
+						String content = Zip.unzip(node.origArch, node.path);
 						RSyntaxTextArea textArea = new RSyntaxTextArea(content);
 						textArea.setSyntaxEditingStyle(getSyntax(lowPath));
 						textArea.setBorder(Settings.EMPTY_BORDER);
@@ -275,8 +275,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 			private Result decompile(JarNode node) {
 				IDecompiler decompiler = Decompiler.get();
-				return "".equals(node.path) ? decompiler.decompile(node.archive)
-						: decompiler.decompile(node.archive, node.path);
+				return "".equals(node.path) ? decompiler.decompile(node.origArch)
+						: decompiler.decompile(node.origArch, node.path);
 			}
 
 			@Override

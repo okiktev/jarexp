@@ -36,7 +36,6 @@ import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
 import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
 import com.delfin.jarexp.frame.resources.Resources;
-import com.delfin.jarexp.utils.FileUtils;
 
 
 class JarTree extends JTree {
@@ -195,7 +194,7 @@ class JarTree extends JTree {
 
 	static class ArchiveLoader {
 		protected void load(JarNode node) {
-			node.add(new JarNode("", Settings.NAME_PLACEHOLDER, null, false));
+			node.add(new JarNode("", Settings.NAME_PLACEHOLDER, null, null, false));
 		}
 	}
 
@@ -244,20 +243,21 @@ class JarTree extends JTree {
 		CropIconsBugResolver.getInstance().adaptTree(jarTreeCellRenderer, this);
 	}
 
-	void load(File file) {
-		if (file == null) {
+	void load(final File origArch) {
+		if (origArch == null) {
 			root = new JarNode();
+			root.origArch = origArch;
 			return;
 		}
-		final File dst = new File(Resources.createTmpDir(), file.getName());
-		FileUtils.copy(file, dst);
-		root = new JarNode(file.getAbsolutePath(), "", dst, false);
+		String fileName = origArch.getName();
+		final File tmpArch = new File(Resources.createTmpDir(), fileName);
+		root = new JarNode(origArch.getAbsolutePath(), "", tmpArch, origArch, false);
 		
-		if (!file.getName().toLowerCase().endsWith(".class")) {
-	        new Jar(file) {
+		if (!fileName.toLowerCase().endsWith(".class")) {
+	        new Jar(origArch) {
 	            @Override
 	            protected void process(JarEntry entry) throws IOException {
-	                addIntoNode(entry, root, dst);
+	                addIntoNode(entry, root, tmpArch, origArch);
 	            }
 	        }.bypass();
 		} else {
@@ -291,8 +291,8 @@ class JarTree extends JTree {
 			if (isDir) {
 				path += "/";
 			}
-			File archive = isArchive ? node.getCurrentArchive() : node.archive;
-			JarNode child = new JarNode(f.getName(), path, archive, isDir);
+			File archive = isArchive ? node.getCurrentArchive() : node.getTempArchive();
+			JarNode child = new JarNode(f.getName(), path, archive, node.origArch, isDir);
 			if (child.isArchive()) {
 				archiveLoader.load(child);
 			}
@@ -309,7 +309,7 @@ class JarTree extends JTree {
 		new Jar(jar) {
 			@Override
 			protected void process(JarEntry entry) throws IOException {
-				addIntoNode(entry, node, jar);
+				addIntoNode(entry, node, jar, node.origArch);
 			}
 		}.bypass();
 	}
@@ -388,7 +388,7 @@ class JarTree extends JTree {
 		return false;
 	}
 
-	private static void addIntoNode(JarEntry entry, JarNode node, File archive) throws IOException {
+	private static void addIntoNode(JarEntry entry, JarNode node, File tempArch, File origArch) throws IOException {
 		String path = entry.getName();
 		String[] files = path.split("/");
 		String name = null;
@@ -408,14 +408,14 @@ class JarTree extends JTree {
 				break;
 			}
 			if (!isExist) {
-				JarNode child = new JarNode(files[i], calcPath(files, i), archive, true);
+				JarNode child = new JarNode(files[i], calcPath(files, i), tempArch, origArch, true);
 				child.grab(entry);
 				node.add(child);
 				node = child;
 			}
 		}
 		if (name != null) {
-			JarNode child = new JarNode(name, path, archive, entry.isDirectory());
+			JarNode child = new JarNode(name, path, tempArch, origArch, entry.isDirectory());
 			child.grab(entry);
 			if (child.isArchive()) {
 				child.grab(entry);

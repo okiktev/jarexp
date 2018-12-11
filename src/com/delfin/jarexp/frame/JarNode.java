@@ -17,6 +17,7 @@ import javax.swing.tree.TreePath;
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Version;
 import com.delfin.jarexp.utils.Enumerator;
+import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
 class JarNode extends DefaultMutableTreeNode {
@@ -40,16 +41,19 @@ class JarNode extends DefaultMutableTreeNode {
 
 	String path;
 
-	File archive;
+	private File tempArch;
 
 	boolean isDirectory;
 
 	private Boolean isArchive = null;
 
-	JarNode(String name, String path, File archive, boolean isDirectory) {
+	File origArch;
+
+	JarNode(String name, String path, File tempArch, File origArch, boolean isDirectory) {
 		this.name = name;
 		this.path = path;
-		this.archive = archive;
+		this.tempArch = tempArch;
+		this.origArch = origArch;
 		this.isDirectory = isDirectory;
 	}
 
@@ -61,11 +65,22 @@ class JarNode extends DefaultMutableTreeNode {
 		return name;
 	}
 
+	File getTempArchive() {
+		if (tempArch != null && !tempArch.exists()) {
+			FileUtils.copy(origArch, tempArch);
+		}
+		return tempArch;
+	}
+
+	void setTempArchive(File tempArch) {
+		this.tempArch = tempArch;
+	}
+
 	File getCurrentArchive() {
 		if (getChildCount() <= 0) {
 			throw new JarexpException("Unexpected content of jar file " + this.path);
 		}
-		return ((JarNode) getChildAt(0)).archive;
+		return ((JarNode) getChildAt(0)).getTempArchive();
 	}
 
 	List<JarNode> getPathList() {
@@ -130,7 +145,7 @@ class JarNode extends DefaultMutableTreeNode {
                 }
             };
 		} else {
-			Zip.unzip(getFullPath(), path, archive, file, false);
+			Zip.unzip(getFullPath(), path, getTempArchive(), file, false);
 		}
 	}
 

@@ -101,9 +101,9 @@ public class InfoDlg extends JDialog {
 			final Map<String, Integer> types = new HashMap<String, Integer>();
 			File dst = new File(Resources.createTmpDir(), node.name);
 			if (node.getParent() == null) {
-				dst = node.archive;
+				dst = node.origArch;
 			} else {
-				dst = Zip.unzip(node.getFullPath(), node.path, node.archive, dst);
+				dst = Zip.unzip(node.getFullPath(), node.path, node.origArch, dst);
 			}
 			new Jar(dst) {
 				@Override
@@ -183,7 +183,7 @@ public class InfoDlg extends JDialog {
 	}
 
 	private static String getSize(JarNode node) {
-		long size = node.getParent() == null ? node.archive.length() : node.size;
+		long size = node.getParent() == null ? node.origArch.length() : node.size;
 		long kb = size / 1024;
 		if (kb > 0) {
 			long mb = kb / 1024;
@@ -199,8 +199,8 @@ public class InfoDlg extends JDialog {
 
 	private static String getCompressedSize(JarNode node) {
 		boolean isRoot = node.getParent() == null;
-		long size = isRoot ? node.archive.length() : node.size;
-		long compressedSize = isRoot ? node.archive.length() : node.compSize;
+		long size = isRoot ? node.origArch.length() : node.size;
+		long compressedSize = isRoot ? node.origArch.length() : node.compSize;
 		if (size == 0l) {
 			return format(compressedSize);
 		}

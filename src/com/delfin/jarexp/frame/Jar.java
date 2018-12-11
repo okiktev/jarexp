@@ -57,10 +57,10 @@ public abstract class Jar {
     		List<JarNode> path = node.getPathList();
     		JarNode currNode = path.get(0);
     		String p = currNode.path;
-    		File archive = currNode.archive;
+    		File archive = currNode.getTempArchive();
     		if (node.isDirectory || !node.isLeaf()) {
     			p = currNode.path.endsWith(currNode.name) ? "" : currNode.path;
-    			archive = p.isEmpty() ? currNode.getCurrentArchive() : currNode.archive;
+    			archive = p.isEmpty() ? currNode.getCurrentArchive() : currNode.getTempArchive();
     		}
     		Zip.add(p, archive, files);
 
@@ -77,7 +77,7 @@ public abstract class Jar {
     			p = arc.path;
     		}
     		JarNode root = path.get(path.size() - 1);
-    		FileUtils.copy(root.archive, new File(root.name));
+    		FileUtils.copy(root.getTempArchive(), new File(root.name));
 		} catch (Exception e) {
 			throw new JarexpException("An error occurred while packing node " + node.path, e);
 		}
@@ -96,20 +96,20 @@ public abstract class Jar {
 		    for (JarNode node : nodes) {
 	            path = node.getPathList();
 	            JarNode currNode = path.get(0);
-	            if (currNode.archive == null) {
+	            if (currNode.getTempArchive() == null) {
 	                continue;
 	            }
 	            root = path.get(path.size() - 1);
 	            String delPath = currNode.path;
-	            Zip.delete(currNode.path, currNode.archive);
+	            Zip.delete(currNode.path, currNode.getTempArchive());
 
 	            List<JarNode> archives = node.grabParentArchives();
 	            List<File> files = new ArrayList<File>();
-	            files.add(currNode.archive);
+	            files.add(currNode.getTempArchive());
                 if (currNode.isArchive()) {
-                    File arch = currNode.archive;
+                    File arch = currNode.getTempArchive();
                     clearArchive(currNode);
-                    currNode.archive = arch;
+                    currNode.setTempArchive(arch);
                 }
 	            currNode = archives.get(0);
 	            for (int i = 1; i < archives.size(); ++i) {
@@ -124,7 +124,7 @@ public abstract class Jar {
 		    }
 
 			if (withCopy) {
-				FileUtils.copy(root.archive, new File(root.name));
+				FileUtils.copy(root.getTempArchive(), new File(root.name));
 			}
 		} catch (Exception e) {
 			throw new JarexpException("An error occurred while deleting node " + nodes, e);
@@ -133,7 +133,7 @@ public abstract class Jar {
 
 	@SuppressWarnings("unchecked")
     private static void clearArchive(JarNode node) {
-	    node.archive = null;
+	    node.setTempArchive(null);
 	    new Enumerator<JarNode>(node.children()) {
             @Override
             protected void doAction(JarNode entity) {
