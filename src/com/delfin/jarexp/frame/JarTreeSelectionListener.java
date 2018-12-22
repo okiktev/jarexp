@@ -271,6 +271,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				pane.validate();
 				pane.repaint();
 				setDividerLocation(pane);
+				isLocked = false;
 			}
 
 			private Result decompile(JarNode node) {

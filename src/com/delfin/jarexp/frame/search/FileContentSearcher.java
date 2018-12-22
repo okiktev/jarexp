@@ -73,7 +73,6 @@ class FileContentSearcher implements Searcher {
 			statement = statement.toLowerCase();
 		}
 		initFileFilters(searchDlg.tfFileFilter.getText());
-		// final List<SearchResult> results = new ArrayList<SearchResult>();
 		final Thread search = new Thread(new Runnable() {
 			@Override
 			public void run() {
