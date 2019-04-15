@@ -80,6 +80,8 @@ public class Resources {
 
 	private Icon procyonIcon;
 
+	private Icon fernflowerIcon;
+
 	private Icon environmentIcon;
 
 	private static Map<String, Icon> icons = new HashMap<String, Icon>();
@@ -444,6 +446,17 @@ public class Resources {
 			return procyonIcon = new ImageIcon(loadImage("proc.png"));
 		} catch (IOException e) {
 			throw new ResourcesException("Unable to load rocyon menu icon from class path", e);
+		}
+	}
+
+	public Icon getFernflowerIcon() {
+		if (fernflowerIcon != null) {
+			return fernflowerIcon;
+		}
+		try {
+			return fernflowerIcon = new ImageIcon(loadImage("fern.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load fernflower menu icon from class path", e);
 		}
 	}
 

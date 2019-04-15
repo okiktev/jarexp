@@ -12,6 +12,7 @@ import java.util.jar.JarEntry;
 
 import javax.swing.JMenuItem;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.JarexpException;
@@ -131,17 +132,17 @@ class JarNode extends DefaultMutableTreeNode {
 		return isArchive.booleanValue();
 	}
 
-	@SuppressWarnings("unchecked")
     void unzip(final File file) {
 		if (getParent() == null) {
 			return;
 		}
 		if (isDirectory) {
 			file.mkdir();
-			new Enumerator<JarNode>(children()) {
+			new Enumerator<TreeNode>(children()) {
                 @Override
-                protected void doAction(JarNode child) {
-                    child.unzip(new File(file, child.name));
+                protected void doAction(TreeNode child) {
+            		JarNode node  = (JarNode)child;
+            		node.unzip(new File(file, node.name));
                 }
             };
 		} else {

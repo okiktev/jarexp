@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project>
 
 <project name="Jar Explorer">
 	<description>
@@ -39,6 +40,8 @@
 			<filterset>
 				<filter token="VERSION" value="${full.version}" />
 				<filter token="COPYRIGHT" value="${copyright}" />
+				<filter token="PROCYON_FILE_NAME" value="${dependency4jarName}" />
+				<filter token="FERNFLOWER_FILE_NAME" value="${dependency5jarName}" />
 			</filterset>
 		</copy>
 
@@ -50,6 +53,7 @@
 					<file name="${dependency2}"/>
 					<file name="${dependency3}"/>
 					<file name="${dependency4}"/>
+					<file name="${dependency5}"/>
 				</filelist>
 			</classpath>
 		</javac>
@@ -71,7 +75,9 @@
 		<delete dir="${jar.dir}/META-INF" />
 		<unjar src="${dependency4}" dest="${jar.dir}" />
 		<delete dir="${jar.dir}/META-INF" />
-
+		<unjar src="${dependency5}" dest="${jar.dir}" />
+		<delete dir="${jar.dir}/META-INF" />
+		
 		<copy todir="${jar.dir}">
 			<fileset dir="${resources.dir}" >
 				<exclude name="**/LICENSE" />
@@ -130,11 +136,16 @@
 		<jar destfile="${artifacts.dir}/jar-explorer-${full.version}.jar">
 			<manifest>
 				<attribute name="Built-By" value="delfin" />
-				<attribute name="Main-Class" value="com.delfin.jarexp.Main" />
 				<attribute name="Application-Version" value="${full.version}" />
+				<attribute name="Main-Class" value="com.delfin.jarexp.Main" />
+				<attribute name="Class-Path" value="lib/${dependency4jarName} lib/${dependency5jarName}"/>
 			</manifest>
 
-			<fileset dir="${jar.dir}" />
+			<fileset dir="${jar.dir}" >
+				<exclude name="com/beust/**" />
+				<exclude name="com/strobel/**" />
+				<exclude name="org/jetbrains/**" />
+			</fileset>
 		</jar>
 	</target>
 
@@ -257,6 +268,14 @@
 			<fileset dir="${artifacts.dir}">
 				<include name="${win.archive.name}" />
 				<include name="${lin.archive.name}" />
+			</fileset>
+		</copy>
+		<property name="decompilers.dir" value="${jarexp.dir}/downloads/decompilers"/>
+		<mkdir dir="${decompilers.dir}" />
+		<copy todir="${decompilers.dir}">
+			<fileset dir="${basedir}/lib">
+				<include name="${dependency4jarName}" />
+				<include name="${dependency5jarName}" />
 			</fileset>
 		</copy>
 		<zip destfile="${artifacts.dir}/jarexp.zip" basedir="${jarexp.dir}" />

@@ -10,6 +10,8 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.tree.TreeNode;
+
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.utils.Enumerator;
 import com.delfin.jarexp.utils.FileUtils;
@@ -131,13 +133,13 @@ public abstract class Jar {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
     private static void clearArchive(JarNode node) {
 	    node.setTempArchive(null);
-	    new Enumerator<JarNode>(node.children()) {
+	    new Enumerator<TreeNode>(node.children()) {
             @Override
-            protected void doAction(JarNode entity) {
-                clearArchive(entity);
+            protected void doAction(TreeNode entity) {
+        		JarNode node  = (JarNode)entity;
+                clearArchive(node);
             }
         };
     }

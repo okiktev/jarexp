@@ -67,6 +67,9 @@ imp folder table data can be decreased for empty columns. ... done .............
 imp add info about env where application is run. ... done .........................................22Nov2018
 imp optimized pre loading of archive. Original archive is copied only when its needed ... done ....11Dec2018
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 22_dec_2018
+imp dynamic loading decompilers added fernflower. ... done ........................................15Apr2019
+
+bug with decompiling class from archive.
 
 imp information window does not show files for folder
 imp decompile all classes
@@ -94,6 +97,48 @@ imp pdf recognizing
 imp fix rendering icons for file chooser
 
 refactor code
+
+
+
+java.lang.NoClassDefFoundError: Could not initialize class com.strobel.assembler.metadata.MetadataSystem
+	at com.delfin.jarexp.decompiler.ProcyonDecompiler.decompile(ProcyonDecompiler.java:76)
+	at com.delfin.jarexp.decompiler.ProcyonDecompiler.decompile(ProcyonDecompiler.java:39)
+	at com.delfin.jarexp.frame.JarTreeSelectionListener$1.decompile(JarTreeSelectionListener.java:280)
+	at com.delfin.jarexp.frame.JarTreeSelectionListener$1.perform(JarTreeSelectionListener.java:186)
+	at com.delfin.jarexp.frame.Executor$1.doInBackground(Executor.java:23)
+	at com.delfin.jarexp.frame.Executor$1.doInBackground(Executor.java:20)
+	at java.desktop/javax.swing.SwingWorker$1.call(Unknown Source)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.desktop/javax.swing.SwingWorker.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+
+
+
+com.delfin.jarexp.JarexpException: An error occurred while copying file C:\git\sv\hybris-5.7.0.16.zip into C:\Users\OLEH_K~1\AppData\Local\Temp\jarexp1545137931076\1545137990967\hybris-5.7.0.16.zip
+	at com.delfin.jarexp.utils.FileUtils$Java7FileCopier.copy(FileUtils.java:291)
+	at com.delfin.jarexp.utils.FileUtils.copyFile(FileUtils.java:132)
+	at com.delfin.jarexp.utils.FileUtils.copy(FileUtils.java:122)
+	at com.delfin.jarexp.frame.JarNode.getTempArchive(JarNode.java:70)
+	at com.delfin.jarexp.frame.Content$2.perform(Content.java:120)
+	at com.delfin.jarexp.frame.Executor$1.doInBackground(Executor.java:23)
+	at com.delfin.jarexp.frame.Executor$1.doInBackground(Executor.java:1)
+	at javax.swing.SwingWorker$1.call(SwingWorker.java:295)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at javax.swing.SwingWorker.run(SwingWorker.java:334)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.nio.file.NoSuchFileException: C:\git\sv\hybris-5.7.0.16.zip -> C:\Users\OLEH_K~1\AppData\Local\Temp\jarexp1545137931076\1545137990967\hybris-5.7.0.16.zip
+	at sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:79)
+	at sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:97)
+	at sun.nio.fs.WindowsFileCopy.copy(WindowsFileCopy.java:205)
+	at sun.nio.fs.WindowsFileSystemProvider.copy(WindowsFileSystemProvider.java:278)
+	at java.nio.file.Files.copy(Files.java:1274)
+	at com.delfin.jarexp.utils.FileUtils$Java7FileCopier.copy(FileUtils.java:279)
+	... 12 more
+
 
 
 found 20 Sep while decompiling class:

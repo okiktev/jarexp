@@ -18,14 +18,15 @@ import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
 
+
 class Menu extends JMenuBar {
 
 	private static final long serialVersionUID = 6283256126265026307L;
 
 	private static final Resources resources = Resources.getInstance();
 
-	Menu(ActionListener openListener, ActionListener searchListener, ActionListener duplicatesListener,
-			ActionListener jdCoreListener, ActionListener procyonListener, ActionListener environmentListener, ActionListener aboutListener)
+	Menu(ActionListener openListener, ActionListener searchListener, ActionListener duplicatesListener, ActionListener jdCoreListener, 
+			ActionListener procyonListener, ActionListener fernflowerListener, ActionListener environmentListener, ActionListener aboutListener)
 			throws ResourcesException {
 
 		JMenuItem item;
@@ -76,19 +77,33 @@ class Menu extends JMenuBar {
 		rbProcyonItem.setMnemonic(KeyEvent.VK_P);
 		rbProcyonItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
 		rbProcyonItem.addActionListener(procyonListener);
-		enableProcyonDecompileOption(rbProcyonItem);
+		boolean isProcyonSupported = isProcyonSupported();
+		rbProcyonItem.setEnabled(isProcyonSupported);
+		rbProcyonItem.setToolTipText(isProcyonSupported ? null : "Unfortunately Procyon decompiler supports Java 7 and 8 only.");
+		JRadioButtonMenuItem rbFernflowerItem = new JRadioButtonMenuItem("Fernflower", resources.getFernflowerIcon());
+		rbFernflowerItem.setMnemonic(KeyEvent.VK_F);
+		rbFernflowerItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+		rbFernflowerItem.addActionListener(fernflowerListener);
+		boolean isFernflowerSupported = isFernflowerSupported();
+		rbFernflowerItem.setEnabled(isFernflowerSupported);
+		rbFernflowerItem.setToolTipText(isFernflowerSupported ? null : "Unfortunately Fernflower decompiler supports Java 8 and higher.");
 		ButtonGroup group = new ButtonGroup();
 		group.add(rbJdCoreItem);
 		group.add(rbProcyonItem);
+		group.add(rbFernflowerItem);
 		switch (Settings.getDecompilerType()) {
 		case PROCYON:
 			rbProcyonItem.setSelected(true);
+			break;
+		case FERNFLOWER:
+			rbFernflowerItem.setSelected(true);
 			break;
 		default:
 			rbJdCoreItem.setSelected(true);
 		}
 		decompilers.add(rbJdCoreItem);
 		decompilers.add(rbProcyonItem);
+		decompilers.add(rbFernflowerItem);
 		add(decompilers);
 
 		JMenu help = new JMenu("Help");
@@ -106,8 +121,12 @@ class Menu extends JMenuBar {
 		add(help);
 	}
 
-	private void enableProcyonDecompileOption(JRadioButtonMenuItem rbProcyonItem) {
-		rbProcyonItem.setEnabled(JAVA_MAJOR_VER >= 7);
+	private boolean isFernflowerSupported() {
+		return JAVA_MAJOR_VER >= 8;
+	}
+
+	private static boolean isProcyonSupported() {
+		return JAVA_MAJOR_VER >= 7 && JAVA_MAJOR_VER <= 8;
 	}
 
 }

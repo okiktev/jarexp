@@ -1,4 +1,42 @@
 
+
+com.delfin.jarexp.JarexpException: Unable to decompile class org/jetbrains/java/decompiler/code/ExceptionTable.class from C:\java\jarexp\plugins\org.sf.feeling.decompiler_3.1.0.201807021924.jar
+	at com.delfin.jarexp.decompiler.JdCoreDecompiler.decompile(JdCoreDecompiler.java:74)
+	at com.delfin.jarexp.frame.JarTreeSelectionListener$1.decompile(JarTreeSelectionListener.java:280)
+	at com.delfin.jarexp.frame.JarTreeSelectionListener$1.perform(JarTreeSelectionListener.java:186)
+	at com.delfin.jarexp.frame.Executor$1.doInBackground(Executor.java:23)
+	at com.delfin.jarexp.frame.Executor$1.doInBackground(Executor.java:20)
+	at java.desktop/javax.swing.SwingWorker$1.call(Unknown Source)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.desktop/javax.swing.SwingWorker.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.NullPointerException: entry
+	at java.base/java.util.Objects.requireNonNull(Unknown Source)
+	at java.base/java.util.zip.ZipFile.getInputStream(Unknown Source)
+	at com.delfin.jarexp.decompiler.JdCoreDecompiler.decompile(JdCoreDecompiler.java:44)
+	... 10 more
+
+
+java.lang.NoClassDefFoundError: Could not initialize class com.strobel.assembler.metadata.MetadataSystem
+	at com.delfin.jarexp.decompiler.ProcyonDecompiler.decompile(ProcyonDecompiler.java:76)
+	at com.delfin.jarexp.decompiler.ProcyonDecompiler.decompile(ProcyonDecompiler.java:39)
+	at com.delfin.jarexp.frame.JarTreeSelectionListener$1.decompile(JarTreeSelectionListener.java:280)
+	at com.delfin.jarexp.frame.JarTreeSelectionListener$1.perform(JarTreeSelectionListener.java:186)
+	at com.delfin.jarexp.frame.Executor$1.doInBackground(Executor.java:23)
+	at com.delfin.jarexp.frame.Executor$1.doInBackground(Executor.java:20)
+	at java.desktop/javax.swing.SwingWorker$1.call(Unknown Source)
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+	at java.desktop/javax.swing.SwingWorker.run(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+
+
+
+
+
 found 22Dec2018
 Caused by: com.delfin.jarexp.JarexpException: An error occurred while unpacking path Jar Explorer.exe from archive /home/dfn/Desktop/jarexp.8.10.30.zip
 	at com.delfin.jarexp.utils.Zip.unzip(Zip.java:399)

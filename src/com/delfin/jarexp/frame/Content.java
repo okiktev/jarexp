@@ -46,7 +46,9 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
+import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 import com.delfin.jarexp.frame.about.AboutDlg;
 import com.delfin.jarexp.frame.about.EnvironmentDlg;
@@ -317,7 +319,39 @@ public class Content extends JPanel {
 		, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				changeDecompiler(DecompilerType.PROCYON);
+				new Executor() {
+					@Override
+					protected void perform() {
+						try {
+							statusBar.enableProgress("Downloading...");
+							Decompiler.prepareBinariesFor(DecompilerType.PROCYON);
+							changeDecompiler(DecompilerType.PROCYON);
+						} catch (Exception ex) {
+							Msg.showException("Unable to toggle decompiler", ex);
+						} finally {
+							statusBar.disableProgress();
+						}
+					}
+				}.execute();
+			}
+		}
+		, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Executor() {
+					@Override
+					protected void perform() {
+						try {
+							statusBar.enableProgress("Downloading...");
+							Decompiler.prepareBinariesFor(DecompilerType.FERNFLOWER);
+							changeDecompiler(DecompilerType.FERNFLOWER);
+						} catch (Exception ex) {
+							Msg.showException("Unable to toggle decompiler", ex);
+						} finally {
+							statusBar.disableProgress();
+						}
+					}
+				}.execute();
 			}
 		}
 		, new ActionListener() {
