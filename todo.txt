@@ -67,9 +67,9 @@ imp folder table data can be decreased for empty columns. ... done .............
 imp add info about env where application is run. ... done .........................................22Nov2018
 imp optimized pre loading of archive. Original archive is copied only when its needed ... done ....11Dec2018
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 22_dec_2018
-imp dynamic loading decompilers added fernflower. ... done ........................................15Apr2019
+imp dynamic loading decompilers. added fernflower. ... done .......................................15Apr2019
+bug with decompiling class from archive. ... done .................................................22Apr2019
 
-bug with decompiling class from archive.
 
 imp information window does not show files for folder
 imp decompile all classes

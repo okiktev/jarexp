@@ -201,7 +201,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				} else if (isImgFile(lowPath)) {
 					ZipFile zip = null;
 					try {
-						zip = new ZipFile(node.origArch);
+						zip = new ZipFile(node.getTempArchive());
 						ZipEntry entry = zip.getEntry(node.path);
 						InputStream stream = zip.getInputStream(entry);
 						Image image = ImageIO.read(stream);
@@ -224,7 +224,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						}
 					}
 				} else if (lowPath.endsWith(".ico")) {
-					file = Zip.unzip(node.getFullPath(), node.path, node.origArch, file);
+					file = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), file);
 					try {
 						pane.remove(contentView);
 						JPanel pnl = new JPanel();
@@ -238,7 +238,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				} else {
 					if (!file.isDirectory()) {
 						statusBar.enableProgress("Reading...");
-						String content = Zip.unzip(node.origArch, node.path);
+						String content = Zip.unzip(node.getTempArchive(), node.path);
 						RSyntaxTextArea textArea = new RSyntaxTextArea(content);
 						textArea.setSyntaxEditingStyle(getSyntax(lowPath));
 						textArea.setBorder(Settings.EMPTY_BORDER);
@@ -276,8 +276,9 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 			private Result decompile(JarNode node) {
 				IDecompiler decompiler = Decompiler.get();
-				return "".equals(node.path) ? decompiler.decompile(node.origArch)
-						: decompiler.decompile(node.origArch, node.path);
+				File archive = node.getTempArchive();
+				return "".equals(node.path) ? decompiler.decompile(archive)
+						: decompiler.decompile(archive, node.path);
 			}
 
 			@Override
