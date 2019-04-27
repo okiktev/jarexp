@@ -69,6 +69,7 @@ imp optimized pre loading of archive. Original archive is copied only when its n
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 22_dec_2018
 imp dynamic loading decompilers. added fernflower. ... done .......................................15Apr2019
 bug with decompiling class from archive. ... done .................................................22Apr2019
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 23_apr_2019
 
 
 bug with rendering content after folder settings appear
