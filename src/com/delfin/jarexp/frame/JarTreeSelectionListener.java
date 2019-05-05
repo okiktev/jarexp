@@ -157,6 +157,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							pane.validate();
 							pane.repaint();
 							setDividerLocation(pane);
+							isLocked = false;
 						}
 					});
 					return;

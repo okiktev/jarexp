@@ -70,10 +70,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 22_dec_2018
 imp dynamic loading decompilers. added fernflower. ... done .......................................15Apr2019
 bug with decompiling class from archive. ... done .................................................22Apr2019
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 23_apr_2019
+bug with rendering content after folder settings appear. ... done .................................05May2019
 
-
-bug with rendering content after folder settings appear
-
+imp search files/content not only in loaded archive but from file system as well
 
 imp information window does not show files for folder
 imp decompile all classes
