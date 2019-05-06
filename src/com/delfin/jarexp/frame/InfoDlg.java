@@ -48,7 +48,11 @@ public class InfoDlg extends JDialog {
 
 		this.node = node;
 
-		initComponents();
+		try {
+			initComponents();
+		} catch (IOException e) {
+			Msg.showException("An error occurred while grabbing file data.", e);
+		}
 		alignComponents();
 
 		setTitle("Information | " + node.getFullPath());
@@ -74,7 +78,7 @@ public class InfoDlg extends JDialog {
 		add(spResult, new GridBagConstraints(0, 0, 1, 1, 1, 1, NORTH, BOTH, insets, 0, 0));
 	}
 
-	protected void initComponents() {
+	protected void initComponents() throws IOException {
 		tTypes.setFont(DLG_TEXT_FONT);
 		taResult.setFont(DLG_TEXT_FONT);
 
@@ -97,33 +101,8 @@ public class InfoDlg extends JDialog {
 		taResult.append("Extra: " + (node.extra == null ? "" : JarNodeTableModel.formatExtra(node.extra)) + '\n');
 		taResult.append("Code Signers: " + (node.signers == null ? "" : Arrays.toString(node.signers)) + '\n');
 
-		if (node.isArchive()) {
-			final Map<String, Integer> types = new HashMap<String, Integer>();
-			File dst = new File(Resources.createTmpDir(), node.name);
-			if (node.getParent() == null) {
-				dst = node.origArch;
-			} else {
-				dst = Zip.unzip(node.getFullPath(), node.path, node.origArch, dst);
-			}
-			new Jar(dst) {
-				@Override
-				protected void process(JarEntry entry) throws IOException {
-					if (entry.isDirectory()) {
-						return;
-					}
-					String ext = "";
-					String path = entry.getName();
-					int i = path.lastIndexOf('.');
-					if (i != -1) {
-						ext = path.substring(i);
-					}
-					Integer count = types.get(ext);
-					if (count == null) {
-						count = 0;
-					}
-					types.put(ext, ++count);
-				}
-			}.bypass();
+		final Map<String, Integer> types = grabTypesInside(node);
+		if (!types.isEmpty()) {
 			taResult.append("File Types:");
 			tTypes.setModel(new AbstractTableModel() {
 
@@ -172,7 +151,55 @@ public class InfoDlg extends JDialog {
 			});
 			tTypes.setAutoCreateRowSorter(true);
 		}
+	}
 
+	private static Map<String, Integer> grabTypesInside(JarNode node) throws IOException {
+		final Map<String, Integer> types = new HashMap<String, Integer>();
+		if (node.isArchive()) {
+			File dst = new File(Resources.createTmpDir(), node.name);
+			if (node.getParent() == null) {
+				dst = node.origArch;
+			} else {
+				dst = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), dst);
+			}
+			new Jar(dst) {
+				@Override
+				protected void process(JarEntry entry) throws IOException {
+					if (entry.isDirectory()) {
+						return;
+					}
+					increaseCount(types, entry.getName());
+				}
+			}.bypass();
+		} else if (node.isDirectory) {
+			new Jar(node.getTempArchive()) {
+				@Override
+				protected void process(JarEntry entry) throws IOException {
+					if (entry.isDirectory()) {
+						return;
+					}
+					String path = entry.getName();
+					if (!path.startsWith(node.path)) {
+						return;
+					}
+					increaseCount(types, path);
+				}
+			}.bypass();
+		}
+		return types;
+	}
+
+	private static void increaseCount(Map<String, Integer> types, String path) {
+		String ext = "";
+		int i = path.lastIndexOf('.');
+		if (i != -1) {
+			ext = path.substring(i);
+		}
+		Integer count = types.get(ext);
+		if (count == null) {
+			count = 0;
+		}
+		types.put(ext, ++count);
 	}
 
 	private static String formatLastModifiedTime(JarNode node) {

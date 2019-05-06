@@ -292,7 +292,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				String syntax = SyntaxConstants.SYNTAX_STYLE_NONE;
 				if (lowPath.endsWith(".html") || lowPath.endsWith(".htm")) {
 					syntax = SyntaxConstants.SYNTAX_STYLE_HTML;
-				} else if (lowPath.endsWith(".xml")) {
+				} else if (lowPath.endsWith(".xml") || lowPath.endsWith(".tld")) {
 					syntax = SyntaxConstants.SYNTAX_STYLE_XML;
 				} else if (lowPath.endsWith(".properties")) {
 					syntax = SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE;
