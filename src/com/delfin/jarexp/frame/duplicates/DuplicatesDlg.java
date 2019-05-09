@@ -42,7 +42,7 @@ public abstract class DuplicatesDlg extends JDialog {
 
 	private JRadioButton rbUseMd5 = new JRadioButton("MD5 check");
 	private JRadioButton rbUsePath = new JRadioButton("Path in archive");
-	protected JCheckBox cbInAllSubArchives = new JCheckBox("In all sub-archives");
+	protected JCheckBox cbInAllSubArchives = new JCheckBox("In sub-archives");
 	protected JLabel lbResult = new JLabel("Result");
 	private JButton btnFind = new JButton("Find");
 	protected JTable tResult = new JTable();

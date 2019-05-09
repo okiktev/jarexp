@@ -21,7 +21,7 @@ public abstract class Jar {
 
 	private static final Logger log = Logger.getLogger(Jar.class.getCanonicalName());
 
-	private final File file;
+	protected final File file;
 
 	public Jar(File file) {
 		this.file = file;

@@ -9,6 +9,9 @@ import static java.awt.GridBagConstraints.NONE;
 import static java.awt.GridBagConstraints.NORTH;
 import static java.awt.GridBagConstraints.WEST;
 
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
@@ -25,6 +28,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -34,15 +38,21 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.utils.Zip;
 
 public abstract class SearchDlg extends JDialog {
 
-	private static final long serialVersionUID = -5182515718022242086L;
+	private static final long serialVersionUID = -2473586208850553553L;
 
+	private JLabel lbSearchIn = new JLabel("Search In:");
+	private JTextField tfSearchIn = new JTextField();
+	private JButton btnChangePlace = new JButton("Browse");
 	protected JCheckBox cbMatchCase = new JCheckBox("Match case");
 	protected JCheckBox cbInAllSubArchives = new JCheckBox("In all sub-archives");
 	protected JLabel lbResult = new JLabel("Result");
@@ -57,7 +67,7 @@ public abstract class SearchDlg extends JDialog {
 	protected JTextField tfFileFilter = new JTextField("!.png,!.jpeg,!.jpg,!.bmp,!.gif,!.ico,!.exe");
 
 	protected boolean isFindClass = true;
-	protected final File jarFile;
+	protected File jarFile;
 	private ChangeListener setFocusOnInput = new ChangeListener() {
 		@Override
 		public void stateChanged(ChangeEvent e) {
@@ -80,6 +90,7 @@ public abstract class SearchDlg extends JDialog {
 		alignComponents();
 
 		setTitle("Search");
+		initLocation();
 		setIconImage(Resources.getInstance().getSearchImage());
 		setPreferredSize(DLG_DIM);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -93,17 +104,31 @@ public abstract class SearchDlg extends JDialog {
 	private void alignComponents() {
 		setLayout(new GridBagLayout());
 		Insets insets = new Insets(0, 0, 0, 0);
-		add(rbClass, new GridBagConstraints(0, 0, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
-		add(rbInFiles, new GridBagConstraints(1, 0, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
-		add(cbMatchCase,        new GridBagConstraints(0, 1, 1, 1, 0, 0, NORTH, NONE, insets, 0, 0));
-		add(cbInAllSubArchives, new GridBagConstraints(1, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
-		add(lbFileFilter,       new GridBagConstraints(0, 2, 1, 1, 0, 0, EAST, NONE, insets, 0, 0));
-		add(tfFileFilter,       new GridBagConstraints(1, 2, 2, 1, 0, 0, NORTH, BOTH, new Insets(0, 5, 5, 5), 0, 0));
-		add(lbFind, new GridBagConstraints(0, 3, 1, 1, 0, 0, EAST, NONE, insets, 0, 0));
-		add(tfFind, new GridBagConstraints(1, 3, 1, 1, 1, 0, NORTH, BOTH, new Insets(0, 5, 0, 0), 0, 0));
-		add(btnFind, new GridBagConstraints(2, 3, 1, 1, 0, 0, EAST, NONE, new Insets(0, 5, 0, 5), 0, 0));
-		add(lbResult, new GridBagConstraints(0, 4, 3, 1, 1, 0, WEST, HORIZONTAL, new Insets(5, 5, 5, 0), 0, 0));
-		add(spResult, new GridBagConstraints(0, 5, 3, 1, 1, 1, NORTH, BOTH, insets, 0, 0));
+
+		add(lbSearchIn, 	new GridBagConstraints(0, 0, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 0, 0), 0, 0));
+		add(tfSearchIn, 	new GridBagConstraints(1, 0, 1, 1, 1, 0, NORTH, BOTH, new Insets(5, 5, 0, 0), 0, 0));
+		add(btnChangePlace, new GridBagConstraints(2, 0, 1, 1, 0, 0, WEST, NONE, new Insets(5, 5, 0, 5), 0, 0));
+
+		add(rbClass,   new GridBagConstraints(0, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
+		add(rbInFiles, new GridBagConstraints(1, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
+
+		add(cbMatchCase,        new GridBagConstraints(0, 2, 1, 1, 0, 0, NORTH, NONE, insets, 0, 0));
+		add(cbInAllSubArchives, new GridBagConstraints(1, 2, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
+
+		add(lbFileFilter,       new GridBagConstraints(0, 3, 1, 1, 0, 0, EAST, NONE, insets, 0, 0));
+		add(tfFileFilter,       new GridBagConstraints(1, 3, 2, 1, 0, 0, NORTH, BOTH, new Insets(0, 5, 5, 5), 0, 0));
+
+		add(lbFind, new GridBagConstraints(0, 4, 1, 1, 0, 0, EAST, NONE, insets, 0, 0));
+		add(tfFind, new GridBagConstraints(1, 4, 1, 1, 1, 0, NORTH, BOTH, new Insets(0, 5, 0, 0), 0, 0));
+		add(btnFind, new GridBagConstraints(2, 4, 1, 1, 0, 0, EAST, NONE, new Insets(0, 5, 0, 5), 0, 0));
+
+		add(lbResult, new GridBagConstraints(0, 5, 3, 1, 1, 0, WEST, HORIZONTAL, new Insets(5, 5, 5, 0), 0, 0));
+
+		add(spResult, new GridBagConstraints(0, 6, 3, 1, 1, 1, NORTH, BOTH, insets, 0, 0));
+	}
+
+	private void initLocation() {
+		tfSearchIn.setText(jarFile.getAbsolutePath());
 	}
 
 	protected void initComponents() {
@@ -117,6 +142,37 @@ public abstract class SearchDlg extends JDialog {
 		tfFind.setFont(DLG_TEXT_FONT);
 		btnFind.setFont(DLG_TEXT_FONT);
 		lbResult.setFont(DLG_TEXT_FONT);
+		lbSearchIn.setFont(DLG_TEXT_FONT);
+		tfSearchIn.setFont(DLG_TEXT_FONT);
+		btnChangePlace.setFont(DLG_TEXT_FONT);
+
+		tfSearchIn.setEditable(false);
+
+		btnChangePlace.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				chooser.setDialogTitle("Select archive or directory to search");
+				FileFilter filter = new FileNameExtensionFilter("Jar Files (*.jar,*.war,*.ear,*.zip,*.apk)", "jar", "war", "ear", "zip", "apk");
+				chooser.addChoosableFileFilter(filter);
+				chooser.setFileFilter(filter);
+				if (jarFile != null) {
+					chooser.setCurrentDirectory(jarFile.getParentFile());
+				}
+				if (chooser.showOpenDialog(SearchDlg.this) == JFileChooser.APPROVE_OPTION) {
+					File f = chooser.getSelectedFile();
+					if (!f.exists()) {
+						showMessageDialog(SearchDlg.this, "Specified file does not exist.", "Wrong input", ERROR_MESSAGE);
+					} if (!f.isDirectory() && !Zip.isArchive(f.getName())) {
+						showMessageDialog(SearchDlg.this, "Specified file is not archive.", "Wrong input", ERROR_MESSAGE);
+					} else {
+						jarFile = f;
+						initLocation();
+					}
+				}
+			}
+		});
 
 		cbMatchCase.setMnemonic(KeyEvent.VK_M);
 		cbMatchCase.addChangeListener(setFocusOnInput);
@@ -126,7 +182,8 @@ public abstract class SearchDlg extends JDialog {
 
 		btnFind.setMnemonic(KeyEvent.VK_ENTER);
 		btnFind.addActionListener(new OnFindBtnClickListener(this));
-
+		btnFind.setMinimumSize(btnChangePlace.getPreferredSize());
+		
 		rbClass.setMnemonic(KeyEvent.VK_C);
 		rbClass.addChangeListener(setFocusOnInput);
 		rbClass.addActionListener(new ActionListener() {
@@ -194,7 +251,7 @@ public abstract class SearchDlg extends JDialog {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		new SearchDlg(null) {
+		new SearchDlg(new File("")) {
 			private static final long serialVersionUID = -2883424465981010979L;
 		};
 	}

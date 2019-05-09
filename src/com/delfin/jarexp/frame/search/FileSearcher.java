@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.regex.Pattern;
 
+import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.frame.Jar;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.utils.FileUtils;
@@ -18,8 +19,8 @@ import com.delfin.jarexp.utils.Zip;
 class FileSearcher implements Searcher {
 
 	private Pattern pattern;
-	
-	private final File jarFile;
+
+	private final File searchRoot;
 
 	private String fileName;
 
@@ -27,8 +28,8 @@ class FileSearcher implements Searcher {
 
 	private boolean isInAll;
 
-	FileSearcher(File jarFile) {
-		this.jarFile = jarFile;
+	FileSearcher(File searchRoot) {
+		this.searchRoot = searchRoot;
 	}
 
 	@Override
@@ -46,7 +47,7 @@ class FileSearcher implements Searcher {
 			@Override
 			public void run() {
 				long start = System.currentTimeMillis();
-				search("", jarFile, results, searchDlg);
+				search("", searchRoot, results, searchDlg);
 				long overall = System.currentTimeMillis() - start;
 				searchDlg.tResult.setModel(new FileSearchResultTableModel(results));
 				searchDlg.lbResult.setText("Result. Found " + results.size() + " results for " + overall + "ms:");
@@ -61,9 +62,22 @@ class FileSearcher implements Searcher {
 		});
 	}
 
-	private void search(final String parent, final File archive, final List<SearchResult> results, final SearchDlg dlg) {
+	private void search(final String parent, final File searchRoot, final List<SearchResult> results,
+			final SearchDlg dlg) {
 
-		new Jar(archive) {
+		Jar seacher;
+		if (searchRoot.isDirectory()) {
+			seacher = prepareDirectorySearch(searchRoot, results, dlg);
+		} else {
+			seacher = prepareArchiveSearch(parent, searchRoot, results, dlg);
+		}
+		seacher.bypass();
+	}
+
+	private Jar prepareArchiveSearch(final String parent, final File archive, final List<SearchResult> results,
+			final SearchDlg dlg) {
+
+		return new Jar(archive) {
 			@Override
 			protected void process(JarEntry entry) throws IOException {
 				String path = entry.getName();
@@ -96,11 +110,76 @@ class FileSearcher implements Searcher {
 				return parent + '/' + path;
 			}
 
-		}.bypass();
+		};
+	}
+
+	private Jar prepareDirectorySearch(final File root, final List<SearchResult> results, final SearchDlg dlg) {
+
+		return new Directory(root) {
+			@Override
+			protected void process(File file) throws IOException {
+
+				dlg.lbResult.setText("Searching..." + file);
+				String fileName = file.getName();
+				if (isEmptySearch()) {
+					if (fileName.lastIndexOf('.') == -1) {
+						results.add(new SearchResult(file.getAbsolutePath()));
+					}
+				} else {
+					if (!isMatchCase) {
+						fileName = fileName.toLowerCase();
+					}
+					if (pattern.matcher(fileName).find()) {
+						results.add(new SearchResult(file.getAbsolutePath()));
+					}
+				}
+				if (isInAll && Zip.isArchive(fileName)) {
+					String fullPath = file.getAbsolutePath() + '!';
+					search(fullPath, file, results, dlg);
+				}
+			}
+
+		};
 	}
 
 	private boolean isEmptySearch() {
 		return fileName == null || fileName.isEmpty();
 	}
 
+}
+
+abstract class Directory extends Jar {
+
+	public Directory(File file) {
+		super(file);
+	}
+
+	@Override
+	protected void process(JarEntry entry) throws IOException {
+
+	}
+
+	@Override
+	public void bypass() {
+		try {
+			bypass(file);
+		} catch (Exception e) {
+			throw new JarexpException("An error occurred while bypassing directory " + file, e);
+		}
+	}
+
+	private void bypass(File file) throws IOException {
+		if (file.isDirectory()) {
+			File[] files = file.listFiles();
+			if (files != null) {
+				for (File f : files) {
+					bypass(f);
+				}
+			}
+		} else {
+			process(file);
+		}
+	}
+
+	protected abstract void process(File file) throws IOException;
 }

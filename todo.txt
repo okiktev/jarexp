@@ -73,9 +73,10 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 23_apr_2019
 bug with rendering content after folder settings appear. ... done .................................05May2019
 imp information window does not show files for folder. ... done ...................................06May2019
 imp search files by types. ... done ...............................................................09May2019
+imp search files/content not only in loaded archive but from file system as well. ... done ........09May2019
 
+imp handle search results from file system
 imp make search in folder
-imp search files/content not only in loaded archive but from file system as well
 
 imp decompile all classes
 imp command console
