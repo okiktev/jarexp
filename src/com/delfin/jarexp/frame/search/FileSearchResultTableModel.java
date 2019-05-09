@@ -4,13 +4,13 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-class ClassFileSearchResultTableModel extends AbstractTableModel {
+class FileSearchResultTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 2838930607781355845L;
 
 	private List<SearchResult> data;
 
-	ClassFileSearchResultTableModel(List<SearchResult> data) {
+	FileSearchResultTableModel(List<SearchResult> data) {
 		this.data = data;
 	}
 

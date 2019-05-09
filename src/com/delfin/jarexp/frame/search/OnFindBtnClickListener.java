@@ -14,7 +14,7 @@ class OnFindBtnClickListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (dlg.isFindClass) {
-			new ClassFileSearcher(dlg.jarFile).search(new ClassFileSearchCriteria(dlg));
+			new FileSearcher(dlg.jarFile).search(new FileSearchCriteria(dlg));
 		} else {
 			new FileContentSearcher(dlg.jarFile).search(new FileContentSearchCriteria(dlg));
 		}

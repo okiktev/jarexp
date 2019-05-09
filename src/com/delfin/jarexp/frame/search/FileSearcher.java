@@ -7,8 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
-
-import javax.swing.JOptionPane;
+import java.util.regex.Pattern;
 
 import com.delfin.jarexp.frame.Jar;
 import com.delfin.jarexp.frame.resources.Resources;
@@ -16,34 +15,32 @@ import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.StringUtils;
 import com.delfin.jarexp.utils.Zip;
 
-class ClassFileSearcher implements Searcher {
+class FileSearcher implements Searcher {
 
+	private Pattern pattern;
+	
 	private final File jarFile;
 
-	private String className;
+	private String fileName;
 
 	private boolean isMatchCase;
 
 	private boolean isInAll;
 
-	ClassFileSearcher(File jarFile) {
+	FileSearcher(File jarFile) {
 		this.jarFile = jarFile;
 	}
 
 	@Override
 	public void search(SearchCriteria criteria) {
-		final SearchDlg searchDlg = ((ClassFileSearchCriteria) criteria).dlg;
+		final SearchDlg searchDlg = ((FileSearchCriteria) criteria).dlg;
 		isMatchCase = searchDlg.cbMatchCase.isSelected();
 		isInAll = searchDlg.cbInAllSubArchives.isSelected();
-		className = searchDlg.tfFind.getText();
-		if (className == null || className.isEmpty()) {
-			JOptionPane.showMessageDialog(searchDlg, "Class name should not be empty.", "Wrong input",
-					JOptionPane.WARNING_MESSAGE);
-			return;
-		}
+		fileName = searchDlg.tfFind.getText();
 		if (!isMatchCase) {
-			className = className.toLowerCase();
+			fileName = fileName.toLowerCase();
 		}
+		pattern = Pattern.compile(fileName.replace(".", "\\.").replace("?", ".?").replace("*", ".*"));
 		final List<SearchResult> results = new ArrayList<SearchResult>();
 		final Thread search = new Thread(new Runnable() {
 			@Override
@@ -51,7 +48,7 @@ class ClassFileSearcher implements Searcher {
 				long start = System.currentTimeMillis();
 				search("", jarFile, results, searchDlg);
 				long overall = System.currentTimeMillis() - start;
-				searchDlg.tResult.setModel(new ClassFileSearchResultTableModel(results));
+				searchDlg.tResult.setModel(new FileSearchResultTableModel(results));
 				searchDlg.lbResult.setText("Result. Found " + results.size() + " results for " + overall + "ms:");
 			};
 		});
@@ -73,20 +70,21 @@ class ClassFileSearcher implements Searcher {
 				if (StringUtils.isLast(path, '/')) {
 					return;
 				}
-				dlg.lbResult.setText("Searching..." + entry.getName());
+				dlg.lbResult.setText("Searching..." + path);
 				String fileName = FileUtils.getFileName(path);
-				if (!Zip.isArchive(path)) {
-					int i = fileName.lastIndexOf('.');
-					if (i != -1) {
-						fileName = fileName.substring(0, i);
+				if (isEmptySearch()) {
+					if (fileName.lastIndexOf('.') == -1) {
+						results.add(new SearchResult(getFullPath(path)));
 					}
+				} else {
 					if (!isMatchCase) {
 						fileName = fileName.toLowerCase();
 					}
-					if (fileName.contains(className)) {
+					if (pattern.matcher(fileName).find()) {
 						results.add(new SearchResult(getFullPath(path)));
 					}
-				} else if (isInAll) {
+				}
+				if (isInAll && Zip.isArchive(path)) {
 					File dst = new File(Resources.createTmpDir(), fileName);
 					String fullPath = getFullPath(path) + '!';
 					dst = Zip.unzip(fullPath, path, archive, dst);
@@ -99,6 +97,10 @@ class ClassFileSearcher implements Searcher {
 			}
 
 		}.bypass();
+	}
+
+	private boolean isEmptySearch() {
+		return fileName == null || fileName.isEmpty();
 	}
 
 }

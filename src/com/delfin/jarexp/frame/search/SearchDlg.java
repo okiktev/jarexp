@@ -49,7 +49,7 @@ public abstract class SearchDlg extends JDialog {
 	private JLabel lbFind = new JLabel("Find what:");
 	protected JTextField tfFind = new JTextField();
 	private JButton btnFind = new JButton("Find");
-	private JRadioButton rbClass = new JRadioButton("Find Class");
+	private JRadioButton rbClass = new JRadioButton("Find File");
 	private JRadioButton rbInFiles = new JRadioButton("Find in Files");
 	protected JTable tResult = new JTable();
 	protected JScrollPane spResult = new JScrollPane(tResult);

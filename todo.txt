@@ -72,7 +72,9 @@ bug with decompiling class from archive. ... done ..............................
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 23_apr_2019
 bug with rendering content after folder settings appear. ... done .................................05May2019
 imp information window does not show files for folder. ... done ...................................06May2019
+imp search files by types. ... done ...............................................................09May2019
 
+imp make search in folder
 imp search files/content not only in loaded archive but from file system as well
 
 imp decompile all classes
@@ -84,12 +86,10 @@ imp remember last state
 imp when delete file clear preview and context panel
 imp all option dialogs should be custom
 
-imp search files by types
 imp means to work with properties, environment and search results data (copy to clipboard etc.)
 imp progress bar to search
 imp pause button to search
 imp output search result to clipboard or file
-imp make search in folder
 imp change loading ico from file to input stream
 imp search history
 imp settings functional
