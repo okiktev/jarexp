@@ -153,7 +153,7 @@ public class InfoDlg extends JDialog {
 		}
 	}
 
-	private static Map<String, Integer> grabTypesInside(JarNode node) throws IOException {
+	private static Map<String, Integer> grabTypesInside(final JarNode node) throws IOException {
 		final Map<String, Integer> types = new HashMap<String, Integer>();
 		if (node.isArchive()) {
 			File dst = new File(Resources.createTmpDir(), node.name);
