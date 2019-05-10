@@ -3,6 +3,7 @@ package com.delfin.jarexp.frame.search;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
 
-import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.frame.Jar;
@@ -24,12 +26,12 @@ import com.delfin.jarexp.utils.Zip;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.StringUtils;
 
-
 class FileContentSearcher implements Searcher {
 
 	private static class UnpackResult {
 		String fullPath;
 		File dst;
+
 		UnpackResult(String fullPath, File dst) {
 			this.fullPath = fullPath;
 			this.dst = dst;
@@ -46,7 +48,7 @@ class FileContentSearcher implements Searcher {
 
 	private Map<String, String> errors = new LinkedHashMap<String, String>();
 
-	private final File jarFile;
+	private final File searchRoot;
 
 	private String statement;
 
@@ -54,10 +56,10 @@ class FileContentSearcher implements Searcher {
 
 	private boolean isInAll;
 
-	FileContentSearcher(File jarFile) {
-		this.jarFile = jarFile;
+	FileContentSearcher(File searchRoot) {
+		this.searchRoot = searchRoot;
 	}
-	
+
 	@Override
 	public void search(SearchCriteria criteria) {
 		final SearchDlg searchDlg = ((FileContentSearchCriteria) criteria).dlg;
@@ -65,8 +67,7 @@ class FileContentSearcher implements Searcher {
 		isInAll = searchDlg.cbInAllSubArchives.isSelected();
 		statement = searchDlg.tfFind.getText();
 		if (statement == null || statement.isEmpty()) {
-			JOptionPane.showMessageDialog(searchDlg, "Statement for search should not be empty.", "Wrong input",
-					JOptionPane.WARNING_MESSAGE);
+			showMessageDialog(searchDlg, "Statement for search should not be empty.", "Wrong input", WARNING_MESSAGE);
 			return;
 		}
 		if (!isMatchCase) {
@@ -77,7 +78,7 @@ class FileContentSearcher implements Searcher {
 			@Override
 			public void run() {
 				long start = System.currentTimeMillis();
-				search("", jarFile, searchDlg);
+				search("", searchRoot, searchDlg);
 				long overall = System.currentTimeMillis() - start;
 				searchDlg.tResult.setModel(new FileContentSearchResultTableModel(searchResult, errors));
 				String label = "Found " + searchResult.size() + " results for " + overall + "ms";
@@ -98,6 +99,125 @@ class FileContentSearcher implements Searcher {
 		});
 	}
 
+	private void search(final String parent, final File searchRoot, final SearchDlg dlg) {
+		Jar seacher;
+		if (searchRoot.isDirectory()) {
+			seacher = prepareDirectorySearch(searchRoot, dlg);
+		} else {
+			seacher = prepareArchiveSearch(parent, searchRoot, dlg);
+		}
+		seacher.bypass();
+	}
+
+	private Jar prepareArchiveSearch(final String parent, final File searchRoot, final SearchDlg dlg) {
+		return new Jar(searchRoot) {
+			@Override
+			protected void process(JarEntry entry) throws IOException {
+				String path = entry.getName();
+				if (StringUtils.isLast(path, '/')) {
+					return;
+				}
+				String ext = path.toLowerCase();
+				boolean isArchive = Zip.isArchive(ext, false);
+				if (!isArchive && !isForSearch(ext)) {
+					return;
+				}
+				dlg.lbResult.setText("Searching..." + path);
+				if (!isArchive) {
+					String fullPath = getFullPath(path);
+					Scanner scanner;
+					if (ext.endsWith(".class")) {
+						try {
+							scanner = new Scanner(Decompiler.get().decompile(searchRoot, path).content);
+						} catch (Exception e) {
+							handleError(e, fullPath);
+							return;
+						}
+					} else {
+						ZipFile zip = new ZipFile(searchRoot);
+						InputStream stream = zip.getInputStream(zip.getEntry(path));
+						scanner = new Scanner(stream);
+						zip.close();
+					}
+					doSearchInFile(scanner, fullPath);
+				} else if (isInAll) {
+					UnpackResult res = unpack(FileUtils.getFileName(path), path, searchRoot);
+					search(res.fullPath + '!', res.dst, dlg);
+				}
+			}
+
+			private UnpackResult unpack(String fileName, String path, File archive) {
+				File dst = new File(Resources.createTmpDir(), fileName);
+				String fullPath = getFullPath(path);
+				dst = Zip.unzip(fullPath, path, archive, dst);
+				return new UnpackResult(fullPath, dst);
+			}
+
+			private String getFullPath(String path) {
+				return parent + '/' + path;
+			}
+
+		};
+	}
+
+	private Jar prepareDirectorySearch(File searchRoot, final SearchDlg dlg) {
+		return new Directory(searchRoot) {
+			@Override
+			protected void process(File file) throws IOException {
+				String path = file.getName();
+				String ext = path.toLowerCase();
+				boolean isArchive = Zip.isArchive(ext, false);
+				if (!isArchive && !isForSearch(ext)) {
+					return;
+				}
+				dlg.lbResult.setText("Searching..." + file);
+				if (!isArchive) {
+					String fullPath = file.getAbsolutePath();
+					Scanner scanner;
+					if (ext.endsWith(".class")) {
+						try {
+							scanner = new Scanner(Decompiler.get().decompile(file).content);
+						} catch (Exception e) {
+							handleError(e, fullPath);
+							return;
+						}
+					} else {
+						scanner = new Scanner(new FileInputStream(file));
+					}
+					doSearchInFile(scanner, fullPath);
+				} else if (isInAll) {
+					search(file.getAbsolutePath() + '!', file, dlg);
+				}
+			}
+		};
+	}
+
+	private void doSearchInFile(Scanner scanner, String fullPath) {
+		try {
+			int j = 0;
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				int k = isMatchCase ? line.indexOf(statement) : StringUtils.indexOf(line, statement);
+				if (k != -1) {
+					List<SearchResult> findings = searchResult.get(fullPath);
+					if (findings == null) {
+						findings = new ArrayList<SearchResult>();
+					}
+					findings.add(new SearchResult(line, j + k));
+					searchResult.put(fullPath, findings);
+				}
+				j += line.length() + 1;
+			}
+		} finally {
+			scanner.close();
+		}
+	}
+
+	private void handleError(Exception e, String fullPath) {
+		log.log(Level.SEVERE, "An error occurred while decompiling file " + fullPath, e);
+		errors.put(fullPath, "ERROR. Unable to search in the class. Cause: " + e.getMessage());
+	}
+
 	private void initFileFilters(String fileFilter) {
 		if (fileFilter == null || fileFilter.isEmpty()) {
 			return;
@@ -115,91 +235,21 @@ class FileContentSearcher implements Searcher {
 		}
 	}
 
-	private void search(final String parent, final File archive, final SearchDlg dlg) {
-
-		new Jar(archive) {
-			@Override
-			protected void process(JarEntry entry) throws IOException {
-				String path = entry.getName();
-				if (StringUtils.isLast(path, '/')) {
-					return;
-				}
-				String ext = path.toLowerCase();
-				boolean isArchive = Zip.isArchive(ext, false);
-				if (!isArchive && !isForSearch(ext)) {
-					return;
-				}
-				dlg.lbResult.setText("Searching..." + path);
-				if (!isArchive) {
-			        String fullPath = getFullPath(path);
-					Scanner scanner;
-					if (ext.endsWith(".class")) {
-						try {
-							scanner = new Scanner(Decompiler.get().decompile(archive, path).content);
-						} catch (Exception e) {
-							log.log(Level.SEVERE, "An error occurred while decompiling file " + fullPath, e);
-							errors.put(fullPath, "ERROR. Unable to search in the class. Cause: " + e.getMessage());
-							return;
-						}
-					} else {
-				        ZipFile zip = new ZipFile(archive);
-				        InputStream stream = zip.getInputStream(zip.getEntry(path));
-						scanner = new Scanner(stream);
-						zip.close();
-					}
-					try {
-						int j = 0;
-						while(scanner.hasNextLine()) {
-							String line = scanner.nextLine();
-							int k = isMatchCase ? line.indexOf(statement) : StringUtils.indexOf(line, statement);
-							if (k != -1) {
-								List<SearchResult> findings = searchResult.get(fullPath);
-								if (findings == null) {
-									findings = new ArrayList<SearchResult>();
-								}
-								findings.add(new SearchResult(line, j + k));
-								searchResult.put(fullPath, findings);
-							}
-							j += line.length() + 1;
-						}
-					} finally {
-						scanner.close();
-					}
-				} else if (isInAll) {
-					UnpackResult res = unpack(FileUtils.getFileName(path), path, archive);
-					search(res.fullPath + '!', res.dst, dlg);
-				}
+	private boolean isForSearch(String fileName) {
+		if (ignores.isEmpty() && nonIgnores.isEmpty()) {
+			return true;
+		}
+		for (String ext : nonIgnores) {
+			if (fileName.endsWith(ext)) {
+				return true;
 			}
-
-			private UnpackResult unpack(String fileName, String path, File archive) {
-				File dst = new File(Resources.createTmpDir(), fileName);
-				String fullPath = getFullPath(path);
-				dst = Zip.unzip(fullPath, path, archive, dst);
-				return new UnpackResult(fullPath, dst);
+		}
+		for (String ext : ignores) {
+			if (fileName.endsWith(ext)) {
+				return true;
 			}
-
-			private boolean isForSearch(String fileName) {
-				if (ignores.isEmpty() && nonIgnores.isEmpty()) {
-					return true;
-				}
-				for (String ext : nonIgnores) {
-					if (fileName.endsWith(ext)) {
-						return true;
-					}
-				}
-				for (String ext : ignores) {
-					if (fileName.endsWith(ext)) {
-						return true;
-					}
-				}
-				return nonIgnores.isEmpty();
-			}
-
-			private String getFullPath(String path) {
-				return parent + '/' + path;
-			}
-
-		}.bypass();
+		}
+		return nonIgnores.isEmpty();
 	}
 
 }

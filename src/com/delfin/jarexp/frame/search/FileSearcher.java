@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.regex.Pattern;
 
-import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.frame.Jar;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.utils.FileUtils;
@@ -118,7 +117,6 @@ class FileSearcher implements Searcher {
 		return new Directory(root) {
 			@Override
 			protected void process(File file) throws IOException {
-
 				dlg.lbResult.setText("Searching..." + file);
 				String fileName = file.getName();
 				if (isEmptySearch()) {
@@ -146,40 +144,4 @@ class FileSearcher implements Searcher {
 		return fileName == null || fileName.isEmpty();
 	}
 
-}
-
-abstract class Directory extends Jar {
-
-	public Directory(File file) {
-		super(file);
-	}
-
-	@Override
-	protected void process(JarEntry entry) throws IOException {
-
-	}
-
-	@Override
-	public void bypass() {
-		try {
-			bypass(file);
-		} catch (Exception e) {
-			throw new JarexpException("An error occurred while bypassing directory " + file, e);
-		}
-	}
-
-	private void bypass(File file) throws IOException {
-		if (file.isDirectory()) {
-			File[] files = file.listFiles();
-			if (files != null) {
-				for (File f : files) {
-					bypass(f);
-				}
-			}
-		} else {
-			process(file);
-		}
-	}
-
-	protected abstract void process(File file) throws IOException;
 }
