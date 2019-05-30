@@ -26,7 +26,7 @@ import com.delfin.jarexp.utils.Zip;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.StringUtils;
 
-class FileContentSearcher implements Searcher {
+class FileContentSearcher extends AbstractSearcher {
 
 	private static class UnpackResult {
 		String fullPath;
@@ -48,23 +48,15 @@ class FileContentSearcher implements Searcher {
 
 	private Map<String, String> errors = new LinkedHashMap<String, String>();
 
-	private final File searchRoot;
-
 	private String statement;
 
-	private boolean isMatchCase;
-
-	private boolean isInAll;
-
 	FileContentSearcher(File searchRoot) {
-		this.searchRoot = searchRoot;
+		super(searchRoot);
 	}
 
 	@Override
 	public void search(SearchCriteria criteria) {
-		final SearchDlg searchDlg = ((FileContentSearchCriteria) criteria).dlg;
-		isMatchCase = searchDlg.cbMatchCase.isSelected();
-		isInAll = searchDlg.cbInAllSubArchives.isSelected();
+		super.search(criteria);
 		statement = searchDlg.tfFind.getText();
 		if (statement == null || statement.isEmpty()) {
 			showMessageDialog(searchDlg, "Statement for search should not be empty.", "Wrong input", WARNING_MESSAGE);
@@ -99,7 +91,7 @@ class FileContentSearcher implements Searcher {
 		});
 	}
 
-	private void search(final String parent, final File searchRoot, final SearchDlg dlg) {
+	private void search(String parent, File searchRoot, SearchDlg dlg) {
 		Jar seacher;
 		if (searchRoot.isDirectory()) {
 			seacher = prepareDirectorySearch(searchRoot, dlg);
@@ -117,6 +109,9 @@ class FileContentSearcher implements Searcher {
 				if (StringUtils.isLast(path, '/')) {
 					return;
 				}
+				if (pathInJar != null && !path.startsWith(pathInJar)) {
+					return;
+				}
 				String ext = path.toLowerCase();
 				boolean isArchive = Zip.isArchive(ext, false);
 				if (!isArchive && !isForSearch(ext)) {
@@ -124,7 +119,7 @@ class FileContentSearcher implements Searcher {
 				}
 				dlg.lbResult.setText("Searching..." + path);
 				if (!isArchive) {
-					String fullPath = getFullPath(path);
+					String fullPath = getFullPath(parent, path);
 					Scanner scanner;
 					if (ext.endsWith(".class")) {
 						try {
@@ -148,13 +143,9 @@ class FileContentSearcher implements Searcher {
 
 			private UnpackResult unpack(String fileName, String path, File archive) {
 				File dst = new File(Resources.createTmpDir(), fileName);
-				String fullPath = getFullPath(path);
+				String fullPath = getFullPath(parent, path);
 				dst = Zip.unzip(fullPath, path, archive, dst);
 				return new UnpackResult(fullPath, dst);
-			}
-
-			private String getFullPath(String path) {
-				return parent + '/' + path;
 			}
 
 		};
@@ -250,6 +241,11 @@ class FileContentSearcher implements Searcher {
 			}
 		}
 		return nonIgnores.isEmpty();
+	}
+
+	@Override
+	protected SearchDlg extractSearchDlg(SearchCriteria criteria) {
+		return ((FileContentSearchCriteria) criteria).dlg;
 	}
 
 }

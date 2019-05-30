@@ -74,9 +74,11 @@ bug with rendering content after folder settings appear. ... done ..............
 imp information window does not show files for folder. ... done ...................................06May2019
 imp search files by types. ... done ...............................................................09May2019
 imp search files/content not only in loaded archive but from file system as well. ... done ........09May2019
+imp make search in folder. ... done ...............................................................14May2019
 
+bug each filter panel appear for each pressing ctrl+f
+bug right panel disappears when press ctrl+f
 imp handle search results from file system
-imp make search in folder
 
 imp decompile all classes
 imp command console

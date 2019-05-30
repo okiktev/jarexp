@@ -44,11 +44,11 @@ class JarNode extends DefaultMutableTreeNode {
 
 	private File tempArch;
 
+	File origArch;
+
 	boolean isDirectory;
 
-	private Boolean isArchive = null;
-
-	File origArch;
+	private Boolean isArchive;
 
 	JarNode(String name, String path, File tempArch, File origArch, boolean isDirectory) {
 		this.name = name;
@@ -180,7 +180,7 @@ class JarNode extends DefaultMutableTreeNode {
 	byte[] extra;
 	int method;
 	long size;
-	// to support for Java 6 (avoiding java.nio.file.attribute.FileTime)
+	// to support Java 6 (avoiding java.nio.file.attribute.FileTime)
 	Object creationTime;
 	Object lastAccessTime;
 	Object lastModTime;

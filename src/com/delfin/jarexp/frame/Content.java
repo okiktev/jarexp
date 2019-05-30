@@ -1,6 +1,9 @@
-
 package com.delfin.jarexp.frame;
 
+import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -27,11 +30,12 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
@@ -78,7 +82,71 @@ public class Content extends JPanel {
 		}
 
 	};
-	
+
+	static class SearchResultMouseAdapter extends MouseAdapter {
+
+		private final JTextField tfFind;
+
+		private final JTable tResult;
+
+		SearchResultMouseAdapter(JTextField tfFind, JTable tResult) {
+			this.tfFind = tfFind;
+			this.tResult = tResult;
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (e.getClickCount() != 2) {
+				return;
+			}
+			int row = tResult.getSelectedRow();
+			if (row == -1) {
+				return;
+			}
+			TableModel tableModel = tResult.getModel();
+			final SearchResult searchResult = (SearchResult) tableModel.getValueAt(row, 0);
+			switch (searchResult.position) {
+			case -1: jarTree.expandTreeLeaf(searchResult.line); break;
+			case -2: showMessageDialog(frame, searchResult.line, "Information", INFORMATION_MESSAGE); break;
+			default:
+				if (searchResult.position < -1) {
+					showMessageDialog(frame, "Unknown result code: " + searchResult.line, "Error", ERROR_MESSAGE);
+					break;
+				}
+				while (row != -1) {
+					SearchResult fileSearch = (SearchResult) tableModel.getValueAt(--row, 0);
+					if (fileSearch.position == -1) {
+						jarTree.expandTreeLeaf(fileSearch.line);
+						break;
+					}
+				}
+				while(jarTreeSelectionListener.isLocked()) {
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException ex) {
+						throw new JarexpException(ex);
+					}
+				}
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException ex) {
+					throw new JarexpException(ex);
+				}
+				try {
+					JTextArea area = jarTreeSelectionListener.area;
+					int position = searchResult.position;
+					area.scrollRectToVisible(area.modelToView(position));
+
+					Highlighter hilit = new RSyntaxTextAreaHighlighter();
+					area.setHighlighter(hilit);
+					hilit.addHighlight(position, position + tfFind.getText().length(), FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
+				} catch (BadLocationException ex) {
+					throw new JarexpException("Could not scroll to found index.", ex);
+				}
+			}
+		}
+	};
+
 	static interface PreLoadAction {
 		void perform();
 	}
@@ -203,7 +271,7 @@ public class Content extends JPanel {
 				if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
 					File f = chooser.getSelectedFile();
 					if (!f.exists()) {
-						JOptionPane.showMessageDialog(frame, "Specified file does not exist.", "Wrong input", JOptionPane.ERROR_MESSAGE);
+						showMessageDialog(frame, "Specified file does not exist.", "Wrong input", ERROR_MESSAGE);
 					} else {
 						loadJarFile(file = f);
 					}
@@ -221,58 +289,7 @@ public class Content extends JPanel {
 					@Override
 					protected void initComponents() {
 						super.initComponents();
-						tResult.addMouseListener(new MouseAdapter() {
-							public void mousePressed(MouseEvent e) {
-								if (e.getClickCount() != 2) {
-									return;
-								}
-								int row = tResult.getSelectedRow();
-								if (row == -1) {
-									return;
-								}
-								TableModel tableModel = tResult.getModel();
-								final SearchResult searchResult = (SearchResult) tableModel.getValueAt(row, 0);
-								switch (searchResult.position) {
-								case -1: jarTree.expandTreeLeaf(searchResult.line); break;
-								case -2: JOptionPane.showMessageDialog(frame, searchResult.line, "Information", JOptionPane.INFORMATION_MESSAGE); break;
-								default:
-									if (searchResult.position < -1) {
-										JOptionPane.showMessageDialog(frame, "Unknown result code: " + searchResult.line, "Error", JOptionPane.ERROR_MESSAGE);
-										break;
-									}
-									while (row != -1) {
-										SearchResult fileSearch = (SearchResult) tableModel.getValueAt(--row, 0);
-										if (fileSearch.position == -1) {
-											jarTree.expandTreeLeaf(fileSearch.line);
-											break;
-										}
-									}
-									while(jarTreeSelectionListener.isLocked()) {
-										try {
-											Thread.sleep(50);
-										} catch (InterruptedException ex) {
-											throw new JarexpException(ex);
-										}
-									}
-									try {
-										Thread.sleep(100);
-									} catch (InterruptedException ex) {
-										throw new JarexpException(ex);
-									}
-									try {
-										JTextArea area = jarTreeSelectionListener.area;
-										int position = searchResult.position;
-										area.scrollRectToVisible(area.modelToView(position));
-
-										Highlighter hilit = new RSyntaxTextAreaHighlighter();
-										area.setHighlighter(hilit);
-										hilit.addHighlight(position, position + tfFind.getText().length(), FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
-									} catch (BadLocationException ex) {
-										throw new JarexpException("Could not scroll to found index.", ex);
-									}
-								}
-							}
-						});
+						tResult.addMouseListener(new SearchResultMouseAdapter(tfFind, tResult));
 					};
 				};
 
@@ -417,7 +434,7 @@ public class Content extends JPanel {
 
 	private static boolean isArchiveNotLoaded() {
 		if (file == null) {
-			JOptionPane.showMessageDialog(frame, "Archive is not loaded.", "Wrong input", JOptionPane.WARNING_MESSAGE);
+			showMessageDialog(frame, "Archive is not loaded.", "Wrong input", WARNING_MESSAGE);
 			return true;
 		}
 		return false;

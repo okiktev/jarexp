@@ -96,15 +96,18 @@ public class Zip {
 						return cached;
 					}
 				} catch (Exception e) {
-					log.log(Level.SEVERE, "Unable to get MD5 checksum for " + fullPath, e);
+					
+					log.log(Level.SEVERE, "Unable to get MD5 checksum for " + archive, e);
+					throw new JarexpException("Unable to get MD5 checksum for " + fullPath, e);
 				}
 			}
 		}
 		
 		//try {throw new RuntimeException();} catch (RuntimeException e) {e.printStackTrace(System.out);}
 		 
-		 //System.out.println("unzipping " + path + " from " + archive + " into " + dst);
+		// System.out.println("unzipping " + path + " from " + archive + " into " + dst);
 		 
+		 JarFile jar = null;
 	     try {
 			 if (dst.exists()) {
 				dst = tempFileCreator.create(dst.getName(), "jarexp");
@@ -116,8 +119,7 @@ public class Zip {
 
 			 makeParentDirs(dst);
 	    	 
-
-	         JarFile jar = new JarFile(archive);
+	         jar = new JarFile(archive);
 	         ZipEntry entry = jar.getEntry(path);
 	         //File efile = new File(entry.getName());
 	         FileOutputStream st = null;
@@ -142,10 +144,19 @@ public class Zip {
 	         st.close();
 	         out.close();
 	         in.close();
-	         jar.close();
 	        }
 	        catch (Exception e) {
-	         e.printStackTrace();
+	        	log.log(Level.SEVERE, "Unable to unzip " + path + " from " + archive + " to " + dst, e);
+	         throw new JarexpException("Unable to unzip " + path + " from " + archive + " to " + dst, e);
+	       } finally {
+	    	   if (jar != null) {
+	    		   try {
+					jar.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    	   }
 	       }
 	     return dst;
 	 }

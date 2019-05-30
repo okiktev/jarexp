@@ -51,7 +51,7 @@ public abstract class SearchDlg extends JDialog {
 	private static final long serialVersionUID = -2473586208850553553L;
 
 	private JLabel lbSearchIn = new JLabel("Search In:");
-	private JTextField tfSearchIn = new JTextField();
+	protected JTextField tfSearchIn = new JTextField();
 	private JButton btnChangePlace = new JButton("Browse");
 	protected JCheckBox cbMatchCase = new JCheckBox("Match case");
 	protected JCheckBox cbInAllSubArchives = new JCheckBox("In all sub-archives");
@@ -68,6 +68,7 @@ public abstract class SearchDlg extends JDialog {
 
 	protected boolean isFindClass = true;
 	protected File jarFile;
+	protected String pathInJar;
 	private ChangeListener setFocusOnInput = new ChangeListener() {
 		@Override
 		public void stateChanged(ChangeEvent e) {
@@ -99,6 +100,12 @@ public abstract class SearchDlg extends JDialog {
 
 		setVisible(true);
 		pack();
+	}
+
+	public SearchDlg(File jarFile, String path, String fullPath) {
+		this(jarFile);
+		tfSearchIn.setText(fullPath);
+		pathInJar = path;
 	}
 
 	private void alignComponents() {

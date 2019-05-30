@@ -33,10 +33,12 @@ import javax.swing.tree.TreeSelectionModel;
 
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.frame.Content.SearchResultMouseAdapter;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
 import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
 import com.delfin.jarexp.frame.resources.Resources;
-
+import com.delfin.jarexp.frame.search.SearchDlg;
+import com.delfin.jarexp.utils.Zip;
 
 class JarTree extends JTree {
 
@@ -83,6 +85,26 @@ class JarTree extends JTree {
 
         private final ActionListener unpackActionListener;
 
+        private final ActionListener searchActionListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JarNode node = getNode(e);
+				String fullName = node.getFullPath();
+				File archive = node.isArchive() ? Zip.getUnpacked(fullName) : node.getTempArchive();
+				if (archive == null) {
+					archive = node.origArch;
+				}
+				new SearchDlg(archive, node.path, fullName) {
+					private static final long serialVersionUID = -2229219000059711983L;
+					@Override
+					protected void initComponents() {
+						super.initComponents();
+						tResult.addMouseListener(new SearchResultMouseAdapter(tfFind, tResult));
+					};
+				};
+			}
+		};
+
         private final ActionListener copyPathActionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -100,6 +122,7 @@ class JarTree extends JTree {
 
 		JarTreeMouseListener(ActionListener deleteActionListener, ActionListener addActionListener
 				, ActionListener extractActionListener, ActionListener unpackActionListener) {
+
 			this.deleteActionListener = deleteActionListener;
 			this.addActionListener = addActionListener;
 			this.extractActionListener = extractActionListener;
@@ -132,6 +155,11 @@ class JarTree extends JTree {
 				JarNodeMenuItem unpackNode = new JarNodeMenuItem("Unpack", path);
 				unpackNode.setIcon(resources.getUnpackIcon());
 				unpackNode.addActionListener(unpackActionListener);
+				
+				JarNodeMenuItem search = new JarNodeMenuItem("Search In", path);
+				search.setIcon(resources.getSearchIcon());
+				search.addActionListener(searchActionListener);
+				
 				JarNodeMenuItem copyPath = new JarNodeMenuItem("Copy Path", path);
 				copyPath.setIcon(resources.getCopyIcon());
 				copyPath.addActionListener(copyPathActionListener);
@@ -143,6 +171,7 @@ class JarTree extends JTree {
 				popupMenu.add(addNode);
 				popupMenu.add(deleteNode);
 				popupMenu.add(unpackNode);
+				popupMenu.add(search);
 				popupMenu.add(copyPath);
 				popupMenu.add(info);
 				popupMenu.show(JarTree.this, e.getX(), e.getY());
@@ -169,6 +198,7 @@ class JarTree extends JTree {
                     if (!node.isDirectory) {
                         addNode.setEnabled(node.isArchive());
                         unpackNode.setEnabled(node.isArchive());
+                        search.setEnabled(node.isArchive());
                     } else {
                         unpackNode.setEnabled(false);
                     }
@@ -257,7 +287,7 @@ class JarTree extends JTree {
 	        new Jar(origArch) {
 	            @Override
 	            protected void process(JarEntry entry) throws IOException {
-	                addIntoNode(entry, root, tmpArch, origArch);
+	            	addIntoNode(entry, root, tmpArch, origArch);
 	            }
 	        }.bypass();
 		} else {
@@ -362,7 +392,7 @@ class JarTree extends JTree {
 							} catch (InterruptedException e) {
 								throw new JarexpException("Error happens while waiting for archive leaf is loaded.", e);
 							}
-							if (!Settings.NAME_PLACEHOLDER.equals(((JarNode)child.getLastChild()).name)) {
+							if (child.children().hasMoreElements() && !Settings.NAME_PLACEHOLDER.equals(((JarNode)child.getLastChild()).name)) {
 								break;
 							}
 						}
@@ -390,25 +420,24 @@ class JarTree extends JTree {
 
 	private static void addIntoNode(JarEntry entry, JarNode node, File tempArch, File origArch) throws IOException {
 		String path = entry.getName();
-		String[] files = path.split("/");
+		String[] pathToken = path.split("/");
 		String name = null;
-		for (int i = 0; i < files.length; ++i) {
-			boolean isExist = false;
+		for (int i = 0; i < pathToken.length; ++i) {
+			boolean isChildExist = false;
 			for (Enumeration<?> children = node.children(); children.hasMoreElements();) {
 				JarNode child = (JarNode) children.nextElement();
-				if (child.name.equals(files[i])) {
-					//child.grab(entry);
+				if (child.name.equals(pathToken[i])) {
 					node = child;
-					isExist = true;
+					isChildExist = true;
 					break;
 				}
 			}
-			if (i == files.length - 1) {
-				name = isExist ? null : files[i];
+			if (i == pathToken.length - 1) {
+				name = isChildExist ? null : pathToken[i];
 				break;
 			}
-			if (!isExist) {
-				JarNode child = new JarNode(files[i], calcPath(files, i), tempArch, origArch, true);
+			if (!isChildExist) {
+				JarNode child = new JarNode(pathToken[i], calcPath(pathToken, i), tempArch, origArch, true);
 				child.grab(entry);
 				node.add(child);
 				node = child;
@@ -418,7 +447,6 @@ class JarTree extends JTree {
 			JarNode child = new JarNode(name, path, tempArch, origArch, entry.isDirectory());
 			child.grab(entry);
 			if (child.isArchive()) {
-				child.grab(entry);
 				archiveLoader.load(child);
 			}
 			node.add(child);

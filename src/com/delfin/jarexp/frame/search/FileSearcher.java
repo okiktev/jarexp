@@ -15,27 +15,19 @@ import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.StringUtils;
 import com.delfin.jarexp.utils.Zip;
 
-class FileSearcher implements Searcher {
+class FileSearcher extends AbstractSearcher {
+
+	FileSearcher(File searchRoot) {
+		super(searchRoot);
+	}
 
 	private Pattern pattern;
 
-	private final File searchRoot;
-
 	private String fileName;
-
-	private boolean isMatchCase;
-
-	private boolean isInAll;
-
-	FileSearcher(File searchRoot) {
-		this.searchRoot = searchRoot;
-	}
 
 	@Override
 	public void search(SearchCriteria criteria) {
-		final SearchDlg searchDlg = ((FileSearchCriteria) criteria).dlg;
-		isMatchCase = searchDlg.cbMatchCase.isSelected();
-		isInAll = searchDlg.cbInAllSubArchives.isSelected();
+		super.search(criteria);
 		fileName = searchDlg.tfFind.getText();
 		if (!isMatchCase) {
 			fileName = fileName.toLowerCase();
@@ -61,9 +53,7 @@ class FileSearcher implements Searcher {
 		});
 	}
 
-	private void search(final String parent, final File searchRoot, final List<SearchResult> results,
-			final SearchDlg dlg) {
-
+	private void search(String parent, File searchRoot, List<SearchResult> results, SearchDlg dlg) {
 		Jar seacher;
 		if (searchRoot.isDirectory()) {
 			seacher = prepareDirectorySearch(searchRoot, results, dlg);
@@ -83,30 +73,29 @@ class FileSearcher implements Searcher {
 				if (StringUtils.isLast(path, '/')) {
 					return;
 				}
+				if (pathInJar != null && !path.startsWith(pathInJar)) {
+					return;
+				}
 				dlg.lbResult.setText("Searching..." + path);
 				String fileName = FileUtils.getFileName(path);
 				if (isEmptySearch()) {
 					if (fileName.lastIndexOf('.') == -1) {
-						results.add(new SearchResult(getFullPath(path)));
+						results.add(new SearchResult(getFullPath(parent, path)));
 					}
 				} else {
 					if (!isMatchCase) {
 						fileName = fileName.toLowerCase();
 					}
 					if (pattern.matcher(fileName).find()) {
-						results.add(new SearchResult(getFullPath(path)));
+						results.add(new SearchResult(getFullPath(parent, path)));
 					}
 				}
 				if (isInAll && Zip.isArchive(path)) {
 					File dst = new File(Resources.createTmpDir(), fileName);
-					String fullPath = getFullPath(path) + '!';
+					String fullPath = getFullPath(parent, path) + '!';
 					dst = Zip.unzip(fullPath, path, archive, dst);
 					search(fullPath, dst, results, dlg);
 				}
-			}
-
-			private String getFullPath(String path) {
-				return parent + '/' + path;
 			}
 
 		};
@@ -132,8 +121,7 @@ class FileSearcher implements Searcher {
 					}
 				}
 				if (isInAll && Zip.isArchive(fileName)) {
-					String fullPath = file.getAbsolutePath() + '!';
-					search(fullPath, file, results, dlg);
+					search(file.getAbsolutePath() + '!', file, results, dlg);
 				}
 			}
 
@@ -142,6 +130,11 @@ class FileSearcher implements Searcher {
 
 	private boolean isEmptySearch() {
 		return fileName == null || fileName.isEmpty();
+	}
+
+	@Override
+	protected SearchDlg extractSearchDlg(SearchCriteria criteria) {
+		return ((FileSearchCriteria) criteria).dlg;
 	}
 
 }
