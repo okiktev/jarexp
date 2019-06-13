@@ -75,6 +75,8 @@ imp information window does not show files for folder. ... done ................
 imp search files by types. ... done ...............................................................09May2019
 imp search files/content not only in loaded archive but from file system as well. ... done ........09May2019
 imp make search in folder. ... done ...............................................................14May2019
+imp remember last state for selection files. ... done .............................................13Jun2019
+
 
 bug each filter panel appear for each pressing ctrl+f
 bug right panel disappears when press ctrl+f
@@ -85,7 +87,6 @@ imp command console
 imp get all depended classes in the jar
 imp ribbon
 
-imp remember last state
 imp when delete file clear preview and context panel
 imp all option dialogs should be custom
 
