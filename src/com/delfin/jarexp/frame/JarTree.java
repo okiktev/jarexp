@@ -108,8 +108,20 @@ class JarTree extends JTree {
         private final ActionListener copyPathActionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				TreePath [] paths = getSelectionPaths();
+				if (paths == null) {
+					throw new JarexpException("The selection path is null.");
+				}
+				StringBuilder toClipboard = new StringBuilder();
+				for (int i = 0; i < paths.length; ++i) {
+					String fullPath = ((JarNode)paths[i].getLastPathComponent()).getFullPath();
+					toClipboard.append(fullPath);
+					if (i != paths.length - 1) {
+						toClipboard.append(',');
+					}
+				}
 		        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		        clipboard.setContents(new StringSelection(getNode(e).getFullPath()), null);
+		        clipboard.setContents(new StringSelection(toClipboard.toString()), null);
 			}
 		};
 
@@ -140,7 +152,6 @@ class JarTree extends JTree {
 				if (path == null) {
 					return;
 				}
-				setSelectionPath(path);
 				JPopupMenu popupMenu = new JPopupMenu();
 				JarNodeMenuItem deleteNode = new JarNodeMenuItem("Delete", path);
 				Resources resources = Resources.getInstance();
@@ -155,11 +166,11 @@ class JarTree extends JTree {
 				JarNodeMenuItem unpackNode = new JarNodeMenuItem("Unpack", path);
 				unpackNode.setIcon(resources.getUnpackIcon());
 				unpackNode.addActionListener(unpackActionListener);
-				
+
 				JarNodeMenuItem search = new JarNodeMenuItem("Search In", path);
 				search.setIcon(resources.getSearchIcon());
 				search.addActionListener(searchActionListener);
-				
+
 				JarNodeMenuItem copyPath = new JarNodeMenuItem("Copy Path", path);
 				copyPath.setIcon(resources.getCopyIcon());
 				copyPath.addActionListener(copyPathActionListener);
@@ -190,19 +201,24 @@ class JarTree extends JTree {
                 });
 
                 TreePath [] paths = getSelectionPaths();
-                if (paths.length > 1) {
-                    addNode.setEnabled(false);
-                    unpackNode.setEnabled(false);
-                } if (paths.length == 1) {
-                    JarNode node = (JarNode)paths[0].getLastPathComponent();
-                    if (!node.isDirectory) {
-                        addNode.setEnabled(node.isArchive());
-                        unpackNode.setEnabled(node.isArchive());
-                        search.setEnabled(node.isArchive());
-                    } else {
-                        unpackNode.setEnabled(false);
-                    }
+                if (paths == null) {
+                	paths = new TreePath[] {path};
                 }
+				if (paths.length > 1) {
+					addNode.setEnabled(false);
+					unpackNode.setEnabled(false);
+				}
+				if (paths.length == 1) {
+					setSelectionPath(path);
+					JarNode node = (JarNode) paths[0].getLastPathComponent();
+					if (node.isDirectory) {
+						unpackNode.setEnabled(false);
+					} else {
+						addNode.setEnabled(node.isArchive());
+						unpackNode.setEnabled(node.isArchive());
+						search.setEnabled(node.isArchive());
+					}
+				}
                 deleteNode.setEnabled(!isSingleFileLoaded());
             } 
             JarTreeClickSelection.setNodes(null);
@@ -249,7 +265,6 @@ class JarTree extends JTree {
 	boolean isNotDraw;
 
 	JarTree(TreeExpansionListener treeExpansionListener, StatusBar statusBar, JFrame frame) {
-		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		//addTreeSelectionListener(treeSelectionListener);
 		addTreeExpansionListener(treeExpansionListener);
 
