@@ -26,6 +26,7 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
@@ -41,12 +42,12 @@ public class InfoDlg extends JDialog {
 	private JTextArea taResult = new JTextArea();
 	private JPanel panel = new JPanel();
 	private JScrollPane spResult = new JScrollPane(panel);
-	private final JarNode node;
+	private final TreePath[] paths;
 
-	public InfoDlg(JarNode node) {
+	InfoDlg(TreePath[] paths) {
 		super();
 
-		this.node = node;
+		this.paths = paths;
 
 		try {
 			initComponents();
@@ -55,7 +56,7 @@ public class InfoDlg extends JDialog {
 		}
 		alignComponents();
 
-		setTitle("Information | " + node.getFullPath());
+		setTitle("Information | " + getComaSeparatedFullPaths(paths));
 		setIconImage(Resources.getInstance().getInfoImage());
 		setPreferredSize(DLG_DIM);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -64,6 +65,18 @@ public class InfoDlg extends JDialog {
 
 		setVisible(true);
 		pack();
+	}
+
+	static String getComaSeparatedFullPaths(TreePath[] paths) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < paths.length; ++i) {
+			String fullPath = ((JarNode) paths[i].getLastPathComponent()).getFullPath();
+			result.append(fullPath);
+			if (i != paths.length - 1) {
+				result.append(',');
+			}
+		}
+		return result.toString();
 	}
 
 	private void alignComponents() {
@@ -84,24 +97,27 @@ public class InfoDlg extends JDialog {
 
 		taResult.setEditable(false);
 
-		taResult.append("Name: " + node.name + '\n');
-		taResult.append("Path In Jar: " + node.path + '\n');
-		taResult.append("Full Path: " + node.getFullPath() + '\n');
-		taResult.append("Size: " + getSize(node) + '\n');
-		taResult.append("Compressed Size: " + getCompressedSize(node) + '\n');
-		taResult.append("CRC: " + format(node.crc) + '\n');
-		taResult.append("Method: " + JarNodeTableModel.formatMethod(node.method) + '\n');
-		taResult.append("Time: " + JarNodeTableModel.formatTime(node.time) + '\n');
-		taResult.append("Creation Time: " + formatTime(node.creationTime) + '\n');
-		taResult.append("Last Access Time: " + formatTime(node.lastAccessTime) + '\n');
-		taResult.append("Last Modified Time: " + formatLastModifiedTime(node) + '\n');
-		taResult.append("Comment: " + format(node.comment) + '\n');
-		taResult.append("Atributes: " + (node.attrs == null ? "" : JarNodeTableModel.formatAttributes(node.attrs)) + '\n');
-		taResult.append("Certificates: " + (node.certs == null ? "" : Arrays.toString(node.certs)) + '\n');
-		taResult.append("Extra: " + (node.extra == null ? "" : JarNodeTableModel.formatExtra(node.extra)) + '\n');
-		taResult.append("Code Signers: " + (node.signers == null ? "" : Arrays.toString(node.signers)) + '\n');
+		if (paths.length == 1) {
+			JarNode node = (JarNode) paths[0].getLastPathComponent();
+			taResult.append("Name: " + node.name + '\n');
+			taResult.append("Path In Jar: " + node.path + '\n');
+			taResult.append("Full Path: " + node.getFullPath() + '\n');
+			taResult.append("Size: " + getSize(node) + '\n');
+			taResult.append("Compressed Size: " + getCompressedSize(node) + '\n');
+			taResult.append("CRC: " + format(node.crc) + '\n');
+			taResult.append("Method: " + JarNodeTableModel.formatMethod(node.method) + '\n');
+			taResult.append("Time: " + JarNodeTableModel.formatTime(node.time) + '\n');
+			taResult.append("Creation Time: " + formatTime(node.creationTime) + '\n');
+			taResult.append("Last Access Time: " + formatTime(node.lastAccessTime) + '\n');
+			taResult.append("Last Modified Time: " + formatLastModifiedTime(node) + '\n');
+			taResult.append("Comment: " + format(node.comment) + '\n');
+			taResult.append("Atributes: " + (node.attrs == null ? "" : JarNodeTableModel.formatAttributes(node.attrs)) + '\n');
+			taResult.append("Certificates: " + (node.certs == null ? "" : Arrays.toString(node.certs)) + '\n');
+			taResult.append("Extra: " + (node.extra == null ? "" : JarNodeTableModel.formatExtra(node.extra)) + '\n');
+			taResult.append("Code Signers: " + (node.signers == null ? "" : Arrays.toString(node.signers)) + '\n');
+		}
 
-		final Map<String, Integer> types = grabTypesInside(node);
+		final Map<String, Integer> types = grabTypesInside(paths);
 		if (!types.isEmpty()) {
 			taResult.append("File Types:");
 			tTypes.setModel(new AbstractTableModel() {
@@ -153,38 +169,41 @@ public class InfoDlg extends JDialog {
 		}
 	}
 
-	private static Map<String, Integer> grabTypesInside(final JarNode node) throws IOException {
+	private static Map<String, Integer> grabTypesInside(TreePath[] paths) throws IOException {
 		final Map<String, Integer> types = new HashMap<String, Integer>();
-		if (node.isArchive()) {
-			File dst = new File(Resources.createTmpDir(), node.name);
-			if (node.getParent() == null) {
-				dst = node.origArch;
-			} else {
-				dst = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), dst);
+		for (TreePath path : paths) {
+			final JarNode node = (JarNode) path.getLastPathComponent();
+			if (node.isArchive()) {
+				File dst = new File(Resources.createTmpDir(), node.name);
+				if (node.getParent() == null) {
+					dst = node.origArch;
+				} else {
+					dst = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), dst);
+				}
+				new Jar(dst) {
+					@Override
+					protected void process(JarEntry entry) throws IOException {
+						if (entry.isDirectory()) {
+							return;
+						}
+						increaseCount(types, entry.getName());
+					}
+				}.bypass();
+			} else if (node.isDirectory) {
+				new Jar(node.getTempArchive()) {
+					@Override
+					protected void process(JarEntry entry) throws IOException {
+						if (entry.isDirectory()) {
+							return;
+						}
+						String path = entry.getName();
+						if (!path.startsWith(node.path)) {
+							return;
+						}
+						increaseCount(types, path);
+					}
+				}.bypass();
 			}
-			new Jar(dst) {
-				@Override
-				protected void process(JarEntry entry) throws IOException {
-					if (entry.isDirectory()) {
-						return;
-					}
-					increaseCount(types, entry.getName());
-				}
-			}.bypass();
-		} else if (node.isDirectory) {
-			new Jar(node.getTempArchive()) {
-				@Override
-				protected void process(JarEntry entry) throws IOException {
-					if (entry.isDirectory()) {
-						return;
-					}
-					String path = entry.getName();
-					if (!path.startsWith(node.path)) {
-						return;
-					}
-					increaseCount(types, path);
-				}
-			}.bypass();
 		}
 		return types;
 	}
@@ -251,7 +270,7 @@ public class InfoDlg extends JDialog {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		new InfoDlg(new JarNode());
+		new InfoDlg(new TreePath[] {});
 	}
 
 }

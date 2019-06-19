@@ -77,8 +77,8 @@ imp search files/content not only in loaded archive but from file system as well
 imp make search in folder. ... done ...............................................................14May2019
 imp remember last state for selection files. ... done .............................................13Jun2019
 bug fixed Shift selection and copy path for several nodes. ... done ...............................19Jun2019
+bug unexpected behavior of file info for multiple selection. ... done .............................19Jun2019
 
-bug unexpected behavior of file info for multiple selection
 bug unexpected behavior of search for multiple selection
 
 bug each filter panel appear for each pressing ctrl+f

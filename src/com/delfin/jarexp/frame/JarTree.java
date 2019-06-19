@@ -112,23 +112,19 @@ class JarTree extends JTree {
 				if (paths == null) {
 					throw new JarexpException("The selection path is null.");
 				}
-				StringBuilder toClipboard = new StringBuilder();
-				for (int i = 0; i < paths.length; ++i) {
-					String fullPath = ((JarNode)paths[i].getLastPathComponent()).getFullPath();
-					toClipboard.append(fullPath);
-					if (i != paths.length - 1) {
-						toClipboard.append(',');
-					}
-				}
 		        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		        clipboard.setContents(new StringSelection(toClipboard.toString()), null);
+		        clipboard.setContents(new StringSelection(InfoDlg.getComaSeparatedFullPaths(paths)), null);
 			}
 		};
 
         private final ActionListener informationActionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new InfoDlg(getNode(e));
+				TreePath [] paths = getSelectionPaths();
+				if (paths == null) {
+					throw new JarexpException("The selection path is null.");
+				}
+				new InfoDlg(paths);
 			}
 		};
 
