@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.jar.JarEntry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +23,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.frame.Jar;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.utils.Zip;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.StringUtils;
@@ -50,10 +52,6 @@ class FileContentSearcher extends AbstractSearcher {
 
 	private String statement;
 
-	FileContentSearcher(File searchRoot) {
-		super(searchRoot);
-	}
-
 	@Override
 	public void search(SearchCriteria criteria) {
 		super.search(criteria);
@@ -70,16 +68,28 @@ class FileContentSearcher extends AbstractSearcher {
 			@Override
 			public void run() {
 				long start = System.currentTimeMillis();
-				search("", searchRoot, searchDlg);
+				for (SearchEntries entry : searchEntries) {
+					fullSearchPath = entry.fullPath;
+					search("", entry.archive, null, searchDlg, entry.path);
+				}
 				long overall = System.currentTimeMillis() - start;
+				searchResult = new TreeMap<String, List<SearchResult>>(searchResult);
 				searchDlg.tResult.setModel(new FileContentSearchResultTableModel(searchResult, errors));
-				String label = "Found " + searchResult.size() + " results for " + overall + "ms";
+				String label = "Found " + searchResult.size() + " results with " + getHits(searchResult) + " hits for " + overall + "ms";
 				int size = errors.size();
 				if (size != 0) {
 					label += " with " + size + " errors";
 				}
 				label += ':';
 				searchDlg.lbResult.setText(label);
+			}
+
+			private int getHits(Map<String, List<SearchResult>> result) {
+				int res = 0;
+				for (List<SearchResult> hits : result.values()) {
+					res += hits.size();
+				}
+				return res;
 			};
 		});
 		search.start();
@@ -91,17 +101,18 @@ class FileContentSearcher extends AbstractSearcher {
 		});
 	}
 
-	private void search(String parent, File searchRoot, SearchDlg dlg) {
+	@Override
+	protected void search(String parent, File searchRoot, Object results, SearchDlg dlg, String pathInJar) {
 		Jar seacher;
 		if (searchRoot.isDirectory()) {
 			seacher = prepareDirectorySearch(searchRoot, dlg);
 		} else {
-			seacher = prepareArchiveSearch(parent, searchRoot, dlg);
+			seacher = prepareArchiveSearch(parent, searchRoot, dlg, pathInJar);
 		}
 		seacher.bypass();
 	}
 
-	private Jar prepareArchiveSearch(final String parent, final File searchRoot, final SearchDlg dlg) {
+	private Jar prepareArchiveSearch(final String parent, final File searchRoot, final SearchDlg dlg, final String pathInJar) {
 		return new Jar(searchRoot) {
 			@Override
 			protected void process(JarEntry entry) throws IOException {
@@ -112,12 +123,14 @@ class FileContentSearcher extends AbstractSearcher {
 				if (pathInJar != null && !path.startsWith(pathInJar)) {
 					return;
 				}
+
 				String ext = path.toLowerCase();
 				boolean isArchive = Zip.isArchive(ext, false);
 				if (!isArchive && !isForSearch(ext)) {
 					return;
 				}
 				dlg.lbResult.setText("Searching..." + path);
+
 				if (!isArchive) {
 					String fullPath = getFullPath(parent, path);
 					Scanner scanner;
@@ -129,19 +142,19 @@ class FileContentSearcher extends AbstractSearcher {
 							return;
 						}
 					} else {
+						@SuppressWarnings("resource")
 						ZipFile zip = new ZipFile(searchRoot);
 						InputStream stream = zip.getInputStream(zip.getEntry(path));
 						scanner = new Scanner(stream);
-						zip.close();
 					}
 					doSearchInFile(scanner, fullPath);
 				} else if (isInAll) {
-					UnpackResult res = unpack(FileUtils.getFileName(path), path, searchRoot);
-					search(res.fullPath + '!', res.dst, dlg);
+					UnpackResult res = unpack(FileUtils.getFileName(path), path, searchRoot, parent);
+					search(res.fullPath + '!', res.dst, null, dlg, null);
 				}
 			}
 
-			private UnpackResult unpack(String fileName, String path, File archive) {
+			private UnpackResult unpack(String fileName, String path, File archive, String parent) {
 				File dst = new File(Resources.createTmpDir(), fileName);
 				String fullPath = getFullPath(parent, path);
 				dst = Zip.unzip(fullPath, path, archive, dst);
@@ -177,7 +190,7 @@ class FileContentSearcher extends AbstractSearcher {
 					}
 					doSearchInFile(scanner, fullPath);
 				} else if (isInAll) {
-					search(file.getAbsolutePath() + '!', file, dlg);
+					search(file.getAbsolutePath() + '!', file, null, dlg, null);
 				}
 			}
 		};

@@ -61,6 +61,7 @@ import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
 import com.delfin.jarexp.frame.search.SearchDlg;
 import com.delfin.jarexp.frame.search.SearchResult;
+import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.utils.Zip;
 
 public class Content extends JPanel {
@@ -284,7 +285,9 @@ public class Content extends JPanel {
 				if (isArchiveNotLoaded()) {
 					return;
 				}
-				new SearchDlg(file) {
+				SearchEntries searchEntries = new SearchEntries();
+				searchEntries.add(file, null, file.getAbsolutePath());
+				new SearchDlg(searchEntries) {
 					private static final long serialVersionUID = -838103554183752603L;						
 					@Override
 					protected void initComponents() {

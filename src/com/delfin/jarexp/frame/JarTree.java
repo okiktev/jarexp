@@ -38,7 +38,7 @@ import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
 import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.search.SearchDlg;
-import com.delfin.jarexp.utils.Zip;
+import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 
 class JarTree extends JTree {
 
@@ -85,17 +85,18 @@ class JarTree extends JTree {
 
         private final ActionListener unpackActionListener;
 
-        private final ActionListener searchActionListener = new ActionListener() {
+		private final ActionListener searchActionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JarNode node = getNode(e);
-				String fullName = node.getFullPath();
-				File archive = node.isArchive() ? Zip.getUnpacked(fullName) : node.getTempArchive();
-				if (archive == null) {
-					archive = node.origArch;
+				TreePath[] paths = getSelectedPaths();
+				SearchEntries entries = new SearchEntries();
+				for (TreePath path : paths) {
+					JarNode node = ((JarNode) path.getLastPathComponent());
+					entries.add(node.origArch, node.path, node.getFullPath());
 				}
-				new SearchDlg(archive, node.path, fullName) {
+				new SearchDlg(entries) {
 					private static final long serialVersionUID = -2229219000059711983L;
+
 					@Override
 					protected void initComponents() {
 						super.initComponents();
@@ -108,10 +109,7 @@ class JarTree extends JTree {
         private final ActionListener copyPathActionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				TreePath [] paths = getSelectionPaths();
-				if (paths == null) {
-					throw new JarexpException("The selection path is null.");
-				}
+				TreePath [] paths = getSelectedPaths();
 		        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 		        clipboard.setContents(new StringSelection(InfoDlg.getComaSeparatedFullPaths(paths)), null);
 			}
@@ -120,13 +118,17 @@ class JarTree extends JTree {
         private final ActionListener informationActionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				TreePath [] paths = getSelectionPaths();
-				if (paths == null) {
-					throw new JarexpException("The selection path is null.");
-				}
-				new InfoDlg(paths);
+				new InfoDlg(getSelectedPaths());
 			}
 		};
+
+		private TreePath[] getSelectedPaths() {
+			TreePath [] paths = getSelectionPaths();
+			if (paths == null) {
+				throw new JarexpException("The selection path is null.");
+			}
+			return paths;
+		}
 
 		JarTreeMouseListener(ActionListener deleteActionListener, ActionListener addActionListener
 				, ActionListener extractActionListener, ActionListener unpackActionListener) {
@@ -261,7 +263,6 @@ class JarTree extends JTree {
 	boolean isNotDraw;
 
 	JarTree(TreeExpansionListener treeExpansionListener, StatusBar statusBar, JFrame frame) {
-		//addTreeSelectionListener(treeSelectionListener);
 		addTreeExpansionListener(treeExpansionListener);
 
 		this.statusBar = statusBar;
@@ -413,11 +414,6 @@ class JarTree extends JTree {
 				}
 			}
 		}
-	}
-
-	private static JarNode getNode(ActionEvent e) {
-		JarNodeMenuItem item = (JarNodeMenuItem) e.getSource();
-		return (JarNode) item.path.getLastPathComponent();
 	}
 
 	private static boolean isExist(JarNode node, File file) {

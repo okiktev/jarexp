@@ -17,12 +17,14 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.HeadlessException;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -42,6 +44,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.utils.Zip;
@@ -49,6 +52,35 @@ import com.delfin.jarexp.utils.Zip;
 public abstract class SearchDlg extends JDialog {
 
 	private static final long serialVersionUID = -2473586208850553553L;
+
+	public static class SearchEntries implements Iterable<SearchEntries> {
+
+		final File archive;
+		final String path;
+		final String fullPath;
+
+		private List<SearchEntries> entries = new ArrayList<SearchEntries>();
+
+		private SearchEntries(File archive, String path, String fullPath) {
+			this.archive = archive;
+			this.path = path;
+			this.fullPath = fullPath;
+		}
+
+		public SearchEntries() {
+			archive = null;
+			path = fullPath = null;
+		}
+
+		public void add(File archive, String path, String fullPath) {
+			entries.add(new SearchEntries(archive, path, fullPath));
+		}
+
+		@Override
+		public Iterator<SearchEntries> iterator() {
+			return entries.iterator();
+		}
+	}
 
 	private JLabel lbSearchIn = new JLabel("Search In:");
 	protected JTextField tfSearchIn = new JTextField();
@@ -67,8 +99,8 @@ public abstract class SearchDlg extends JDialog {
 	protected JTextField tfFileFilter = new JTextField("!.png,!.jpeg,!.jpg,!.bmp,!.gif,!.ico,!.exe");
 
 	protected boolean isFindClass = true;
-	protected File jarFile;
-	protected String pathInJar;
+	protected SearchEntries searchEntries;
+
 	private ChangeListener setFocusOnInput = new ChangeListener() {
 		@Override
 		public void stateChanged(ChangeEvent e) {
@@ -82,10 +114,9 @@ public abstract class SearchDlg extends JDialog {
 		}
 	};
 
-	public SearchDlg(File jarFile) throws HeadlessException {
+	public SearchDlg(SearchEntries searchEntries) {
 		super();
-
-		this.jarFile = jarFile;
+		this.searchEntries = searchEntries;
 
 		initComponents();
 		alignComponents();
@@ -100,12 +131,6 @@ public abstract class SearchDlg extends JDialog {
 
 		setVisible(true);
 		pack();
-	}
-
-	public SearchDlg(File jarFile, String path, String fullPath) {
-		this(jarFile);
-		tfSearchIn.setText(fullPath);
-		pathInJar = path;
 	}
 
 	private void alignComponents() {
@@ -135,7 +160,14 @@ public abstract class SearchDlg extends JDialog {
 	}
 
 	private void initLocation() {
-		tfSearchIn.setText(jarFile.getAbsolutePath());
+		StringBuilder fullNames = new StringBuilder();
+		for (Iterator<SearchEntries> it = searchEntries.iterator();it.hasNext();) {
+			fullNames.append(it.next().fullPath);
+			if (it.hasNext()) {
+				fullNames.append(',').append(' ');
+			}
+		}
+		tfSearchIn.setText(fullNames.toString());
 	}
 
 	protected void initComponents() {
@@ -164,17 +196,23 @@ public abstract class SearchDlg extends JDialog {
 				FileFilter filter = new FileNameExtensionFilter("Jar Files (*.jar,*.war,*.ear,*.zip,*.apk)", "jar", "war", "ear", "zip", "apk");
 				chooser.addChoosableFileFilter(filter);
 				chooser.setFileFilter(filter);
-				if (jarFile != null) {
-					chooser.setCurrentDirectory(jarFile.getParentFile());
+
+				List<File> dirs = ActionHistory.getLastDirSelected();
+				if (!dirs.isEmpty()) {
+					chooser.setCurrentDirectory(dirs.get(0));
 				}
+
 				if (chooser.showOpenDialog(SearchDlg.this) == JFileChooser.APPROVE_OPTION) {
 					File f = chooser.getSelectedFile();
 					if (!f.exists()) {
 						showMessageDialog(SearchDlg.this, "Specified file does not exist.", "Wrong input", ERROR_MESSAGE);
-					} if (!f.isDirectory() && !Zip.isArchive(f.getName())) {
+					}
+					if (!f.isDirectory() && !Zip.isArchive(f.getName())) {
 						showMessageDialog(SearchDlg.this, "Specified file is not archive.", "Wrong input", ERROR_MESSAGE);
 					} else {
-						jarFile = f;
+						ActionHistory.addLastDirSelected(f);
+						SearchDlg.this.searchEntries = new SearchEntries();
+						SearchDlg.this.searchEntries.add(f, null, f.getAbsolutePath());
 						initLocation();
 					}
 				}
@@ -258,7 +296,7 @@ public abstract class SearchDlg extends JDialog {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		new SearchDlg(new File("")) {
+		new SearchDlg(new SearchEntries()) {
 			private static final long serialVersionUID = -2883424465981010979L;
 		};
 	}
