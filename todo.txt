@@ -79,9 +79,11 @@ imp remember last state for selection files. ... done ..........................
 bug fixed Shift selection and copy path for several nodes. ... done ...............................19Jun2019
 bug unexpected behavior of file info for multiple selection. ... done .............................19Jun2019
 bug unexpected behavior of search for multiple selection. ... done ................................29Jun2019
+bug unable to do search for separate file. ... done ...............................................30Jun2019
 
+bug unable to search from inside archive
 imp find in classes only
-bug unable to do search for separate file
+
 bug each filter panel appear for each pressing ctrl+f
 bug right panel disappears when press ctrl+f
 imp handle search results from file system

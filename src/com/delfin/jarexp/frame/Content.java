@@ -286,7 +286,7 @@ public class Content extends JPanel {
 					return;
 				}
 				SearchEntries searchEntries = new SearchEntries();
-				searchEntries.add(file, null, file.getAbsolutePath());
+				searchEntries.add(file, null, file.getAbsolutePath(), file.isDirectory());
 				new SearchDlg(searchEntries) {
 					private static final long serialVersionUID = -838103554183752603L;						
 					@Override

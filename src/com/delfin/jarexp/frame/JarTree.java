@@ -92,7 +92,7 @@ class JarTree extends JTree {
 				SearchEntries entries = new SearchEntries();
 				for (TreePath path : paths) {
 					JarNode node = ((JarNode) path.getLastPathComponent());
-					entries.add(node.origArch, node.path, node.getFullPath());
+					entries.add(node.origArch, node.path, node.getFullPath(), node.isDirectory);
 				}
 				new SearchDlg(entries) {
 					private static final long serialVersionUID = -2229219000059711983L;
@@ -214,7 +214,6 @@ class JarTree extends JTree {
 					} else {
 						addNode.setEnabled(node.isArchive());
 						unpackNode.setEnabled(node.isArchive());
-						search.setEnabled(node.isArchive());
 					}
 				}
                 deleteNode.setEnabled(!isSingleFileLoaded());

@@ -58,27 +58,34 @@ public abstract class SearchDlg extends JDialog {
 		final File archive;
 		final String path;
 		final String fullPath;
+		final boolean isDirectory;
 
 		private List<SearchEntries> entries = new ArrayList<SearchEntries>();
 
-		private SearchEntries(File archive, String path, String fullPath) {
+		private SearchEntries(File archive, String path, String fullPath, boolean isDirectory) {
 			this.archive = archive;
 			this.path = path;
 			this.fullPath = fullPath;
+			this.isDirectory = isDirectory;
 		}
 
 		public SearchEntries() {
 			archive = null;
 			path = fullPath = null;
+			isDirectory = false;
 		}
 
-		public void add(File archive, String path, String fullPath) {
-			entries.add(new SearchEntries(archive, path, fullPath));
+		public void add(File archive, String path, String fullPath, boolean isDirectory) {
+			entries.add(new SearchEntries(archive, path, fullPath, isDirectory));
 		}
 
 		@Override
 		public Iterator<SearchEntries> iterator() {
 			return entries.iterator();
+		}
+
+		public int size() {
+			return entries.size();
 		}
 	}
 
@@ -212,8 +219,9 @@ public abstract class SearchDlg extends JDialog {
 					} else {
 						ActionHistory.addLastDirSelected(f);
 						SearchDlg.this.searchEntries = new SearchEntries();
-						SearchDlg.this.searchEntries.add(f, null, f.getAbsolutePath());
+						SearchDlg.this.searchEntries.add(f, null, f.getAbsolutePath(), f.isDirectory());
 						initLocation();
+						makeVisibleHide();
 					}
 				}
 			}
@@ -285,6 +293,18 @@ public abstract class SearchDlg extends JDialog {
 	}
 
 	private void makeVisibleHide() {
+		rbClass.setEnabled(true);
+		cbInAllSubArchives.setEnabled(true);
+		if (searchEntries.size() == 1) {
+			SearchEntries entry = searchEntries.iterator().next();
+			String path = entry.path.isEmpty() ? entry.archive.getName() : entry.path;
+			if (!entry.isDirectory && !Zip.isArchive(path.toLowerCase(), true)) {
+				rbClass.setEnabled(false);
+				cbInAllSubArchives.setEnabled(false);
+				rbInFiles.setSelected(true);
+				isFindClass = false;
+			}
+		}
 		lbFileFilter.setVisible(!isFindClass);
 		tfFileFilter.setVisible(!isFindClass);
 	}
