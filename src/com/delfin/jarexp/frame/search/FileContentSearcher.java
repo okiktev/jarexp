@@ -70,6 +70,7 @@ class FileContentSearcher extends AbstractSearcher {
 				long start = System.currentTimeMillis();
 				for (SearchEntries entry : searchEntries) {
 					fullSearchPath = entry.fullPath;
+					isSearchInWhole = entry.archive.getAbsolutePath().equals(fullSearchPath);
 					search("", entry.archive, null, searchDlg, entry.path);
 				}
 				long overall = System.currentTimeMillis() - start;
@@ -120,10 +121,9 @@ class FileContentSearcher extends AbstractSearcher {
 				if (StringUtils.isLast(path, '/')) {
 					return;
 				}
-				if (pathInJar != null && !path.startsWith(pathInJar)) {
+				if (isNotAllowedToSearch(parent, path, pathInJar)) {
 					return;
 				}
-
 				String ext = path.toLowerCase();
 				boolean isArchive = Zip.isArchive(ext, false);
 				if (!isArchive && !isForSearch(ext)) {
@@ -148,7 +148,7 @@ class FileContentSearcher extends AbstractSearcher {
 						scanner = new Scanner(stream);
 					}
 					doSearchInFile(scanner, fullPath);
-				} else if (isInAll) {
+				} else if (isInAll || fullSearchPath.startsWith(getCurrentFullPath(parent, path, pathInJar))) {
 					UnpackResult res = unpack(FileUtils.getFileName(path), path, searchRoot, parent);
 					search(res.fullPath + '!', res.dst, null, dlg, null);
 				}

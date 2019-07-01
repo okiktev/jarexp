@@ -80,8 +80,9 @@ bug fixed Shift selection and copy path for several nodes. ... done ............
 bug unexpected behavior of file info for multiple selection. ... done .............................19Jun2019
 bug unexpected behavior of search for multiple selection. ... done ................................29Jun2019
 bug unable to do search for separate file. ... done ...............................................30Jun2019
+bug unable to search from inside archive. ... done ................................................01Jul2019
 
-bug unable to search from inside archive
+bug within including searching
 imp find in classes only
 
 bug each filter panel appear for each pressing ctrl+f

@@ -38,6 +38,7 @@ class FileSearcher extends AbstractSearcher {
 				long start = System.currentTimeMillis();
 				for (SearchEntries entry : searchEntries) {
 					fullSearchPath = entry.fullPath;
+					isSearchInWhole = entry.archive.getAbsolutePath().equals(fullSearchPath);
 					search("", entry.archive, results, searchDlg, entry.path);
 				}
 				long overall = System.currentTimeMillis() - start;
@@ -77,7 +78,7 @@ class FileSearcher extends AbstractSearcher {
 				if (StringUtils.isLast(path, '/')) {
 					return;
 				}
-				if (pathInJar != null && !path.startsWith(pathInJar)) {
+				if (isNotAllowedToSearch(parent, path, pathInJar)) {
 					return;
 				}
 				dlg.lbResult.setText("Searching..." + path);
@@ -94,12 +95,17 @@ class FileSearcher extends AbstractSearcher {
 						results.add(new SearchResult(getFullPath(parent, path)));
 					}
 				}
-				if (isInAll && Zip.isArchive(path)) {
+				if (isNeedSearchInArchive(path)) {
 					File dst = new File(Resources.createTmpDir(), fileName);
 					String fullPath = getFullPath(parent, path) + '!';
 					dst = Zip.unzip(fullPath, path, archive, dst);
 					search(fullPath, dst, results, dlg, null);
 				}
+			}
+
+			private boolean isNeedSearchInArchive(String path) {
+				return fullSearchPath.startsWith(getCurrentFullPath(parent, path, pathInJar)) 
+						|| isInAll && Zip.isArchive(path, true);
 			}
 
 		};

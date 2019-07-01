@@ -293,7 +293,7 @@ class JarTree extends JTree {
 		String fileName = origArch.getName();
 		final File tmpArch = new File(Resources.createTmpDir(), fileName);
 		root = new JarNode(origArch.getAbsolutePath(), "", tmpArch, origArch, false);
-		
+
 		if (!fileName.toLowerCase().endsWith(".class")) {
 	        new Jar(origArch) {
 	            @Override

@@ -297,7 +297,7 @@ public abstract class SearchDlg extends JDialog {
 		cbInAllSubArchives.setEnabled(true);
 		if (searchEntries.size() == 1) {
 			SearchEntries entry = searchEntries.iterator().next();
-			String path = entry.path.isEmpty() ? entry.archive.getName() : entry.path;
+			String path = entry.path == null || entry.path.isEmpty() ? entry.archive.getName() : entry.path;
 			if (!entry.isDirectory && !Zip.isArchive(path.toLowerCase(), true)) {
 				rbClass.setEnabled(false);
 				cbInAllSubArchives.setEnabled(false);
