@@ -76,6 +76,16 @@ public abstract class SearchDlg extends JDialog {
 		}
 
 		public void add(File archive, String path, String fullPath, boolean isDirectory) {
+			for (Iterator<SearchEntries> it = iterator(); it.hasNext();) {
+				String fp = it.next().fullPath;
+				if (fullPath.equals(fp) || fullPath.startsWith(fp)) {
+					return;
+				}
+				if (fp.startsWith(fullPath)) {
+					it.remove();
+					break;
+				}
+			}
 			entries.add(new SearchEntries(archive, path, fullPath, isDirectory));
 		}
 
