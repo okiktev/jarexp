@@ -7,15 +7,8 @@ switch($_GET['l']) {
 }
 
 
-$get_without_menu='';
 $get_without_lang='';
 foreach($_GET as $key => $value){
-	if ($key != 'm') {
-		$get_without_menu.=$key;
-		$get_without_menu.='=';
-		$get_without_menu.=$value;
-		$get_without_menu.='&';
-	}
 	if ($key != 'l') {
 		$get_without_lang.=$key;
 		$get_without_lang.='=';
@@ -34,34 +27,36 @@ foreach($_GET as $key => $value){
 	<script src="script/script.js" ></script>
 </head>
 <body>
-	<div id="center">
-		<div id="header">
-			<h1>Jar Explorer</h1>
+
+
+	<div id="wrapper">
+		<div id="center">
+			<?php include $root_cont.'downloads.htm' ?>
+			<?php include 'content/slides.htm' ?>
+		</div>
+	</div>
+
+	<div id="left">
+
+		<div id="notfooter" >
+			<div id="logo"></div>
 			<div id="lang">
 				<?php include 'content/lang.htm' ?>
 			</div>
+			<div class="clr"></div>
+			<h1>Jar Explorer</h1>
+			<?php include $root_cont.'about.htm' ?>
 		</div>
-		<div id="menu" >
-			<?php include $root_cont.'menu.htm' ?>
-		</div>
-		<div id="content">
 
-		<?php
-			$menu = $_GET['m'];
-			$link='';
-			switch( $menu ) {
-  				case 1:$link=$root_cont.'downloads.htm';break;
-				case 2:$link=$root_cont.'screens.htm';break;
-				case 3:$link=$root_cont.'news.htm';break;
-  				default:$link=$root_cont.'home.htm';break;
-			}
-			include $link;
-		?>
-
-		</div>
 		<div id="footer">
 			Copyright &copy; @COPYRIGHT@.<br/>Developed by delfin. Ver: @SITE_VER@
 		</div>
+
 	</div>
+
+	<div id="right">
+		<?php include $root_cont.'news.htm' ?>
+	</div>
+	
 </body>
 </html>

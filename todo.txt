@@ -82,6 +82,8 @@ bug unexpected behavior of search for multiple selection. ... done .............
 bug unable to do search for separate file. ... done ...............................................30Jun2019
 bug unable to search from inside archive. ... done ................................................01Jul2019
 bug within including searching. ... done ..........................................................01Jul2019
+imp site redesign. ... done .......................................................................06Jul2019
+
 
 bug each filter panel appear for each pressing ctrl+f
 bug right panel disappears when press ctrl+f
