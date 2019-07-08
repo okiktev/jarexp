@@ -39,6 +39,8 @@ public class Settings {
 
 	public static final String EOL = System.getProperty("line.separator", "\r\n");
 
+	private static File HOME_DIR;
+
 	private static DecompilerType decompilerType = DecompilerType.JDCORE;
 
 	private File executiveJarFile;
@@ -106,6 +108,13 @@ public class Settings {
 			}
 		}
 		return executiveJarFile;
+	}
+
+	public static File getUserHome() {
+		if (HOME_DIR == null) {
+			HOME_DIR = new File(System.getProperty("user.home"));
+		}
+		return HOME_DIR;
 	}
 
 }

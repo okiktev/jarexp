@@ -64,12 +64,20 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 			if (area == null) {
 				return;
 			}
-			JSplitPane pane = Content.getSplitPane();
-			pane.setRightComponent(new ContentPanel(new FilterPanel(JarTreeSelectionListener.this),
-					pane.getRightComponent()));
-			pane.validate();
-			pane.repaint();
-			setDividerLocation(pane);
+			if (node.isDirectory || node.isArchive()) {
+				return;
+			}
+			JarTreeSelectionListener.this.isLocked = true;
+			try {
+				JSplitPane pane = Content.getSplitPane();
+				pane.setRightComponent(new ContentPanel(new FilterPanel(JarTreeSelectionListener.this),
+						pane.getRightComponent()));
+				pane.validate();
+				pane.repaint();
+				setDividerLocation(pane);
+			} finally {
+				JarTreeSelectionListener.this.isLocked = false;
+			}
 		}
 	}
  

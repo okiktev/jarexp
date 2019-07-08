@@ -48,6 +48,7 @@ import javax.swing.tree.TreePath;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 
+import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.decompiler.Decompiler;
@@ -282,11 +283,13 @@ public class Content extends JPanel {
 		, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (isArchiveNotLoaded()) {
-					return;
-				}
 				SearchEntries searchEntries = new SearchEntries();
-				searchEntries.add(file, null, file.getAbsolutePath(), file.isDirectory());
+				File f = file;
+				if (file == null) {
+					List<File> files = ActionHistory.getLastDirSelected();
+					f = files.isEmpty() ? Settings.getUserHome() : files.get(0);
+				}
+				searchEntries.add(f, null, f.getAbsolutePath(), f.isDirectory());
 				new SearchDlg(searchEntries) {
 					private static final long serialVersionUID = -838103554183752603L;						
 					@Override
