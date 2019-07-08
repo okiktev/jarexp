@@ -60,22 +60,11 @@ function nextSlide() {
 
 slds = document.getElementById('slides')
 slds.addEventListener("mouseover", function(){
-//alert('on hover');
 	window.clearInterval(slideInterval);
   });
-
 slds.addEventListener("mouseout", function(){
-//alert('on hover');
 	slideInterval = setInterval(nextSlide,5000);
   });
-/*
-document.getElementById('slides').hover(function(){
-alert('on hover');
-	clearInterval(currentSlide);
-  }, function(){
-alert('out hover');
-	slideInterval = setInterval(nextSlide,5000);
-});
-*/
+
 
 </script>
