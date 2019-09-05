@@ -26,7 +26,6 @@ import com.strobel.assembler.metadata.TypeReference;
 import com.strobel.decompiler.DecompilationOptions;
 import com.strobel.decompiler.DecompilerSettings;
 import com.strobel.decompiler.PlainTextOutput;
-import com.strobel.decompiler.languages.java.JavaFormattingOptions;
 
 public class ProcyonDecompiler implements IDecompiler {
 
@@ -91,9 +90,6 @@ public class ProcyonDecompiler implements IDecompiler {
 		DecompilationOptions options = new DecompilationOptions();
 		options.setSettings(settings);
 		options.setFullDecompilation(true);
-		if (settings.getFormattingOptions() == null) {
-			settings.setFormattingOptions(JavaFormattingOptions.createDefault());
-		}
 		settings.getLanguage().decompileType(resolvedType, output, options);
 		return new Result(writer.toString(), Version.getCompiledJava(resolvedType.getCompilerMinorVersion(),
 				resolvedType.getCompilerMajorVersion()));

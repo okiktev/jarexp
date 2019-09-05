@@ -126,7 +126,7 @@ class Menu extends JMenuBar {
 	}
 
 	private static boolean isProcyonSupported() {
-		return JAVA_MAJOR_VER >= 7 && JAVA_MAJOR_VER <= 8;
+		return JAVA_MAJOR_VER >= 7;
 	}
 
 }
