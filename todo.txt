@@ -87,8 +87,10 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 07_jul_2019
 bug right panel disappears when press ctrl+f. ... done ............................................08Jul2019
 bug archive is not loaded message. ... done .......................................................08Jul2019
 imp reverted rsyntaxtextarea to 2.6.1, updated procyon to 0.5.36 ... done .........................05Sep2019
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 05_sep_2019
 
-
+bug for some reason I could not load procyon to classpath. java 10\jarexp9.9.5\proc0.5.36
+bug the issue with stucking panel is appear after changing to fernflower and fail with decompiling
 
 bug unable to close filter panel
 bug each filter panel appear for each pressing ctrl+f
