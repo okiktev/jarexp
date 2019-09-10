@@ -15,7 +15,6 @@ import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.channels.FileChannel;
@@ -424,9 +423,7 @@ public class FileUtils {
 			} else {
 				Object systemClassLoader = ClassLoader.getSystemClassLoader();
 				Field ucpField = systemClassLoader.getClass().getDeclaredField("ucp");
-				Field modifiersField = Field.class.getDeclaredField("modifiers");
-				modifiersField.setAccessible(true);
-				modifiersField.setInt(ucpField, ucpField.getModifiers() & ~Modifier.FINAL);
+				FieldHelper.makeNonFinal(ucpField);
 				ucpField.setAccessible(true);
 				urlClassLoader = ucpField.get(systemClassLoader);
 				addUrlMethod = urlClassLoader.getClass().getDeclaredMethod("addURL", URL.class);

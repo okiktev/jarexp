@@ -36,7 +36,9 @@
 		<echo message="The product version is: ${full.version}" />
 
 		<copy todir="${build.dir}/src">
-			<fileset dir="${src.dir}" />
+			<fileset dir="${src.dir}" >
+				<exclude name="**/FieldHelper.java"/>
+			</fileset>
 			<filterset>
 				<filter token="VERSION" value="${full.version}" />
 				<filter token="COPYRIGHT" value="${copyright}" />
@@ -54,6 +56,7 @@
 					<file name="${dependency3}"/>
 					<file name="${dependency4}"/>
 					<file name="${dependency5}"/>
+					<file name="${build.res.dir}"/>
 				</filelist>
 			</classpath>
 		</javac>
@@ -65,6 +68,7 @@
 		<mkdir dir="${jar.dir}" />
 		<copy todir="${jar.dir}">
 			<fileset dir="${classes.dir}" />
+			<fileset dir="${build.res.dir}" />
 		</copy>
 
 		<unjar src="${dependency1}" dest="${jar.dir}" />
