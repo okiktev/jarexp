@@ -174,113 +174,115 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				JSplitPane pane = (JSplitPane) current.getComponent(1);
 				Component contentView = pane.getRightComponent();
 
-				statusBar.enableProgress("Loading...");
-				statusBar.setPath(node.getFullPath());
-				statusBar.setCompiledVersion("");
-				statusBar.setChildren("");
+				try {
+					statusBar.enableProgress("Loading...");
+					statusBar.setPath(node.getFullPath());
+					statusBar.setCompiledVersion("");
+					statusBar.setChildren("");
 
-				String archName = null;
-				File file;
-				String lowPath;
-				if (node.getParent() == null && (archName = node.origArch.getName().toLowerCase()).endsWith(".class")) {
-                    file = node.origArch;
-                    lowPath = archName;
-				} else {
-	                file = new File(node.origArch.getParent(), node.path);
-	                lowPath = node.path.toLowerCase();
-				}
-
-				if (lowPath.endsWith(".class")) {
-					statusBar.enableProgress("Decompiling...");
-					Result decompiled = decompile(node);
-					statusBar.setCompiledVersion(decompiled.version);
-					String content = decompiled.content;
-					RSyntaxTextArea textArea = new RSyntaxTextArea(content);
-					textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-					textArea.setBorder(Settings.EMPTY_BORDER);
-					textArea.setCodeFoldingEnabled(true);
-					textArea.setEditable(false);
-					applyTheme(textArea);
-					area = textArea;
-
-					pane.remove(contentView);
-					RTextScrollPane textScrollPane = new RTextScrollPane(textArea);
-					textScrollPane.setBorder(Settings.EMPTY_BORDER);
-					contentView = new ContentPanel(textScrollPane);
-				} else if (isImgFile(lowPath)) {
-					ZipFile zip = null;
-					try {
-						zip = new ZipFile(node.getTempArchive());
-						ZipEntry entry = zip.getEntry(node.path);
-						InputStream stream = zip.getInputStream(entry);
-						Image image = ImageIO.read(stream);
-						if (image == null) {
-							JOptionPane.showConfirmDialog(frame, "Could not read image " + node.path,
-							        "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-							return;
-						}
-						pane.remove(contentView);
-						contentView = new JScrollPane(new ImgPanel(image));
-					} catch (IOException e) {
-						throw new JarexpException("Couldn't read file " + file + " as image", e);
-					} finally {
-						if (zip != null) {
-							try {
-								zip.close();
-							} catch (IOException e) {
-								log.log(Level.WARNING, "Couldn't close zip file " + file, e);
-							}
-						}
+					String archName = null;
+					File file;
+					String lowPath;
+					if (node.getParent() == null && (archName = node.origArch.getName().toLowerCase()).endsWith(".class")) {
+	                    file = node.origArch;
+	                    lowPath = archName;
+					} else {
+		                file = new File(node.origArch.getParent(), node.path);
+		                lowPath = node.path.toLowerCase();
 					}
-				} else if (lowPath.endsWith(".ico")) {
-					file = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), file);
-					try {
-						pane.remove(contentView);
-						JPanel pnl = new JPanel();
-				        for (BufferedImage icon : Ico.read(file)) {
-				        	pnl.add(new ImgPanel(icon));
-				        }
-						contentView = new JScrollPane(pnl);
-					} catch (IOException e) {
-						throw new JarexpException("Couldn't read file " + file + " as ico", e);
-					}
-				} else {
-					if (!file.isDirectory()) {
-						statusBar.enableProgress("Reading...");
-						String content = Zip.unzip(node.getTempArchive(), node.path);
+
+					if (lowPath.endsWith(".class")) {
+						statusBar.enableProgress("Decompiling...");
+						Result decompiled = decompile(node);
+						statusBar.setCompiledVersion(decompiled.version);
+						String content = decompiled.content;
 						RSyntaxTextArea textArea = new RSyntaxTextArea(content);
-						textArea.setSyntaxEditingStyle(getSyntax(lowPath));
+						textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
 						textArea.setBorder(Settings.EMPTY_BORDER);
 						textArea.setCodeFoldingEnabled(true);
-						textArea.setEditable(true);
-						textArea.getDocument().addDocumentListener(new TextAreaDocumentListener());
+						textArea.setEditable(false);
 						applyTheme(textArea);
-						InputMap map = textArea.getInputMap();
-						map.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK), new AbstractAction() {
-							private static final long serialVersionUID = -3016470783134782605L;
-
-							@Override
-							public void actionPerformed(ActionEvent event) {
-								saveChanges();
-							}
-						});
 						area = textArea;
-
-						Dimension size = contentView.getPreferredSize();
+	
 						pane.remove(contentView);
 						RTextScrollPane textScrollPane = new RTextScrollPane(textArea);
 						textScrollPane.setBorder(Settings.EMPTY_BORDER);
 						contentView = new ContentPanel(textScrollPane);
-						contentView.setPreferredSize(size);
-					}
-				}
+					} else if (isImgFile(lowPath)) {
+						ZipFile zip = null;
+						try {
+							zip = new ZipFile(node.getTempArchive());
+							ZipEntry entry = zip.getEntry(node.path);
+							InputStream stream = zip.getInputStream(entry);
+							Image image = ImageIO.read(stream);
+							if (image == null) {
+								JOptionPane.showConfirmDialog(frame, "Could not read image " + node.path,
+								        "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+								return;
+							}
+							pane.remove(contentView);
+							contentView = new JScrollPane(new ImgPanel(image));
+						} catch (IOException e) {
+							throw new JarexpException("Couldn't read file " + file + " as image", e);
+						} finally {
+							if (zip != null) {
+								try {
+									zip.close();
+								} catch (IOException e) {
+									log.log(Level.WARNING, "Couldn't close zip file " + file, e);
+								}
+							}
+						}
+					} else if (lowPath.endsWith(".ico")) {
+						file = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), file);
+						try {
+							pane.remove(contentView);
+							JPanel pnl = new JPanel();
+					        for (BufferedImage icon : Ico.read(file)) {
+					        	pnl.add(new ImgPanel(icon));
+					        }
+							contentView = new JScrollPane(pnl);
+						} catch (IOException e) {
+							throw new JarexpException("Couldn't read file " + file + " as ico", e);
+						}
+					} else {
+						if (!file.isDirectory()) {
+							statusBar.enableProgress("Reading...");
+							String content = Zip.unzip(node.getTempArchive(), node.path);
+							RSyntaxTextArea textArea = new RSyntaxTextArea(content);
+							textArea.setSyntaxEditingStyle(getSyntax(lowPath));
+							textArea.setBorder(Settings.EMPTY_BORDER);
+							textArea.setCodeFoldingEnabled(true);
+							textArea.setEditable(true);
+							textArea.getDocument().addDocumentListener(new TextAreaDocumentListener());
+							applyTheme(textArea);
+							InputMap map = textArea.getInputMap();
+							map.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK), new AbstractAction() {
+								private static final long serialVersionUID = -3016470783134782605L;
 
-				((JComponent) contentView).setBorder(Settings.EMPTY_BORDER);
-				pane.setRightComponent(contentView);
-				pane.validate();
-				pane.repaint();
-				setDividerLocation(pane);
-				isLocked = false;
+								@Override
+								public void actionPerformed(ActionEvent event) {
+									saveChanges();
+								}
+							});
+							area = textArea;
+
+							Dimension size = contentView.getPreferredSize();
+							pane.remove(contentView);
+							RTextScrollPane textScrollPane = new RTextScrollPane(textArea);
+							textScrollPane.setBorder(Settings.EMPTY_BORDER);
+							contentView = new ContentPanel(textScrollPane);
+							contentView.setPreferredSize(size);
+						}
+					}
+				} finally {
+					((JComponent) contentView).setBorder(Settings.EMPTY_BORDER);
+					pane.setRightComponent(contentView);
+					pane.validate();
+					pane.repaint();
+					setDividerLocation(pane);
+					isLocked = false;
+				}
 			}
 
 			private Result decompile(JarNode node) {

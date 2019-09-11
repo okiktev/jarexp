@@ -89,8 +89,8 @@ bug archive is not loaded message. ... done ....................................
 imp reverted rsyntaxtextarea to 2.6.1, updated procyon to 0.5.36 ... done .........................05Sep2019
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 05_sep_2019
 bug unable to load procyon to classpath. java 12\jarexp9.9.5\proc0.5.36 ... done ..................10Sep2019
+bug issue with stuck panel is appear after switch to fernflower and fail while decompile ... done .11Sep2019
 
-bug the issue with stucking panel is appear after changing to fernflower and fail with decompiling
 
 bug unable to close filter panel
 bug each filter panel appear for each pressing ctrl+f
