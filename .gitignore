@@ -15,6 +15,7 @@ www/jarexp/.htaccess
 www/jarexp/downloads/*.zip
 local.properties
 resources/logging.properties
+/settings.properties
 
 
 # Windows image file caches

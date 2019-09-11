@@ -3,8 +3,15 @@ package com.delfin.jarexp.settings;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.security.CodeSource;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +26,38 @@ import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
 public class Settings {
 
 	private static final Logger log = Logger.getLogger(Settings.class.getCanonicalName());
+
+	private static final String SETTINGS_FILE_NAME = "settings.properties";
+	private static final long AUTO_SAVE_DELAY = 30000L;
+	static {
+		try {
+			new Timer("SettingsDumper").scheduleAtFixedRate(new TimerTask() {
+				public void run() {
+					Properties settings = new Properties();
+					settings.put("x", String.valueOf(X));
+					settings.put("y", String.valueOf(Y));
+					try {
+						OutputStream output = new FileOutputStream(new File(SETTINGS_FILE_NAME));
+						settings.store(output, null);
+						output.close();
+					} catch (Exception e) {
+						log.log(Level.SEVERE, "Unable to save settings into " + SETTINGS_FILE_NAME, e);
+					}
+				}
+			}, AUTO_SAVE_DELAY, AUTO_SAVE_DELAY);
+
+			Properties settings = new Properties();
+			InputStream input = new FileInputStream(new File(SETTINGS_FILE_NAME));
+			settings.load(input);
+			input.close();
+			String x = (String)settings.get("x");
+			X = Integer.valueOf(x == null ? "0" : x);
+			String y = (String)settings.get("y");
+			Y = Integer.valueOf(y == null ? "0" : y);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Unable to init settings dumper from " + SETTINGS_FILE_NAME, e);
+		}
+	}
 
 	public static final String JAREXP_HOST_URL = "http://dst.in.ua/jarexp";
 
@@ -67,8 +106,8 @@ public class Settings {
 
 	public static File getTmpDir() {
 		if (tmpDir == null) {
-			 tmpDir = new File(System.getProperty("java.io.tmpdir"), "jarexp" + System.currentTimeMillis());
-			 tmpDir.mkdirs();
+			tmpDir = new File(System.getProperty("java.io.tmpdir"), "jarexp" + System.currentTimeMillis());
+			tmpDir.mkdirs();
 		}
 		return tmpDir;
 	}

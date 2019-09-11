@@ -209,6 +209,15 @@ public class Content extends JPanel {
 	public static void createAndShowGUI(File passedFile) throws ResourcesException {
 		// Create and set up the window.
 		frame = new JFrame("Jar Explorer " + Settings.getInstance().getVersion());
+		if (Settings.X != 0 && Settings.Y != 0) {
+			frame.setLocation(Settings.X, Settings.Y);
+		}
+		frame.addComponentListener(new ComponentAdapter() {
+		    public void componentMoved(ComponentEvent e) {
+		    	Settings.X = frame.getX();
+		    	Settings.Y = frame.getY();
+		    }
+		});
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -423,16 +432,6 @@ public class Content extends JPanel {
 		if (passedFile != null) {
 			loadJarFile(file = passedFile);
 		}
-
-		if (Settings.X != 0 && Settings.Y != 0) {
-			frame.setLocation(Settings.X, Settings.Y);
-		}
-		frame.addComponentListener(new ComponentAdapter() {
-		    public void componentMoved(ComponentEvent e) {
-		    	Settings.X = frame.getX();
-		    	Settings.Y = frame.getY();
-		    }
-		});
 	}
 
 	protected static void changeDecompiler(DecompilerType type) {
