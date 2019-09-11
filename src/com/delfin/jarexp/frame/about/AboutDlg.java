@@ -11,9 +11,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
-import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.frame.resources.Resources;
-
+import com.delfin.jarexp.settings.Settings;
 
 
 public class AboutDlg extends JDialog {

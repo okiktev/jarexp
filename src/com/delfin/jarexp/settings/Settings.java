@@ -1,4 +1,4 @@
-package com.delfin.jarexp;
+package com.delfin.jarexp.settings;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -12,6 +12,7 @@ import javax.swing.BorderFactory;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
 
@@ -22,6 +23,10 @@ public class Settings {
 	public static final String JAREXP_HOST_URL = "http://dst.in.ua/jarexp";
 
 	public final static String NAME_PLACEHOLDER = ".$placehoder|\\";
+
+	public static int X;
+
+	public static int Y;
 
 	private static Settings instance;
 
@@ -72,7 +77,7 @@ public class Settings {
 		return 800;
 	}
 
-	static void initLookAndFeel() {
+	public static void initLookAndFeel() {
 		String sysLookFeel = UIManager.getSystemLookAndFeelClassName();
 		try {
 			UIManager.setLookAndFeel(sysLookFeel);

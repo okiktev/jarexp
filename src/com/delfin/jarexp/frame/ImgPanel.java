@@ -6,7 +6,7 @@ import java.awt.Image;
 
 import javax.swing.JPanel;
 
-import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.settings.Settings;
 
 class ImgPanel extends JPanel {
 

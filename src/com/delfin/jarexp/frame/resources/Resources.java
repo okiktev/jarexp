@@ -17,7 +17,7 @@ import javax.swing.filechooser.FileSystemView;
 import javax.xml.bind.DatatypeConverter;
 
 import com.delfin.jarexp.JarexpException;
-import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.FileUtils;
 
 public class Resources {

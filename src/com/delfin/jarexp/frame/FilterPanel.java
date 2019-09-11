@@ -36,7 +36,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 
 import com.delfin.jarexp.JarexpException;
-import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.StringUtils;
 
 class FilterPanel extends JPanel {

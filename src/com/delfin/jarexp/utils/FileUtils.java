@@ -24,8 +24,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.delfin.jarexp.JarexpException;
-import com.delfin.jarexp.Settings;
-import com.delfin.jarexp.Version;
+import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.Cmd.Result;
 
 public class FileUtils {
@@ -423,7 +423,7 @@ public class FileUtils {
 			} else {
 				Object systemClassLoader = ClassLoader.getSystemClassLoader();
 				Field ucpField = systemClassLoader.getClass().getDeclaredField("ucp");
-				FieldHelper.makeNonFinal(ucpField);
+				FieldHelper.makeNonFinal(ucpField, Version.JAVA_MAJOR_VER);
 				ucpField.setAccessible(true);
 				urlClassLoader = ucpField.get(systemClassLoader);
 				addUrlMethod = urlClassLoader.getClass().getDeclaredMethod("addURL", URL.class);

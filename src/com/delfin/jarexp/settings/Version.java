@@ -1,4 +1,4 @@
-package com.delfin.jarexp;
+package com.delfin.jarexp.settings;
 
 public class Version {
 

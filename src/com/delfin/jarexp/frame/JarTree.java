@@ -32,13 +32,13 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.delfin.jarexp.JarexpException;
-import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.frame.Content.SearchResultMouseAdapter;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
 import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.search.SearchDlg;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
+import com.delfin.jarexp.settings.Settings;
 
 class JarTree extends JTree {
 

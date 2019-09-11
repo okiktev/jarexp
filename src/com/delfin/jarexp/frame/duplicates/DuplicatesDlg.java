@@ -1,7 +1,7 @@
 package com.delfin.jarexp.frame.duplicates;
 
-import static com.delfin.jarexp.Settings.DLG_DIM;
-import static com.delfin.jarexp.Settings.DLG_TEXT_FONT;
+import static com.delfin.jarexp.settings.Settings.DLG_DIM;
+import static com.delfin.jarexp.settings.Settings.DLG_TEXT_FONT;
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.EAST;
 import static java.awt.GridBagConstraints.HORIZONTAL;

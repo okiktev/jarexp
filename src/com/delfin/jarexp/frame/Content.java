@@ -14,6 +14,8 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -50,7 +52,6 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 
 import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.JarexpException;
-import com.delfin.jarexp.Settings;
 import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.dlg.message.Msg;
@@ -62,6 +63,7 @@ import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
 import com.delfin.jarexp.frame.search.SearchDlg;
 import com.delfin.jarexp.frame.search.SearchResult;
+import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.utils.Zip;
 
@@ -421,6 +423,16 @@ public class Content extends JPanel {
 		if (passedFile != null) {
 			loadJarFile(file = passedFile);
 		}
+
+		if (Settings.X != 0 && Settings.Y != 0) {
+			frame.setLocation(Settings.X, Settings.Y);
+		}
+		frame.addComponentListener(new ComponentAdapter() {
+		    public void componentMoved(ComponentEvent e) {
+		    	Settings.X = frame.getX();
+		    	Settings.Y = frame.getY();
+		    }
+		});
 	}
 
 	protected static void changeDecompiler(DecompilerType type) {

@@ -1,6 +1,6 @@
 package com.delfin.jarexp.frame.about;
 
-import static com.delfin.jarexp.Settings.DLG_TEXT_FONT;
+import static com.delfin.jarexp.settings.Settings.DLG_TEXT_FONT;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -18,7 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.delfin.jarexp.JarexpException;
-import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.frame.resources.Resources;
 
 

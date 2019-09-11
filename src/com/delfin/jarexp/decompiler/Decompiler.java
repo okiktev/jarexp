@@ -3,7 +3,7 @@ package com.delfin.jarexp.decompiler;
 import java.io.File;
 import java.io.IOException;
 
-import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.FileUtils;
 
 public class Decompiler {

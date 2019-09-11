@@ -1,5 +1,7 @@
 package com.delfin.jarexp.frame.resources;
 
+import static com.delfin.jarexp.settings.Version.*;
+
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
@@ -21,8 +23,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
-
-import static com.delfin.jarexp.Version.*;
 
 /**
  * For fixing nasty Swing bugs <a href=

@@ -5,7 +5,7 @@ import java.awt.Component;
 
 import javax.swing.JPanel;
 
-import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.settings.Settings;
 
 class ContentPanel extends JPanel {
 

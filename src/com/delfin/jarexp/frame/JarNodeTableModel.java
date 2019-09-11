@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
-import com.delfin.jarexp.Version;
+import com.delfin.jarexp.settings.Version;
 
 class JarNodeTableModel extends AbstractTableModel {
 

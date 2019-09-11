@@ -1,7 +1,5 @@
 package com.delfin.jarexp.frame.about;
 
-import static com.delfin.jarexp.Settings.DLG_TEXT_FONT;
-
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -10,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import com.delfin.jarexp.Settings;
+import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.frame.resources.Resources;
 
 
@@ -23,7 +21,7 @@ class License extends JPanel {
 		license.setEditable(false);
 		license.setOpaque(false);
 		license.setText(Resources.getInstance().getLicenceText());
-		license.setFont(DLG_TEXT_FONT);
+		license.setFont(Settings.DLG_TEXT_FONT);
 		license.setBorder(Settings.EMPTY_BORDER);
 
 		final JScrollPane scrollPane = new JScrollPane(license);

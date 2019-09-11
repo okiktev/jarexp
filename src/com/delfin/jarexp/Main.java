@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import com.delfin.jarexp.frame.Content;
+import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.Zip;
 import com.delfin.jarexp.utils.Zip.TempFileCreator;
 
