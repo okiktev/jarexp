@@ -86,6 +86,8 @@ public class Settings {
 
 	public static final String EOL = System.getProperty("line.separator", "\r\n");
 
+	public static final int HISTORY_BUFFER_SIZE = 30;
+
 	private static File HOME_DIR;
 
 	private static DecompilerType decompilerType = DecompilerType.JDCORE;

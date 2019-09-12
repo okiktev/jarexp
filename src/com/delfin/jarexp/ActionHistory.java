@@ -9,6 +9,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import com.delfin.jarexp.settings.Settings;
+
 public class ActionHistory {
 
 	private static abstract class CommaSeparatedParcer<T> {
@@ -22,7 +24,12 @@ public class ActionHistory {
 			if (tokens == null) {
 				return;
 			}
+			int i = 0;
 			for (String token : tokens.split(",")) {
+				if (i == Settings.HISTORY_BUFFER_SIZE) {
+					break;
+				}
+				++i;
 				collection.add(doParse(token));
 			}
 		}
@@ -94,6 +101,13 @@ public class ActionHistory {
 			}
 		}
 		collection.add(value);
+		if (collection.size() == Settings.HISTORY_BUFFER_SIZE + 1) {
+			for (Iterator<Object> it = collection.iterator(); it.hasNext();) {
+				it.next();
+				it.remove();
+				break;
+			}
+		}
 	}
 
 	private static Collection getList(Key key) {
