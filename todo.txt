@@ -93,7 +93,9 @@ bug issue with stuck panel is appear after switch to fernflower and fail while d
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 11_sep_2019
 imp remember last window position ... done ........................................................11Sep2019
 imp search history ... done .......................................................................12Sep2019
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 12_sep_2019
 
+bug with searching content in separate class 
 imp settings functional
 imp command console
 imp pdf recognizing
