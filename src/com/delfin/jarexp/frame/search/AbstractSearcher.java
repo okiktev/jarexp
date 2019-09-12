@@ -80,7 +80,7 @@ abstract class AbstractSearcher implements Searcher {
 		for (String token : ActionHistory.getSearchTokens()) {
 			cb.addItem(token);
 		}
-		cb.setSelectedIndex(-1);
+		cb.setSelectedIndex(0);
 	}
 
 	protected abstract SearchDlg extractSearchDlg(SearchCriteria criteria);
