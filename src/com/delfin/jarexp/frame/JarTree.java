@@ -100,7 +100,7 @@ class JarTree extends JTree {
 					@Override
 					protected void initComponents() {
 						super.initComponents();
-						tResult.addMouseListener(new SearchResultMouseAdapter(tfFind, tResult));
+						tResult.addMouseListener(new SearchResultMouseAdapter(cbFind, tResult));
 					};
 				};
 			}

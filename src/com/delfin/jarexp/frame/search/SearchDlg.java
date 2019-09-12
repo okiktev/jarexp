@@ -29,6 +29,7 @@ import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -106,7 +107,8 @@ public abstract class SearchDlg extends JDialog {
 	protected JCheckBox cbInAllSubArchives = new JCheckBox("In all sub-archives");
 	protected JLabel lbResult = new JLabel("Result");
 	private JLabel lbFind = new JLabel("Find what:");
-	protected JTextField tfFind = new JTextField();
+	protected JComboBox<String> cbFind = new JComboBox<String>();
+	
 	private JButton btnFind = new JButton("Find");
 	private JRadioButton rbClass = new JRadioButton("Find File");
 	private JRadioButton rbInFiles = new JRadioButton("Find in Files");
@@ -124,8 +126,8 @@ public abstract class SearchDlg extends JDialog {
 			EventQueue.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					tfFind.grabFocus();
-					tfFind.requestFocus();
+					cbFind.grabFocus();
+					cbFind.requestFocus();
 				}
 			});
 		}
@@ -168,7 +170,7 @@ public abstract class SearchDlg extends JDialog {
 		add(tfFileFilter,       new GridBagConstraints(1, 3, 2, 1, 0, 0, NORTH, BOTH, new Insets(0, 5, 5, 5), 0, 0));
 
 		add(lbFind, new GridBagConstraints(0, 4, 1, 1, 0, 0, EAST, NONE, insets, 0, 0));
-		add(tfFind, new GridBagConstraints(1, 4, 1, 1, 1, 0, NORTH, BOTH, new Insets(0, 5, 0, 0), 0, 0));
+		add(cbFind, new GridBagConstraints(1, 4, 1, 1, 1, 0, NORTH, BOTH, new Insets(0, 5, 0, 0), 0, 0));
 		add(btnFind, new GridBagConstraints(2, 4, 1, 1, 0, 0, EAST, NONE, new Insets(0, 5, 0, 5), 0, 0));
 
 		add(lbResult, new GridBagConstraints(0, 5, 3, 1, 1, 0, WEST, HORIZONTAL, new Insets(5, 5, 5, 0), 0, 0));
@@ -195,7 +197,7 @@ public abstract class SearchDlg extends JDialog {
 		lbFileFilter.setFont(DLG_TEXT_FONT);
 		tfFileFilter.setFont(DLG_TEXT_FONT);
 		lbFind.setFont(DLG_TEXT_FONT);
-		tfFind.setFont(DLG_TEXT_FONT);
+		cbFind.setFont(DLG_TEXT_FONT);
 		btnFind.setFont(DLG_TEXT_FONT);
 		lbResult.setFont(DLG_TEXT_FONT);
 		lbSearchIn.setFont(DLG_TEXT_FONT);
@@ -203,6 +205,11 @@ public abstract class SearchDlg extends JDialog {
 		btnChangePlace.setFont(DLG_TEXT_FONT);
 
 		tfSearchIn.setEditable(false);
+		for (String token : ActionHistory.getSearchTokens()) {
+			cbFind.addItem(token);
+		}
+		cbFind.setEditable(true);
+		cbFind.setSelectedIndex(-1);
 
 		btnChangePlace.addActionListener(new ActionListener() {
 			@Override
@@ -246,7 +253,7 @@ public abstract class SearchDlg extends JDialog {
 		btnFind.setMnemonic(KeyEvent.VK_ENTER);
 		btnFind.addActionListener(new OnFindBtnClickListener(this));
 		btnFind.setMinimumSize(btnChangePlace.getPreferredSize());
-		
+
 		rbClass.setMnemonic(KeyEvent.VK_C);
 		rbClass.addChangeListener(setFocusOnInput);
 		rbClass.addActionListener(new ActionListener() {

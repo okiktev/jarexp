@@ -25,7 +25,7 @@ class FileSearcher extends AbstractSearcher {
 	@Override
 	public void search(SearchCriteria criteria) {
 		super.search(criteria);
-		String fileName = searchDlg.tfFind.getText();
+		String fileName = (String) searchDlg.cbFind.getSelectedItem();
 		if (!isMatchCase) {
 			fileName = fileName.toLowerCase();
 		}
@@ -34,6 +34,7 @@ class FileSearcher extends AbstractSearcher {
 		final Thread search = new Thread(new Runnable() {
 			@Override
 			public void run() {
+				manageSearchHistory();
 				final List<SearchResult> results = new ArrayList<SearchResult>();
 				long start = System.currentTimeMillis();
 				for (SearchEntries entry : searchEntries) {

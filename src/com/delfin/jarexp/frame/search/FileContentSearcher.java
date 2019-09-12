@@ -55,7 +55,7 @@ class FileContentSearcher extends AbstractSearcher {
 	@Override
 	public void search(SearchCriteria criteria) {
 		super.search(criteria);
-		statement = searchDlg.tfFind.getText();
+		statement = (String) searchDlg.cbFind.getSelectedItem();
 		if (statement == null || statement.isEmpty()) {
 			showMessageDialog(searchDlg, "Statement for search should not be empty.", "Wrong input", WARNING_MESSAGE);
 			return;
@@ -67,6 +67,7 @@ class FileContentSearcher extends AbstractSearcher {
 		final Thread search = new Thread(new Runnable() {
 			@Override
 			public void run() {
+				manageSearchHistory();
 				long start = System.currentTimeMillis();
 				for (SearchEntries entry : searchEntries) {
 					fullSearchPath = entry.fullPath;

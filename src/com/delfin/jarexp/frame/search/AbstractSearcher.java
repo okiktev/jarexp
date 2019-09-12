@@ -2,6 +2,9 @@ package com.delfin.jarexp.frame.search;
 
 import java.io.File;
 
+import javax.swing.JComboBox;
+
+import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.utils.Zip;
 
@@ -68,6 +71,16 @@ abstract class AbstractSearcher implements Searcher {
 
 	protected String getFullPath(String parent, String path) {
 		return parent + '/' + path;
+	}
+
+	protected void manageSearchHistory() {
+		JComboBox<String> cb = searchDlg.cbFind;
+		ActionHistory.addSearch((String) cb.getSelectedItem());
+		cb.removeAllItems();
+		for (String token : ActionHistory.getSearchTokens()) {
+			cb.addItem(token);
+		}
+		cb.setSelectedIndex(-1);
 	}
 
 	protected abstract SearchDlg extractSearchDlg(SearchCriteria criteria);

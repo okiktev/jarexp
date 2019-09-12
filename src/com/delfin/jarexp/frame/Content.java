@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -37,7 +38,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
@@ -89,12 +89,12 @@ public class Content extends JPanel {
 
 	static class SearchResultMouseAdapter extends MouseAdapter {
 
-		private final JTextField tfFind;
+		private final JComboBox<String> cbFind;
 
 		private final JTable tResult;
 
-		SearchResultMouseAdapter(JTextField tfFind, JTable tResult) {
-			this.tfFind = tfFind;
+		SearchResultMouseAdapter(JComboBox<String> cbFind, JTable tResult) {
+			this.cbFind = cbFind;
 			this.tResult = tResult;
 		}
 
@@ -143,7 +143,8 @@ public class Content extends JPanel {
 
 					Highlighter hilit = new RSyntaxTextAreaHighlighter();
 					area.setHighlighter(hilit);
-					hilit.addHighlight(position, position + tfFind.getText().length(), FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
+					hilit.addHighlight(position, position + ((String)cbFind.getSelectedItem()).length()
+							, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
 				} catch (BadLocationException ex) {
 					throw new JarexpException("Could not scroll to found index.", ex);
 				}
@@ -306,7 +307,7 @@ public class Content extends JPanel {
 					@Override
 					protected void initComponents() {
 						super.initComponents();
-						tResult.addMouseListener(new SearchResultMouseAdapter(tfFind, tResult));
+						tResult.addMouseListener(new SearchResultMouseAdapter(cbFind, tResult));
 					};
 				};
 

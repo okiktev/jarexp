@@ -19,6 +19,7 @@ import javax.swing.BorderFactory;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
@@ -36,6 +37,7 @@ public class Settings {
 					Properties settings = new Properties();
 					settings.put("x", String.valueOf(X));
 					settings.put("y", String.valueOf(Y));
+					settings.put("search.history", ActionHistory.getSearchHistory());
 					try {
 						OutputStream output = new FileOutputStream(new File(SETTINGS_FILE_NAME));
 						settings.store(output, null);
@@ -54,6 +56,7 @@ public class Settings {
 			X = Integer.valueOf(x == null ? "0" : x);
 			String y = (String)settings.get("y");
 			Y = Integer.valueOf(y == null ? "0" : y);
+			ActionHistory.loadSearchHistory((String)settings.get("search.history"));
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Unable to init settings dumper from " + SETTINGS_FILE_NAME, e);
 		}
