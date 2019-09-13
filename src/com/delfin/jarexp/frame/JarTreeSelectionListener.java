@@ -152,15 +152,26 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						public void perform() {
 							Content current = (Content) frame.getContentPane();
 							JSplitPane pane = (JSplitPane) current.getComponent(1);
-							Component contentView = pane.getRightComponent();
+							while (true) {
+								Component contentView = pane.getRightComponent();
+								if (contentView != null) {
+									pane.remove(contentView);
+									break;
+								} else {
+									try {
+										Thread.sleep(20);
+									} catch (InterruptedException e) {
+										log.log(Level.SEVERE, "Error while sleeping", e);
+									}
+								}
+							}
 
 						    JTable table = new JTable(new JarNodeTableModel(node, statusBar));
 					        table.setFillsViewportHeight(true);
 					        table.setAutoCreateRowSorter(true);
 
-					        contentView = new JScrollPane(table);
-
-							((JComponent) contentView).setBorder(Settings.EMPTY_BORDER);
+					        JComponent contentView = new JScrollPane(table);
+							contentView.setBorder(Settings.EMPTY_BORDER);
 							pane.setRightComponent(contentView);
 							pane.validate();
 							pane.repaint();
