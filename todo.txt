@@ -95,6 +95,9 @@ imp remember last window position ... done .....................................
 imp search history ... done .......................................................................12Sep2019
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 12_sep_2019
 bug with switching on tree plus when content was rendered ... done ................................13Sep2019
+bug fix issue with last java version on linux ... done ............................................20Dec2019
+
+imp update checker
 
 bug with searching content in separate class 
 imp settings functional
