@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -17,6 +18,7 @@ import javax.swing.KeyStroke;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.settings.Updater;
 
 
 class Menu extends JMenuBar {
@@ -119,6 +121,13 @@ class Menu extends JMenuBar {
 		item.addActionListener(aboutListener);
 		help.add(item);
 		add(help);
+
+		JMenu update = new JMenu("Update");
+		update.setIcon(resources.getUpdateIcon());
+		update.setVisible(false);
+		new Updater(update);
+		add(Box.createHorizontalGlue());
+		add(update);
 	}
 
 	private boolean isFernflowerSupported() {

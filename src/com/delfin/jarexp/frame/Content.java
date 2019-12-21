@@ -313,7 +313,7 @@ public class Content extends JPanel {
 
 			}
 		}
-		, new ActionListener () {
+		, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (isArchiveNotLoaded()) {

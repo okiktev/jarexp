@@ -26,7 +26,7 @@ import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
 
 public class Settings {
 
-	private static final Logger log = Logger.getLogger(Settings.class.getCanonicalName());
+	private static final Logger log = Logger.getLogger(Settings.class.getName());
 
 	private static final String SETTINGS_FILE_NAME = "settings.properties";
 	private static final long AUTO_SAVE_DELAY = 30000L;
@@ -38,6 +38,8 @@ public class Settings {
 					settings.put("x", String.valueOf(X));
 					settings.put("y", String.valueOf(Y));
 					settings.put("search.history", ActionHistory.getSearchHistory());
+					settings.put("new.version", ActionHistory.getNewVersion());
+					settings.put("last.update.check", ActionHistory.getLastUpdateCheck());
 					try {
 						OutputStream output = new FileOutputStream(new File(SETTINGS_FILE_NAME));
 						settings.store(output, null);
@@ -57,6 +59,8 @@ public class Settings {
 			String y = (String)settings.get("y");
 			Y = Integer.valueOf(y == null ? "0" : y);
 			ActionHistory.loadSearchHistory((String)settings.get("search.history"));
+			ActionHistory.loadNewVersion((String)settings.get("new.version"));
+			ActionHistory.loadLastUpdateCheck((String)settings.get("last.update.check"));
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Unable to init settings dumper from " + SETTINGS_FILE_NAME, e);
 		}
