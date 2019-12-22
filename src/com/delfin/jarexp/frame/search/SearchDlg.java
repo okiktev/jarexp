@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -49,8 +50,11 @@ import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.utils.Zip;
+import com.sun.istack.internal.logging.Logger;
 
 public abstract class SearchDlg extends JDialog {
+
+	private static final Logger log = Logger.getLogger(SearchDlg.class);
 
 	private static final long serialVersionUID = -2473586208850553553L;
 
@@ -221,9 +225,9 @@ public abstract class SearchDlg extends JDialog {
 				chooser.addChoosableFileFilter(filter);
 				chooser.setFileFilter(filter);
 
-				List<File> dirs = ActionHistory.getLastDirSelected();
-				if (!dirs.isEmpty()) {
-					chooser.setCurrentDirectory(dirs.get(0));
+				File openIn = getOpenIn();
+				if (openIn != null) {
+					chooser.setCurrentDirectory(openIn);
 				}
 
 				if (chooser.showOpenDialog(SearchDlg.this) == JFileChooser.APPROVE_OPTION) {
@@ -241,6 +245,19 @@ public abstract class SearchDlg extends JDialog {
 						makeVisibleHide();
 					}
 				}
+			}
+
+			private File getOpenIn() {
+				try {
+					File place = new File(tfSearchIn.getText());
+					if(place.exists()) {
+						return place.isDirectory() ? place : place.getParentFile();
+					}
+				} catch (Exception e) {
+					log.log(Level.WARNING, "Unable to select default path to open directory", e);
+				}
+				List<File> dirs = ActionHistory.getLastDirSelected();
+				return dirs.isEmpty() ? null : dirs.get(0);
 			}
 		});
 

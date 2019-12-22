@@ -35,7 +35,7 @@ class FileSearcher extends AbstractSearcher {
 			@Override
 			public void run() {
 				manageSearchHistory();
-				final List<SearchResult> results = new ArrayList<SearchResult>();
+				List<SearchResult> results = new ArrayList<SearchResult>();
 				long start = System.currentTimeMillis();
 				for (SearchEntries entry : searchEntries) {
 					fullSearchPath = entry.fullPath;
