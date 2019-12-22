@@ -97,6 +97,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 12_sep_2019
 bug with switching on tree plus when content was rendered ... done ................................13Sep2019
 bug fix issue with last java version on linux ... done ............................................20Dec2019
 imp update checker ... done .......................................................................21Dec2019
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 21_dec_2019
 
 imp decompiler ico in status bar
 bug open dir window where file specified in search

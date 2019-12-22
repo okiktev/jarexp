@@ -33,7 +33,7 @@ public class Updater {
 
 	private static Timer checker;
 
-	public Updater(JMenu update) {
+	public Updater(final JMenu update) {
 		try {
 			checker = new Timer("UpdateChecker");
 			checker.scheduleAtFixedRate(new TimerTask() {

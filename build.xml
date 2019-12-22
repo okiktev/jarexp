@@ -232,6 +232,7 @@
 		<echo message="The site version is: ${full.site.version}" />
 
 		<mkdir dir="${jarexp.dir}" />
+		<echo file="${jarexp.dir}/version" append="false">${full.version}</echo>
 		<copy todir="${jarexp.dir}">
 			<fileset dir="${basedir}/www/jarexp">
 				<exclude name="**/*.zip" />

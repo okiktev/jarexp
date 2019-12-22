@@ -132,7 +132,9 @@ public class ActionHistory {
 	}
 
 	public static void loadLastUpdateCheck(Date date) {
-		HISTORY.put(Key.LAST_UPDATE_CHECK, Collections.singletonList(date));
+		List<Object> value = new ArrayList<Object>(1);
+		value.add(date);
+		HISTORY.put(Key.LAST_UPDATE_CHECK, value);
 	}
 
 	public static String getNewVersion() {
@@ -147,7 +149,9 @@ public class ActionHistory {
 		if (version == null || version.isEmpty()) {
 			return;
 		}
-		HISTORY.put(Key.NEW_VERSION, Collections.singletonList(version));
+		List<Object> value = new ArrayList<Object>(1);
+		value.add(version);
+		HISTORY.put(Key.NEW_VERSION, value);
 	}
 
 	private static void addToHistory(Object value, Key key) {
