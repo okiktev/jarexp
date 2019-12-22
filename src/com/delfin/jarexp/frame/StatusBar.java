@@ -6,6 +6,7 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.LayoutManager2;
 import java.util.ArrayList;
@@ -22,19 +23,25 @@ import javax.swing.JProgressBar;
 import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicProgressBarUI;
 
+import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
+import com.delfin.jarexp.frame.resources.Resources;
+
 class StatusBar extends JStatusBar {
 
 	private static final long serialVersionUID = 550207775529991234L;
+	private static final Resources RESOURCES = Resources.getInstance();
 	private JProgressBar progressBar = new JProgressBar();
 	private final Content content;
 	private final JLabel path = new JLabel("");
 	private final JLabel compJava = new JLabel("");
 	private final JLabel children = new JLabel("");
+	private JPanel decompilerImg;
 
 	StatusBar(Content content) {
 		super();
 		this.content = content;
-		
+
 		compJava.setToolTipText("Version of Java which was class compiled with");
 		children.setToolTipText("Number of all objects placed in current folder/archive");
 
@@ -46,9 +53,12 @@ class StatusBar extends JStatusBar {
 		JPanel panel = new JPanel(new GridLayout(1, 1));
 		panel.add(progressBar);
 
+		decompilerImg = new ImgPanel(RESOURCES.getJdCoreImage());
+
 		add(new StatusBarItem("children", children, "20"));
 		add(new StatusBarItem("comp_java", compJava, "20"));
 		add(new StatusBarItem("place_holder", path, "*"));
+		add(new StatusBarItem("decompiler_ico", decompilerImg, "20"));
 		add(new StatusBarItem("progress_bar", panel, "80"));
 	}
 
@@ -74,6 +84,25 @@ class StatusBar extends JStatusBar {
 
 	void setPath(String path) {
 		this.path.setText(path);
+	}
+
+	void setDecompiler(DecompilerType decompiler) {
+		Image img;
+		switch (decompiler) {
+		case JDCORE:
+			img = RESOURCES.getJdCoreImage();
+			break;
+		case FERNFLOWER:
+			img = RESOURCES.getFernflowerImage();
+			break;
+		case PROCYON:
+			img = RESOURCES.getProcyonImage();
+			break;
+		default:
+			throw new JarexpException("Unable to define decompiler type " + decompiler);
+		}
+		((ImgPanel)decompilerImg).setImage(img);
+		decompilerImg.repaint();
 	}
 
 }

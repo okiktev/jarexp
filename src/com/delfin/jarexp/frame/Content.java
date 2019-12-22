@@ -349,6 +349,7 @@ public class Content extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				changeDecompiler(DecompilerType.JDCORE);
+				statusBar.setDecompiler(DecompilerType.JDCORE);
 			}
 		}
 		, new ActionListener() {
@@ -361,6 +362,7 @@ public class Content extends JPanel {
 							statusBar.enableProgress("Downloading...");
 							Decompiler.prepareBinariesFor(DecompilerType.PROCYON);
 							changeDecompiler(DecompilerType.PROCYON);
+							statusBar.setDecompiler(DecompilerType.PROCYON);
 						} catch (Exception ex) {
 							Msg.showException("Unable to toggle decompiler", ex);
 						} finally {
@@ -380,6 +382,7 @@ public class Content extends JPanel {
 							statusBar.enableProgress("Downloading...");
 							Decompiler.prepareBinariesFor(DecompilerType.FERNFLOWER);
 							changeDecompiler(DecompilerType.FERNFLOWER);
+							statusBar.setDecompiler(DecompilerType.FERNFLOWER);
 						} catch (Exception ex) {
 							Msg.showException("Unable to toggle decompiler", ex);
 						} finally {

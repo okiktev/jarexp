@@ -86,6 +86,12 @@ public class Resources {
 
 	private Icon environmentIcon;
 
+	private Image fernflowerImage;
+
+	private Image jdCoreImage;
+
+	private Image procyonImage;
+
 	private static Map<String, Icon> icons = new HashMap<String, Icon>();
 
 	private static File TMP_DIR = Settings.getTmpDir();
@@ -372,6 +378,83 @@ public class Resources {
 		}
 	}
 
+	public Icon getJdCoreIcon() {
+		if (jdCoreIcon != null) {
+			return jdCoreIcon;
+		}
+		try {
+			return jdCoreIcon = new ImageIcon(loadImage("jdco.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load jd core menu icon from class path", e);
+		}
+	}
+
+	public Icon getProcyonIcon() {
+		if (procyonIcon != null) {
+			return procyonIcon;
+		}
+		try {
+			return procyonIcon = new ImageIcon(loadImage("proc.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load procyon menu icon from class path", e);
+		}
+	}
+
+	public Icon getFernflowerIcon() {
+		if (fernflowerIcon != null) {
+			return fernflowerIcon;
+		}
+		try {
+			return fernflowerIcon = new ImageIcon(loadImage("fern.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load fernflower menu icon from class path", e);
+		}
+	}
+
+	public Icon getUpdateIcon() {
+		if (updateIcon != null) {
+			return updateIcon;
+		}
+		try {
+			return updateIcon = new ImageIcon(loadImage("upd.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load update menu icon from class path", e);
+		}
+	}
+
+	public Image getFernflowerImage() {
+		if (fernflowerImage != null) {
+			return fernflowerImage;
+		}
+		try {
+			return fernflowerImage = loadImage("fern.png");
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load fernflower image from class path", e);
+		}
+	}
+
+	public Image getJdCoreImage() {
+		if (jdCoreImage != null) {
+			return jdCoreImage;
+		}
+		try {
+			return jdCoreImage = loadImage("jdco.png");
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load jd core image from class path", e);
+		}
+	}
+
+	public Image getProcyonImage() {
+		if (procyonImage != null) {
+			return procyonImage;
+		}
+		try {
+			return procyonImage = loadImage("proc.png");
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load procyon image from class path", e);
+		}
+	}
+
 	private static String getExtension(String name) {
 		int i = name.lastIndexOf('.');
 		if (i == -1) {
@@ -427,50 +510,6 @@ public class Resources {
 
 		System.out.println(getExtension("dfafas.exe"));
 
-	}
-
-	public Icon getJdCoreIcon() {
-		if (jdCoreIcon != null) {
-			return jdCoreIcon;
-		}
-		try {
-			return jdCoreIcon = new ImageIcon(loadImage("jdco.png"));
-		} catch (IOException e) {
-			throw new ResourcesException("Unable to load jd core menu icon from class path", e);
-		}
-	}
-
-	public Icon getProcyonIcon() {
-		if (procyonIcon != null) {
-			return procyonIcon;
-		}
-		try {
-			return procyonIcon = new ImageIcon(loadImage("proc.png"));
-		} catch (IOException e) {
-			throw new ResourcesException("Unable to load rocyon menu icon from class path", e);
-		}
-	}
-
-	public Icon getFernflowerIcon() {
-		if (fernflowerIcon != null) {
-			return fernflowerIcon;
-		}
-		try {
-			return fernflowerIcon = new ImageIcon(loadImage("fern.png"));
-		} catch (IOException e) {
-			throw new ResourcesException("Unable to load fernflower menu icon from class path", e);
-		}
-	}
-
-	public Icon getUpdateIcon() {
-		if (updateIcon != null) {
-			return updateIcon;
-		}
-		try {
-			return updateIcon = new ImageIcon(loadImage("upd.png"));
-		} catch (IOException e) {
-			throw new ResourcesException("Unable to load update menu icon from class path", e);
-		}
 	}
 
 }
