@@ -67,6 +67,9 @@ class FileSearcher extends AbstractSearcher {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void search(String parent, File searchRoot, Object results, SearchDlg dlg, String pathInJar) {
+		if (Thread.currentThread().isInterrupted()) {
+			return;
+		}
 		Jar seacher;
 		if (searchRoot.isDirectory()) {
 			seacher = prepareDirectorySearch(searchRoot, (List<SearchResult>)results, dlg);

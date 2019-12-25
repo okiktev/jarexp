@@ -9,6 +9,21 @@ public final class StringUtils {
 		return text.charAt(text.length() - 1) == ch;
 	}
 
+	public static boolean endsWith(String text, String token) {
+		if(text == null || token == null) {
+			return false;
+		}
+		int tokenSize = token.length();
+		int textSize = text.length();
+		if (tokenSize > textSize) {
+			return false;
+		}
+		if (tokenSize == 0) {
+			return true;
+		}
+		return seek(textSize - tokenSize, token, text);
+	}
+
 	public static int indexOf(String text, String token) {
 		return indexOf(text, token, 0);
 	}

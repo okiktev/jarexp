@@ -100,11 +100,12 @@ imp update checker ... done ....................................................
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 21_dec_2019
 imp decompiler ico in status bar ... done .........................................................22Dec2019
 bug open dir window where file specified in search ... done .......................................22Dec2019
-imp unable to get copy of search results ... done .................................................25Dec2019
-imp output search result to clipboard or file ... done ............................................25Dec2019
+imp unable to get copy of search results ... done .................................................23Dec2019
+imp output search result to clipboard or file ... done ............................................24Dec2019
+bug with searching content in separate class ... done .............................................25Dec2019
 
-bug with searching content in separate class 
 imp decompile all classes
+imp means to work with properties, environment and search results data (copy to clipboard etc.)
 imp command console
 imp settings functional
 imp pdf recognizing
@@ -117,7 +118,6 @@ imp get all depended classes in the jar
 imp ribbon
 imp when delete file clear preview and context panel
 imp all option dialogs should be custom
-imp means to work with properties, environment and search results data (copy to clipboard etc.)
 imp progress bar to search
 imp pause button to search
 imp change loading ico from file to input stream

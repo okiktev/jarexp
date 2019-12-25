@@ -112,13 +112,31 @@ class FileContentSearcher extends AbstractSearcher {
 
 	@Override
 	protected void search(String parent, File searchRoot, Object results, SearchDlg dlg, String pathInJar) {
+		if (Thread.currentThread().isInterrupted()) {
+			return;
+		}
 		Jar seacher;
 		if (searchRoot.isDirectory()) {
 			seacher = prepareDirectorySearch(searchRoot, dlg);
+		} else if (StringUtils.endsWith(searchRoot.getName(), ".class")) {
+			searchInClass(parent, searchRoot, dlg, pathInJar);
+			return;
 		} else {
 			seacher = prepareArchiveSearch(parent, searchRoot, dlg, pathInJar);
 		}
 		seacher.bypass();
+	}
+
+	private void searchInClass(String parent, File searchRoot, SearchDlg dlg, String pathInJar) {
+		String fullPath = searchRoot.getAbsolutePath();
+		dlg.lbResult.setText("Searching..." + fullPath);
+		try {
+			String content = Decompiler.get().decompile(searchRoot).content;
+			doSearchInFile(new Scanner(content), fullPath);
+		} catch (Exception e) {
+			handleError(e, fullPath);
+			return;
+		}
 	}
 
 	private Jar prepareArchiveSearch(final String parent, final File searchRoot, final SearchDlg dlg, final String pathInJar) {
@@ -225,7 +243,7 @@ class FileContentSearcher extends AbstractSearcher {
 		}
 	}
 
-	private void handleError(Exception e, String fullPath) {
+	private void handleError(Throwable e, String fullPath) {
 		log.log(Level.SEVERE, "An error occurred while decompiling file " + fullPath, e);
 		errors.put(fullPath, "ERROR. Unable to search in the class. Cause: " + e.getMessage());
 	}

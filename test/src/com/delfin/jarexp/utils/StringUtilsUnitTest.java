@@ -100,4 +100,42 @@ public class StringUtilsUnitTest {
 
 	}
 
+	@Test
+	public void testEndsWith() throws Exception {
+		assertFalse(StringUtils.endsWith(null, null));
+		assertFalse(StringUtils.endsWith("fsfds", null));
+		assertFalse(StringUtils.endsWith(null, "fsdfsd"));
+
+		assertTrue(StringUtils.endsWith("aadgerg", ""));
+		assertTrue(StringUtils.endsWith("aadgerg", "erg"));
+		assertTrue(StringUtils.endsWith("aadgerg", "erG"));
+		assertTrue(StringUtils.endsWith("aadgerg", "ERG"));
+		assertTrue(StringUtils.endsWith("aadgerg", "eRg"));
+		assertTrue(StringUtils.endsWith("aadgerg", "ErG"));
+		assertTrue(StringUtils.endsWith("aadgERG", "ERG"));
+		assertTrue(StringUtils.endsWith("aadgeRg", "eRG"));
+		assertTrue(StringUtils.endsWith("aadgerG", "erg"));
+		assertTrue(StringUtils.endsWith("aadgerg", "aadgerg"));
+
+		assertFalse(StringUtils.endsWith("aadg", "ergdas"));
+		assertFalse(StringUtils.endsWith("aadgerg", "aad"));
+		assertFalse(StringUtils.endsWith("aadgerg", "wrg"));
+	}
+	
+	@Test
+	public void testPerfEndsWith() throws Exception {
+		long s;
+		s = System.currentTimeMillis();
+		for (int i = 0; i < 100000; ++i) {
+			"fasGadgafdg".toLowerCase().equals("fdg");
+		}
+		System.out.println("res 1:" + (System.currentTimeMillis() - s));
+
+		s = System.currentTimeMillis();
+		for (int i = 0; i < 100000; ++i) {
+			StringUtils.endsWith("fasGadgafdg", "fdG");
+		}
+		System.out.println("res 2:" + (System.currentTimeMillis() - s));
+	}
+
 }
