@@ -20,4 +20,14 @@ public class SearchResult {
 		this(line, -1);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder out = new StringBuilder();
+		if (position != -1) {
+			out.append('[').append(position).append("]: ");
+		}
+		out.append(line);
+		return out.toString();
+	}
+
 }

@@ -41,4 +41,13 @@ class FileContentSearchResultTableModel extends AbstractTableModel {
 		return data.get(rowIndex);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder out = new StringBuilder();
+		for (Object result : data) {
+			out.append(result).append('\n');
+		}
+		return out.toString();
+	}
+
 }

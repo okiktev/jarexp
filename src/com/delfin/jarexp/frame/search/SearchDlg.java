@@ -4,7 +4,6 @@ import static com.delfin.jarexp.settings.Settings.DLG_DIM;
 import static com.delfin.jarexp.settings.Settings.DLG_TEXT_FONT;
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.EAST;
-import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.NONE;
 import static java.awt.GridBagConstraints.NORTH;
 import static java.awt.GridBagConstraints.WEST;
@@ -18,16 +17,21 @@ import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -49,6 +53,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 import com.sun.istack.internal.logging.Logger;
 
@@ -117,6 +123,8 @@ public abstract class SearchDlg extends JDialog {
 	private JRadioButton rbClass = new JRadioButton("Find File");
 	private JRadioButton rbInFiles = new JRadioButton("Find in Files");
 	protected JTable tResult = new JTable();
+	protected ImgBtn btnResultToFile = new ImgBtn("Save search result to file", Resources.getInstance().getFloppyIcon());
+	protected ImgBtn btnResultToClipboard = new ImgBtn("Copy search result to clipboard", Resources.getInstance().getCopyIcon());
 	protected JScrollPane spResult = new JScrollPane(tResult);
 	private JLabel lbFileFilter = new JLabel("File Filter:");
 	protected JTextField tfFileFilter = new JTextField("!.png,!.jpeg,!.jpg,!.bmp,!.gif,!.ico,!.exe");
@@ -175,9 +183,11 @@ public abstract class SearchDlg extends JDialog {
 
 		add(lbFind, new GridBagConstraints(0, 4, 1, 1, 0, 0, EAST, NONE, insets, 0, 0));
 		add(cbFind, new GridBagConstraints(1, 4, 1, 1, 1, 0, NORTH, BOTH, new Insets(0, 5, 0, 0), 0, 0));
-		add(btnFind, new GridBagConstraints(2, 4, 1, 1, 0, 0, EAST, NONE, new Insets(0, 5, 0, 5), 0, 0));
+		add(btnFind, new GridBagConstraints(2, 4, 1, 1, 0, 0, WEST, NONE, new Insets(0, 5, 0, 5), 0, 0));
 
-		add(lbResult, new GridBagConstraints(0, 5, 3, 1, 1, 0, WEST, HORIZONTAL, new Insets(5, 5, 5, 0), 0, 0));
+		add(lbResult,             new GridBagConstraints(0, 5, 2, 1, 1, 0, WEST, NONE, new Insets(5, 5, 5, 0), 0, 0));
+		add(btnResultToFile,      new GridBagConstraints(2, 5, 1, 0, 0, 0, NORTH, NONE, new Insets(5, 5, 5, 0), 0, 0));
+		add(btnResultToClipboard, new GridBagConstraints(2, 5, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 5, 5), 0, 0));
 
 		add(spResult, new GridBagConstraints(0, 6, 3, 1, 1, 1, NORTH, BOTH, insets, 0, 0));
 	}
@@ -204,6 +214,8 @@ public abstract class SearchDlg extends JDialog {
 		cbFind.setFont(DLG_TEXT_FONT);
 		btnFind.setFont(DLG_TEXT_FONT);
 		lbResult.setFont(DLG_TEXT_FONT);
+		btnResultToFile.setFont(DLG_TEXT_FONT);
+		btnResultToClipboard.setFont(DLG_TEXT_FONT);
 		lbSearchIn.setFont(DLG_TEXT_FONT);
 		tfSearchIn.setFont(DLG_TEXT_FONT);
 		btnChangePlace.setFont(DLG_TEXT_FONT);
@@ -245,19 +257,6 @@ public abstract class SearchDlg extends JDialog {
 						makeVisibleHide();
 					}
 				}
-			}
-
-			private File getOpenIn() {
-				try {
-					File place = new File(tfSearchIn.getText());
-					if(place.exists()) {
-						return place.isDirectory() ? place : place.getParentFile();
-					}
-				} catch (Exception e) {
-					log.log(Level.WARNING, "Unable to select default path to open directory", e);
-				}
-				List<File> dirs = ActionHistory.getLastDirSelected();
-				return dirs.isEmpty() ? null : dirs.get(0);
 			}
 		});
 
@@ -322,8 +321,58 @@ public abstract class SearchDlg extends JDialog {
 			}
 		});
 
+		btnResultToFile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				chooser.setDialogTitle("Select file to save search result");
+				File openIn = getOpenIn();
+				if (openIn != null) {
+					chooser.setCurrentDirectory(openIn);
+				}
+				if (chooser.showOpenDialog(SearchDlg.this) == JFileChooser.APPROVE_OPTION) {
+					File f = chooser.getSelectedFile();
+					if (f.exists()) {
+						showMessageDialog(SearchDlg.this, "Specified file exists.", "Wrong input", ERROR_MESSAGE);
+					}
+					if (f.isDirectory()) {
+						showMessageDialog(SearchDlg.this, "Specified file is a directory.", "Wrong input", ERROR_MESSAGE);
+					} else {
+						ActionHistory.addLastDirSelected(f);
+						try {
+							FileUtils.toFile(f, btnResultToFile.result.toString());
+						} catch (IOException ex) {
+							Msg.showException("Could not dump search results into file " + f, ex);
+						}
+					}
+				}
+			}
+		});
+
+		btnResultToClipboard.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+		        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		        clipboard.setContents(new StringSelection(btnResultToClipboard.result.toString()), null);			
+			}
+		});
+
 		makeVisibleHide();
 		getRootPane().setDefaultButton(btnFind);
+	}
+
+	private File getOpenIn() {
+		try {
+			File place = new File(tfSearchIn.getText());
+			if(place.exists()) {
+				return place.isDirectory() ? place : place.getParentFile();
+			}
+		} catch (Exception e) {
+			log.log(Level.WARNING, "Unable to select default path to open directory", e);
+		}
+		List<File> dirs = ActionHistory.getLastDirSelected();
+		return dirs.isEmpty() ? null : dirs.get(0);
 	}
 
 	private void makeVisibleHide() {
@@ -355,4 +404,22 @@ public abstract class SearchDlg extends JDialog {
 		};
 	}
 
+}
+
+class ImgBtn extends JButton {
+
+	private static final long serialVersionUID = 1615780487137910986L;
+
+	Object result;
+
+	ImgBtn(String alt, Icon icon) {
+		setIcon(icon);
+		setBorder(Settings.EMPTY_BORDER);
+		setToolTipText(alt);
+		setVisible(false);
+	}
+
+	void setResult(Object result) {
+		this.result = result;
+	}
 }

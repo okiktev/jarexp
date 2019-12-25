@@ -86,6 +86,8 @@ public class Resources {
 
 	private Icon environmentIcon;
 
+	private Icon floppyIcon;
+
 	private Image fernflowerImage;
 
 	private Image jdCoreImage;
@@ -419,6 +421,17 @@ public class Resources {
 			return updateIcon = new ImageIcon(loadImage("upd.png"));
 		} catch (IOException e) {
 			throw new ResourcesException("Unable to load update menu icon from class path", e);
+		}
+	}
+
+	public Icon getFloppyIcon() {
+		if (floppyIcon != null) {
+			return floppyIcon;
+		}
+		try {
+			return floppyIcon = new ImageIcon(loadImage("flpy.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load floppy icon from class path", e);
 		}
 	}
 

@@ -17,6 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
 
+import javax.swing.table.TableModel;
+
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 
@@ -76,7 +78,8 @@ class FileContentSearcher extends AbstractSearcher {
 				}
 				long overall = System.currentTimeMillis() - start;
 				searchResult = new TreeMap<String, List<SearchResult>>(searchResult);
-				searchDlg.tResult.setModel(new FileContentSearchResultTableModel(searchResult, errors));
+				TableModel table = new FileContentSearchResultTableModel(searchResult, errors);
+				searchDlg.tResult.setModel(table);
 				String label = "Found " + searchResult.size() + " results with " + getHits(searchResult) + " hits for " + overall + "ms";
 				int size = errors.size();
 				if (size != 0) {
@@ -84,6 +87,10 @@ class FileContentSearcher extends AbstractSearcher {
 				}
 				label += ':';
 				searchDlg.lbResult.setText(label);
+				searchDlg.btnResultToClipboard.setVisible(true);
+				searchDlg.btnResultToClipboard.setResult(table);
+				searchDlg.btnResultToFile.setVisible(true);
+				searchDlg.btnResultToFile.setResult(table);
 			}
 
 			private int getHits(Map<String, List<SearchResult>> result) {

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.regex.Pattern;
 
+import javax.swing.table.TableModel;
+
 import com.delfin.jarexp.frame.Jar;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
@@ -44,8 +46,13 @@ class FileSearcher extends AbstractSearcher {
 				}
 				long overall = System.currentTimeMillis() - start;
 
-				searchDlg.tResult.setModel(new FileSearchResultTableModel(results));
+				TableModel table = new FileSearchResultTableModel(results);
+				searchDlg.tResult.setModel(table);
 				searchDlg.lbResult.setText("Result. Found " + results.size() + " results for " + overall + "ms:");
+				searchDlg.btnResultToClipboard.setVisible(true);
+				searchDlg.btnResultToClipboard.setResult(table);
+				searchDlg.btnResultToFile.setVisible(true);
+				searchDlg.btnResultToFile.setResult(table);
 			};
 		});
 		search.start();

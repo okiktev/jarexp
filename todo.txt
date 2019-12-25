@@ -100,14 +100,14 @@ imp update checker ... done ....................................................
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 21_dec_2019
 imp decompiler ico in status bar ... done .........................................................22Dec2019
 bug open dir window where file specified in search ... done .......................................22Dec2019
+imp unable to get copy of search results ... done .................................................25Dec2019
+imp output search result to clipboard or file ... done ............................................25Dec2019
 
-imp unable to get copy of search results
-imp output search result to clipboard or file
 bug with searching content in separate class 
-imp settings functional
-imp command console
-imp pdf recognizing
 imp decompile all classes
+imp command console
+imp settings functional
+imp pdf recognizing
 
 bug unable to close filter panel
 bug each filter panel appear for each pressing ctrl+f
