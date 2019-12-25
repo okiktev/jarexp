@@ -103,9 +103,11 @@ bug open dir window where file specified in search ... done ....................
 imp unable to get copy of search results ... done .................................................23Dec2019
 imp output search result to clipboard or file ... done ............................................24Dec2019
 bug with searching content in separate class ... done .............................................25Dec2019
+imp means to work with properties, environment (copy to clipboard etc.) ... done ..................25Dec2019
 
+imp decouple relation between message dlg and main frame
+imp multi window support
 imp decompile all classes
-imp means to work with properties, environment and search results data (copy to clipboard etc.)
 imp command console
 imp settings functional
 imp pdf recognizing

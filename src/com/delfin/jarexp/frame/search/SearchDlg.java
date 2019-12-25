@@ -335,6 +335,7 @@ public abstract class SearchDlg extends JDialog {
 					File f = chooser.getSelectedFile();
 					if (f.exists()) {
 						showMessageDialog(SearchDlg.this, "Specified file exists.", "Wrong input", ERROR_MESSAGE);
+						return;
 					}
 					if (f.isDirectory()) {
 						showMessageDialog(SearchDlg.this, "Specified file is a directory.", "Wrong input", ERROR_MESSAGE);
@@ -343,7 +344,7 @@ public abstract class SearchDlg extends JDialog {
 						try {
 							FileUtils.toFile(f, btnResultToFile.result.toString());
 						} catch (IOException ex) {
-							Msg.showException("Could not dump search results into file " + f, ex);
+							Msg.showException("Could not dump search results into the file " + f, ex);
 						}
 					}
 				}

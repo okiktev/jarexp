@@ -3,6 +3,7 @@ package com.delfin.jarexp.frame;
 
 import static com.delfin.jarexp.settings.Version.JAVA_MAJOR_VER;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -44,7 +45,6 @@ class Menu extends JMenuBar {
 		item = new JMenuItem("Exit", KeyEvent.VK_E);
 		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
 		item.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.runFinalization();
@@ -81,7 +81,7 @@ class Menu extends JMenuBar {
 		rbProcyonItem.addActionListener(procyonListener);
 		boolean isProcyonSupported = isProcyonSupported();
 		rbProcyonItem.setEnabled(isProcyonSupported);
-		rbProcyonItem.setToolTipText(isProcyonSupported ? null : "Unfortunately Procyon decompiler supports Java 7 and 8 only.");
+		rbProcyonItem.setToolTipText(isProcyonSupported ? null : "Unfortunately Procyon decompiler supports Java 7 and higher.");
 		JRadioButtonMenuItem rbFernflowerItem = new JRadioButtonMenuItem("Fernflower", resources.getFernflowerIcon());
 		rbFernflowerItem.setMnemonic(KeyEvent.VK_F);
 		rbFernflowerItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
@@ -128,6 +128,8 @@ class Menu extends JMenuBar {
 		new Updater(update);
 		add(Box.createHorizontalGlue());
 		add(update);
+
+		setPreferredSize(new Dimension((int)getPreferredSize().getWidth(), 20));
 	}
 
 	private boolean isFernflowerSupported() {

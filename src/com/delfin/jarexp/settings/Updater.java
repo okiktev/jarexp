@@ -64,7 +64,7 @@ public class Updater {
 						public void mousePressed(MouseEvent event) {
 							if (Desktop.isDesktopSupported()) {
 								try {
-									Desktop.getDesktop().browse(new URI(Settings.JAREXP_HOST_URL));
+									Desktop.getDesktop().browse(new URI(Settings.JAREXP_HOST_URL + "?l=en"));
 								} catch (Exception e) {
 									throw new JarexpException("Could not redirect to jar explorer site", e);
 								}

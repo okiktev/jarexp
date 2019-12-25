@@ -4,21 +4,33 @@ import static com.delfin.jarexp.settings.Settings.DLG_TEXT_FONT;
 import static com.delfin.jarexp.settings.Settings.DLG_DIM;
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.HORIZONTAL;
+import static java.awt.GridBagConstraints.NONE;
 import static java.awt.GridBagConstraints.NORTH;
+import static java.awt.GridBagConstraints.NORTHEAST;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.JarEntry;
 
+import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -28,8 +40,11 @@ import javax.swing.WindowConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.tree.TreePath;
 
+import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
 public class InfoDlg extends JDialog {
@@ -43,6 +58,9 @@ public class InfoDlg extends JDialog {
 	private JPanel panel = new JPanel();
 	private JScrollPane spResult = new JScrollPane(panel);
 	private final TreePath[] paths;
+	private JButton btnResultToFile = new JButton();
+	private JButton btnResultToClipboard = new JButton();
+	private Map<String, Integer> types;
 
 	InfoDlg(TreePath[] paths) {
 		super();
@@ -67,6 +85,20 @@ public class InfoDlg extends JDialog {
 		pack();
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder out = new StringBuilder();
+		out.append(taResult.getText()).append('\n');
+		if (!types.isEmpty()) {
+			String delim = "\t\t|\t\t";
+			out.append(columnNames[0]).append(delim).append(columnNames[1]).append('\n');
+			for(Entry<String, Integer> entry : types.entrySet()) {
+				out.append(entry.getKey()).append(delim).append(entry.getValue()).append('\n');
+			}
+		}
+		return out.toString();
+	}
+
 	static String getComaSeparatedFullPaths(TreePath[] paths) {
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < paths.length; ++i) {
@@ -84,11 +116,16 @@ public class InfoDlg extends JDialog {
 
 		panel.setLayout(new GridBagLayout());
 		panel.add(taResult, new GridBagConstraints(0, 0, 1, 1, 0, 0, NORTH, HORIZONTAL, insets, 0, 0));
+		panel.add(btnResultToFile,      new GridBagConstraints(0, 0, 1, 1, 0, 0, NORTHEAST, NONE, new Insets(5, 5, 5, 25), 0, 0));
+		panel.add(btnResultToClipboard, new GridBagConstraints(0, 0, 1, 1, 0, 0, NORTHEAST, NONE, new Insets(5, 0, 5, 5), 0, 0));
 		panel.add(tTypes.getTableHeader(), new GridBagConstraints(0, 1, 1, 1, 0, 0, NORTH, HORIZONTAL, insets, 0, 0));
 		panel.add(tTypes, new GridBagConstraints(0, 2, 1, 1, 1, 1, NORTH, BOTH, insets, 0, 0));
 
 		setLayout(new GridBagLayout());
 		add(spResult, new GridBagConstraints(0, 0, 1, 1, 1, 1, NORTH, BOTH, insets, 0, 0));
+
+		panel.setComponentZOrder(btnResultToClipboard, 0);
+		panel.setComponentZOrder(btnResultToFile, 0);
 	}
 
 	protected void initComponents() throws IOException {
@@ -117,7 +154,7 @@ public class InfoDlg extends JDialog {
 			taResult.append("Code Signers: " + (node.signers == null ? "" : Arrays.toString(node.signers)) + '\n');
 		}
 
-		final Map<String, Integer> types = grabTypesInside(paths);
+		types = grabTypesInside(paths);
 		if (!types.isEmpty()) {
 			taResult.append("File Types:");
 			tTypes.setModel(new AbstractTableModel() {
@@ -167,6 +204,52 @@ public class InfoDlg extends JDialog {
 			});
 			tTypes.setAutoCreateRowSorter(true);
 		}
+
+		btnResultToClipboard.setFont(DLG_TEXT_FONT);
+		btnResultToClipboard.setBorder(Settings.EMPTY_BORDER);
+		btnResultToClipboard.setIcon(Resources.getInstance().getCopyIcon());
+		btnResultToClipboard.setToolTipText("Copy file info to clipboard");
+		btnResultToClipboard.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+		        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		        clipboard.setContents(new StringSelection(InfoDlg.this.toString()), null);			
+			}
+		});
+
+		btnResultToFile.setFont(DLG_TEXT_FONT);
+		btnResultToFile.setBorder(Settings.EMPTY_BORDER);
+		btnResultToFile.setIcon(Resources.getInstance().getFloppyIcon());
+		btnResultToFile.setToolTipText("Save file info on disk");
+		btnResultToFile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				chooser.setDialogTitle("Select file to save info");
+				List<File> dirs = ActionHistory.getLastDirSelected();
+				if (!dirs.isEmpty()) {
+					chooser.setCurrentDirectory(dirs.get(0));
+				}
+				if (chooser.showOpenDialog(InfoDlg.this) == JFileChooser.APPROVE_OPTION) {
+					File f = chooser.getSelectedFile();
+					if (f.exists()) {
+						showMessageDialog(InfoDlg.this, "Specified file exists.", "Wrong input", ERROR_MESSAGE);
+						return;
+					}
+					if (f.isDirectory()) {
+						showMessageDialog(InfoDlg.this, "Specified file is a directory.", "Wrong input", ERROR_MESSAGE);
+					} else {
+						ActionHistory.addLastDirSelected(f);
+						try {
+							FileUtils.toFile(f, InfoDlg.this.toString());
+						} catch (IOException ex) {
+							Msg.showException("Could not dump info into the file " + f, ex);
+						}
+					}
+				}
+			}
+		});
 	}
 
 	private static Map<String, Integer> grabTypesInside(TreePath[] paths) throws IOException {
