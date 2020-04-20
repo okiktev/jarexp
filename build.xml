@@ -169,9 +169,13 @@
 		<mkdir dir="${jar.lib.dir}" />
 		<move file="${artifacts.dir}/jar-explorer-${full.version}.jar" todir="${jar.lib.dir}" />
 		<echo message="Making exe file in ${artifacts.dir}" />
-		<exec executable="${launch4j.exe.name}" failonerror="true">
+		<exec executable="${launch4j.dir}/windows/launch4j.exe" dir="${launch4j.dir}/windows" failonerror="true" osfamily="windows">
 			<arg value="${artifacts.dir}/jarexp.xml" />
 		</exec>
+		<exec executable="${launch4j.dir}/linux/launch4j" dir="${launch4j.dir}/linux" failonerror="true" osfamily="unix">
+			<arg value="${artifacts.dir}/jarexp.xml" />
+		</exec>
+
 		<waitfor maxwait="30" maxwaitunit="second">
 		    <available file="${artifacts.dir}/Jar Explorer.exe"/>
 		</waitfor>

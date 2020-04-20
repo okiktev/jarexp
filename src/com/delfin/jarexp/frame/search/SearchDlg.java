@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
@@ -56,11 +57,10 @@ import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
-import com.sun.istack.internal.logging.Logger;
 
 public abstract class SearchDlg extends JDialog {
 
-	private static final Logger log = Logger.getLogger(SearchDlg.class);
+	private static final Logger log = Logger.getLogger(SearchDlg.class.getName());
 
 	private static final long serialVersionUID = -2473586208850553553L;
 

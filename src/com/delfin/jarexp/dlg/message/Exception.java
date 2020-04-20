@@ -57,7 +57,7 @@ class Exception extends JDialog {
 
 		final JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.add(getIconLabel(), BorderLayout.WEST);
-		topPanel.add(new JLabel(errMsg));
+		topPanel.add(new JLabel("<html>" + errMsg + "</html>"));
 
 		add(topPanel);
 

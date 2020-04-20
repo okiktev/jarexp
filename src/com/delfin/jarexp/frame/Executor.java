@@ -48,8 +48,11 @@ abstract class Executor {
 		if (cause instanceof ZipException && "error in opening zip file".equals(cause.getMessage())) {
 			JOptionPane.showConfirmDialog(null, "Unknown archive format", "Error", JOptionPane.DEFAULT_OPTION,
 			        JOptionPane.ERROR_MESSAGE);
+		} else if (e.getMessage().startsWith("com.delfin.jarexp.JarexpException: Unable to decompile class")) {
+			Msg.showException("An unexpected error occurred while decompiling class.<br/>"
+					+ "Try another decompiler from menu list.<br/>Press the button to see details.", exception);
 		} else {
-			Msg.showException("An expected error occurred. Press the button to see details.", exception);
+			Msg.showException("An unexpected error occurred. Press the button to see details.", exception);
 		}
 		String msg = "Unhandled error occurred";
 		log.log(Level.SEVERE, msg, e);
