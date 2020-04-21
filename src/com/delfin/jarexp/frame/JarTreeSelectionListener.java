@@ -150,6 +150,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					Content.preLoadArchive(node, new PreLoadAction() {
 						@Override
 						public void perform() {
+							int divLocation = dividerLocation;
 							Content current = (Content) frame.getContentPane();
 							JSplitPane pane = (JSplitPane) current.getComponent(1);
 							while (true) {
@@ -175,6 +176,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							pane.setRightComponent(contentView);
 							pane.validate();
 							pane.repaint();
+
+							dividerLocation = divLocation;
 							setDividerLocation(pane);
 							isLocked = false;
 						}

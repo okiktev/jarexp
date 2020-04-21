@@ -105,6 +105,7 @@ imp output search result to clipboard or file ... done .........................
 bug with searching content in separate class ... done .............................................25Dec2019
 imp means to work with properties, environment (copy to clipboard etc.) ... done ..................25Dec2019
 imp improved decompiler error message ... done ....................................................20Apr2020
+bug fixed issue with right panel for directory ... done ...........................................21Apr2020
 
 imp decouple relation between message dlg and main frame
 imp multi window support
