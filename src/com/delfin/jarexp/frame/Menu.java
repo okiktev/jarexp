@@ -122,12 +122,17 @@ class Menu extends JMenuBar {
 		help.add(item);
 		add(help);
 
+		JMenu donate = new JMenu("Donate");
+		donate.setIcon(resources.getDonateIcon());
+		donate.setToolTipText("Donate to the \"Jar Explorer\" development");
+		donate.setVisible(false);
+		add(Box.createHorizontalGlue());
+		add(donate);
 		JMenu update = new JMenu("Update");
 		update.setIcon(resources.getUpdateIcon());
 		update.setVisible(false);
-		new Updater(update);
-		add(Box.createHorizontalGlue());
 		add(update);
+		new Updater(update, donate);
 
 		setPreferredSize(new Dimension((int)getPreferredSize().getWidth(), 20));
 	}

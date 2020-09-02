@@ -84,6 +84,8 @@ public class Resources {
 
 	private Icon updateIcon;
 
+	private Icon donateIcon;
+
 	private Icon environmentIcon;
 
 	private Icon floppyIcon;
@@ -421,6 +423,17 @@ public class Resources {
 			return updateIcon = new ImageIcon(loadImage("upd.png"));
 		} catch (IOException e) {
 			throw new ResourcesException("Unable to load update menu icon from class path", e);
+		}
+	}
+
+	public Icon getDonateIcon() {
+		if (donateIcon != null) {
+			return donateIcon;
+		}
+		try {
+			return donateIcon = new ImageIcon(loadImage("dlar.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load donate menu icon from class path", e);
 		}
 	}
 

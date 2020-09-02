@@ -31,13 +31,44 @@ public class Updater {
 
 	private static final String VERSION_URL = Settings.JAREXP_HOST_URL + "/version";
 
+	private static final String DONATE_URL = Settings.JAREXP_HOST_URL + "/config/donate";
+
 	private static Timer checker;
 
-	public Updater(final JMenu update) {
+	public Updater(final JMenu update, final JMenu donate) {
 		try {
 			checker = new Timer("UpdateChecker");
 			checker.scheduleAtFixedRate(new TimerTask() {
 				public void run() {
+					final String donateUrl = getDonateUrl();
+					if (donateUrl != null) {
+						donate.setVisible(true);
+						donate.addMouseListener(new MouseListener() {
+							@Override
+							public void mouseReleased(MouseEvent e) {
+							}
+							@Override
+							public void mousePressed(MouseEvent event) {
+								if (Desktop.isDesktopSupported()) {
+									try {
+										Desktop.getDesktop().browse(new URI(donateUrl));
+									} catch (Exception e) {
+										throw new JarexpException("Could not redirect to donate page", e);
+									}
+								}
+							}
+							@Override
+							public void mouseExited(MouseEvent e) {
+							}
+							@Override
+							public void mouseEntered(MouseEvent e) {
+							}
+							@Override
+							public void mouseClicked(MouseEvent e) {
+							}
+						});
+					}
+
 					Date now = new Date();
 					String newVersion = null;
 					if (ActionHistory.getLastUpdateCheckDate().getTime() + ONE_DAY < now.getTime()) {
@@ -55,7 +86,7 @@ public class Updater {
 					}
 					update.setVisible(true);
 					update.setToolTipText(
-							"<html>Jar Explorer with version<br/><b>" + newVersion + "</b> is available</html>");
+							"<html>\"Jar Explorer\" update<br/>v<b>" + newVersion + "</b> is available</html>");
 					update.addMouseListener(new MouseListener() {
 						@Override
 						public void mouseReleased(MouseEvent e) {
@@ -81,18 +112,26 @@ public class Updater {
 						}
 					});
 				}
-			}, 5000L, ONE_DAY);
+			}, 1000L, ONE_DAY);
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Unable to init update checker", e);
 		}
 	}
 
 	private static String checkVersion() {
+		return query(VERSION_URL);
+	}
+
+	private static String getDonateUrl() {
+		return query(DONATE_URL);
+	}
+
+	private static String query(String url) {
 		InputStream stream = null;
 		InputStreamReader reader = null;
 		BufferedReader buff = null;
 		try {
-			URLConnection connection = new URL(VERSION_URL).openConnection();
+			URLConnection connection = new URL(url).openConnection();
 			connection.setReadTimeout(CONN_TIMEOUT);
 			stream = connection.getInputStream();
 			reader = new InputStreamReader(stream);
