@@ -53,7 +53,7 @@ public abstract class DuplicatesDlg extends JDialog {
 	protected final File jarFile;
 
 	public DuplicatesDlg(File jarFile) throws HeadlessException {
-		super();
+		super((JDialog) null);
 
 		this.jarFile = jarFile;
 

@@ -14,10 +14,6 @@
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
   <icon>@BUILD_EXE_DIR@/jarexp.ico</icon>
-  <singleInstance>
-    <mutexName>jarexp</mutexName>
-    <windowTitle>Jar Explorer</windowTitle>
-  </singleInstance>
   <jre>
     <path></path>
     <bundledJre64Bit>false</bundledJre64Bit>

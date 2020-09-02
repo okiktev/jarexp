@@ -14,18 +14,17 @@ public class Msg {
 	static Font defaultFont = UIManager.getDefaults().getFont("Label.font");
 
 	public static void centerDlg(Window win, int width, int height) {
-		JFrame parent = null;
 		for (Window window : JDialog.getWindows()) {
-			if (window instanceof JFrame && ((JFrame) window).getTitle().startsWith("Jar Explorer")) {
-				parent = (JFrame) window;
-				break;
+			if (window instanceof JFrame) {
+				JFrame frame = (JFrame) window;
+				if (frame.isActive() && frame.getTitle().startsWith("Jar Explorer")) {
+					Rectangle rec = frame.getBounds();
+					int x = (frame.getWidth() - width) / 2;
+					int y = (frame.getHeight() - height) / 2;
+					win.setBounds(rec.x + x, rec.y + y, width, height);
+					break;
+				}
 			}
-		}
-		if (parent != null) {
-			Rectangle rec = parent.getBounds();
-			int x = (parent.getWidth() - width) / 2;
-			int y = (parent.getHeight() - height) / 2;
-			win.setBounds(rec.x + x, rec.y + y, width, height);
 		}
 	}
 

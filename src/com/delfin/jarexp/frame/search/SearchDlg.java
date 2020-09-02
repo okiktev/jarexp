@@ -146,7 +146,7 @@ public abstract class SearchDlg extends JDialog {
 	};
 
 	public SearchDlg(SearchEntries searchEntries) {
-		super();
+		super((JDialog) null);
 		this.searchEntries = searchEntries;
 
 		initComponents();

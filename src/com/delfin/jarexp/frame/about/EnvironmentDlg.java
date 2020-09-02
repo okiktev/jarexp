@@ -60,13 +60,13 @@ public class EnvironmentDlg extends JDialog {
 	private Set<Entry<String, String>> env = System.getenv().entrySet();
 
 	public EnvironmentDlg(Component parent) {
-		super();
-		setModal(true);
+		super((JDialog) null);
 		setTitle("Java Environment");
 		setIconImage(Resources.getInstance().getEnvironmentImage());
-		setSize(DLG_DIM);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		setLocationRelativeTo(parent);
+
+		setSize(DLG_DIM);
+		setPreferredSize(DLG_DIM);
 
 		initComponents();
 		alignComponents();
