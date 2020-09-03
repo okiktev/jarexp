@@ -23,8 +23,8 @@ import javax.swing.JProgressBar;
 import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicProgressBarUI;
 
-import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.resources.Resources;
 
 class StatusBar extends JStatusBar {

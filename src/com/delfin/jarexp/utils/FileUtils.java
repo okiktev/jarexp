@@ -23,7 +23,7 @@ import java.nio.channels.OverlappingFileLockException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.Cmd.Result;

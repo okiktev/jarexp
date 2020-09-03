@@ -15,7 +15,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.Enumerator;
 import com.delfin.jarexp.utils.FileUtils;

@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.utils.FileUtils;
 
 import jd.common.loader.BaseLoader;

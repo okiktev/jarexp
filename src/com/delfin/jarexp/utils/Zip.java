@@ -23,7 +23,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.exception.JarexpException;
 
 public class Zip {
 	

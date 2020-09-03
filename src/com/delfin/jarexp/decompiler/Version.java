@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipFile;
 
-import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.exception.JarexpException;
 
 class Version {
 

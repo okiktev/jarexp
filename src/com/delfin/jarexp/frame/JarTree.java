@@ -31,7 +31,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.Content.SearchResultMouseAdapter;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
 import com.delfin.jarexp.frame.resources.CropIconsBugResolver;

@@ -17,8 +17,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.resources.Resources;
 
 

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarEntry;
 
-import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.Jar;
 
 abstract class Directory extends Jar {

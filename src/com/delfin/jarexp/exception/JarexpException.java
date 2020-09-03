@@ -1,4 +1,4 @@
-package com.delfin.jarexp;
+package com.delfin.jarexp.exception;
 
 public class JarexpException extends RuntimeException {
 

@@ -51,10 +51,10 @@ import javax.swing.tree.TreePath;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 
 import com.delfin.jarexp.ActionHistory;
-import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.dlg.message.Msg;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 import com.delfin.jarexp.frame.about.AboutDlg;
 import com.delfin.jarexp.frame.about.EnvironmentDlg;

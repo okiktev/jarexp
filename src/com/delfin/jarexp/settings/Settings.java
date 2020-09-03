@@ -20,8 +20,8 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 import com.delfin.jarexp.ActionHistory;
-import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
 
 public class Settings {

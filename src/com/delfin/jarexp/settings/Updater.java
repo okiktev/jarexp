@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 import javax.swing.JMenu;
 
 import com.delfin.jarexp.ActionHistory;
-import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.exception.JarexpException;
 
 public class Updater {
 

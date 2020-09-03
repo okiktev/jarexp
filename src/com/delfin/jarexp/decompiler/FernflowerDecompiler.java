@@ -22,7 +22,7 @@ import org.jetbrains.java.decompiler.main.extern.IResultSaver;
 import org.jetbrains.java.decompiler.struct.StructClass;
 import org.jetbrains.java.decompiler.struct.lazy.LazyLoader;
 
-import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.utils.FileUtils;
 
 public class FernflowerDecompiler implements IDecompiler {

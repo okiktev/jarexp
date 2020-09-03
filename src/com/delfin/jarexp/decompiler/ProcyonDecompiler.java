@@ -11,7 +11,7 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.exception.JarexpException;
 import com.strobel.assembler.ir.ConstantPool;
 import com.strobel.assembler.ir.ConstantPool.TypeInfoEntry;
 import com.strobel.assembler.metadata.Buffer;

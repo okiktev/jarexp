@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import javax.swing.tree.TreeNode;
 
-import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.utils.Enumerator;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;

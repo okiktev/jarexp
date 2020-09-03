@@ -43,8 +43,8 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
-import com.delfin.jarexp.JarexpException;
 import com.delfin.jarexp.decompiler.IDecompiler.Result;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.IDecompiler;
 import com.delfin.jarexp.frame.Content.PreLoadAction;

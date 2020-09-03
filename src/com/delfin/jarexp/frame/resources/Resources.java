@@ -16,7 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileSystemView;
 import javax.xml.bind.DatatypeConverter;
 
-import com.delfin.jarexp.JarexpException;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.FileUtils;
 
