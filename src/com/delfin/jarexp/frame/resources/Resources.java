@@ -14,10 +14,10 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileSystemView;
-import javax.xml.bind.DatatypeConverter;
 
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.FileUtils;
 
 public class Resources {
@@ -118,7 +118,10 @@ public class Resources {
 		try {
 			return logoImage = loadImage("logo.png");
 		} catch (IOException e) {
-			return Toolkit.getDefaultToolkit().createImage(DatatypeConverter.parseBase64Binary(LOGO_ICON));
+			byte[] base64 = Version.JAVA_MAJOR_VER >= 8 
+					? java.util.Base64.getDecoder().decode(LOGO_ICON) 
+					: javax.xml.bind.DatatypeConverter.parseBase64Binary(LOGO_ICON);
+			return Toolkit.getDefaultToolkit().createImage(base64);
 		}
 	}
 
