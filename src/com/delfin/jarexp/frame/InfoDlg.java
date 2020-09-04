@@ -51,6 +51,7 @@ public class InfoDlg extends JDialog {
 
 	private static final long serialVersionUID = 311846921252768204L;
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("##.00");
+	private static final DecimalFormat DECIMAL_FORMAT_WITH_COMMA = new DecimalFormat("##,00");
 	private static final String[] columnNames = { "Type", "Count" };
 
 	private JTable tTypes = new JTable();
@@ -63,7 +64,7 @@ public class InfoDlg extends JDialog {
 	private Map<String, Integer> types;
 
 	InfoDlg(TreePath[] paths) {
-		super();
+		super((JDialog) null);
 
 		this.paths = paths;
 
@@ -334,7 +335,11 @@ public class InfoDlg extends JDialog {
 			return format(compressedSize);
 		}
 		double ratio = (compressedSize * 100) / (double) size;
-		ratio = Double.valueOf(DECIMAL_FORMAT.format(ratio));
+		try {
+			ratio = Double.valueOf(DECIMAL_FORMAT.format(ratio));
+		} catch (NumberFormatException e) {
+			ratio = Double.valueOf(DECIMAL_FORMAT_WITH_COMMA.format(ratio));
+		}
 		return format(compressedSize + " (" + ratio + "%)");
 	}
 

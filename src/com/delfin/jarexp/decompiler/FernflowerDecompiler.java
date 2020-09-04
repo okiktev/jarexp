@@ -190,6 +190,14 @@ public class FernflowerDecompiler implements IDecompiler {
 
 	private static String convertVersion(int version) {
 		switch (version) {
+		case CodeConstants.BYTECODE_JAVA_13:
+			return "13";
+		case CodeConstants.BYTECODE_JAVA_12:
+			return "12";
+		case CodeConstants.BYTECODE_JAVA_11:
+			return "11";
+		case CodeConstants.BYTECODE_JAVA_10:
+			return "10";
 		case CodeConstants.BYTECODE_JAVA_9:
 			return "9";
 		case CodeConstants.BYTECODE_JAVA_8:

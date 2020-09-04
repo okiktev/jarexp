@@ -111,8 +111,9 @@ imp decouple relation between message dlg and main frame ... done ..............
 imp multi window support ... done .................................................................01Sep2020
 imp make search windows visible ... done ..........................................................02Sep2020
 imp donate button ... done ........................................................................02Sep2020
+imp improve handling of decompiled error ... done .................................................04Sep2020
+imp fernflower update ... done ....................................................................05Sep2020
 
-imp improve handling of decompiled error
 imp copy buttons on decompiled class
 imp decompile all classes
 imp command console
