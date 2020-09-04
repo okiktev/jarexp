@@ -1,6 +1,8 @@
 package com.delfin.jarexp.frame.resources;
 
-import static com.delfin.jarexp.settings.Version.*;
+import static com.delfin.jarexp.settings.Version.IS_WINDOWS;
+import static com.delfin.jarexp.settings.Version.JAVA_MAJOR_VER;
+import static com.delfin.jarexp.settings.Version.OS_VER;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -47,9 +49,9 @@ public class CropIconsBugResolver {
 	private static final boolean isApplied = IS_WINDOWS && JAVA_MAJOR_VER < 9
 			&& BigDecimal.valueOf(Double.parseDouble(OS_VER)).compareTo(BigDecimal.valueOf(6.1)) > 0;
 
-	private static final String[][] optionIcons = { { "OptionPane.errorIcon", "65585" },
-			{ "OptionPane.warningIcon", "65581" }, { "OptionPane.questionIcon", "65583" },
-			{ "OptionPane.informationIcon", "65587" } };
+	private static final String[][] optionIcons = { { "OptionPane.errorIcon", "65581" },
+			{ "OptionPane.warningIcon", "65577" }, { "OptionPane.questionIcon", "65579" },
+			{ "OptionPane.informationIcon", "65583" } };
 
 	private Method getIconBits;
 
@@ -178,6 +180,22 @@ public class CropIconsBugResolver {
 		g.dispose();
 
 		return new ImageIcon(image);
+	}
+
+	public static void main(String[] args) throws Exception {
+		String sysLookFeel = UIManager.getSystemLookAndFeelClassName();
+		UIManager.setLookAndFeel(sysLookFeel);
+		getInstance().fixOptionIcons();
+
+		javax.swing.JDialog dlg = new javax.swing.JDialog();
+		dlg.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+		dlg.add(new javax.swing.JLabel(UIManager.getIcon("OptionPane.errorIcon")));
+		dlg.add(new javax.swing.JLabel(UIManager.getIcon("OptionPane.informationIcon")));
+		dlg.add(new javax.swing.JLabel(UIManager.getIcon("OptionPane.warningIcon")));
+		dlg.add(new javax.swing.JLabel(UIManager.getIcon("OptionPane.questionIcon")));
+		dlg.setSize(300, 300);
+		dlg.setVisible(true);
+		dlg.pack();
 	}
 
 }

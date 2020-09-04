@@ -9,6 +9,8 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
+import com.delfin.jarexp.exception.JarexpDecompilerException;
+
 public class Msg {
 
 	static Font defaultFont = UIManager.getDefaults().getFont("Label.font");
@@ -34,6 +36,14 @@ public class Msg {
 
 	public static int showList(String title, String msg, java.util.List<File> files) {
 		return new List(title, msg, files).getCode();
+	}
+
+	public static void showException(Throwable e) {
+		if (e instanceof JarexpDecompilerException) {
+			new DecompilerException("An error occurred while decompiling class. Press the button \"View Error\" to see details.", e);
+		} else {
+			new Exception("An unexpected error occurred. Press the button to see details.", e);
+		}		
 	}
 
 }

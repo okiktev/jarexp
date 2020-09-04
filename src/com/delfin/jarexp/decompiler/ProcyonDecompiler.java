@@ -11,6 +11,7 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.delfin.jarexp.exception.JarexpDecompilerException;
 import com.delfin.jarexp.exception.JarexpException;
 import com.strobel.assembler.ir.ConstantPool;
 import com.strobel.assembler.ir.ConstantPool.TypeInfoEntry;
@@ -37,7 +38,7 @@ public class ProcyonDecompiler implements IDecompiler {
 		try {
 			return decompile(internalName, new JarTypeLoader(new JarFile(archive)));
 		} catch (Exception e) {
-			throw new JarexpException("An error occurred while decompiling " + path + " from " + archive, e);
+			throw new JarexpDecompilerException("An error occurred while decompiling " + path + " from " + archive, e);
 		}
 	}
 
@@ -62,7 +63,7 @@ public class ProcyonDecompiler implements IDecompiler {
 				}
 			});
 		} catch (Exception e) {
-			throw new JarexpException("An error occurred while decompiling " + file, e);
+			throw new JarexpDecompilerException("An error occurred while decompiling " + file, e);
 		}
 	}
 

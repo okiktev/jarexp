@@ -89,8 +89,11 @@ class Version {
 		// 6 (1.6) 50.0
 		// 7 (1.7) 51.0
 		// 8 (1.8) 52.0
-		// 9 (1.9) 53.0
-		// 10 (1.10) 54.0
+		// 9 (9) 53.0
+		// 10 (10) 54.0
+		// 11 (11) 55.0
+		// 12 (12) 56.0
+		// 13 (13) 57.0
 
 		switch (major) {
 		case 45:
@@ -113,6 +116,12 @@ class Version {
 			return "9";
 		case 54:
 			return "10";
+		case 55:
+			return "11";
+		case 56:
+			return "12";
+		case 57:
+			return "13";
 		default:
 			log.warning("Unknown version of compiled file. Major " + major + ". Minor " + minor);
 			return "~";

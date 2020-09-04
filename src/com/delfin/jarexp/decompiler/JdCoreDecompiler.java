@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import com.delfin.jarexp.exception.JarexpException;
+import com.delfin.jarexp.exception.JarexpDecompilerException;
 import com.delfin.jarexp.utils.FileUtils;
 
 import jd.common.loader.BaseLoader;
@@ -71,7 +71,7 @@ public class JdCoreDecompiler implements IDecompiler {
 				return new Result(new String(baos.toByteArray()), getVersion(classFile));
 			}
 		} catch (Exception e) {
-			throw new JarexpException("Unable to decompile class " + path + " from " + archive, e);
+			throw new JarexpDecompilerException("Unable to decompile class " + path + " from " + archive, e);
 		} finally {
 			if (ps != null) {
 				ps.close();
@@ -109,7 +109,7 @@ public class JdCoreDecompiler implements IDecompiler {
 				return new Result(new String(baos.toByteArray()), getVersion(classFile));
 			}
 		} catch (Exception e) {
-			throw new JarexpException("An error while decompiling file " + file, e);
+			throw new JarexpDecompilerException("An error while decompiling file " + file, e);
 		} finally {
 			ps.close();
 		}

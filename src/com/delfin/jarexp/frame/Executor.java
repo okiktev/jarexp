@@ -4,7 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipException;
 
-import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.*;
 import javax.swing.SwingWorker;
 
 import com.delfin.jarexp.dlg.message.Msg;
@@ -46,13 +46,9 @@ abstract class Executor {
 		Throwable exception = e.getCause();
 		Throwable cause = exception.getCause();
 		if (cause instanceof ZipException && "error in opening zip file".equals(cause.getMessage())) {
-			JOptionPane.showConfirmDialog(null, "Unknown archive format", "Error", JOptionPane.DEFAULT_OPTION,
-			        JOptionPane.ERROR_MESSAGE);
-		} else if (e.getMessage().startsWith("com.delfin.jarexp.JarexpException: Unable to decompile class")) {
-			Msg.showException("An unexpected error occurred while decompiling class.<br/>"
-					+ "Try another decompiler from menu list.<br/>Press the button to see details.", exception);
+			showConfirmDialog(null, "Unknown archive format", "Error", DEFAULT_OPTION, ERROR_MESSAGE);
 		} else {
-			Msg.showException("An unexpected error occurred. Press the button to see details.", exception);
+			Msg.showException(exception);
 		}
 		String msg = "Unhandled error occurred";
 		log.log(Level.SEVERE, msg, e);

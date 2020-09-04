@@ -75,6 +75,7 @@ class Menu extends JMenuBar {
 		rbJdCoreItem.setMnemonic(KeyEvent.VK_C);
 		rbJdCoreItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
 		rbJdCoreItem.addActionListener(jdCoreListener);
+		DecompilierMenuItems.jdCore = rbJdCoreItem;
 		JRadioButtonMenuItem rbProcyonItem = new JRadioButtonMenuItem("Procyon", resources.getProcyonIcon());
 		rbProcyonItem.setMnemonic(KeyEvent.VK_P);
 		rbProcyonItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
@@ -82,6 +83,7 @@ class Menu extends JMenuBar {
 		boolean isProcyonSupported = isProcyonSupported();
 		rbProcyonItem.setEnabled(isProcyonSupported);
 		rbProcyonItem.setToolTipText(isProcyonSupported ? null : "Unfortunately Procyon decompiler supports Java 7 and higher.");
+		DecompilierMenuItems.procyon = rbProcyonItem;
 		JRadioButtonMenuItem rbFernflowerItem = new JRadioButtonMenuItem("Fernflower", resources.getFernflowerIcon());
 		rbFernflowerItem.setMnemonic(KeyEvent.VK_F);
 		rbFernflowerItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
@@ -89,6 +91,7 @@ class Menu extends JMenuBar {
 		boolean isFernflowerSupported = isFernflowerSupported();
 		rbFernflowerItem.setEnabled(isFernflowerSupported);
 		rbFernflowerItem.setToolTipText(isFernflowerSupported ? null : "Unfortunately Fernflower decompiler supports Java 8 and higher.");
+		DecompilierMenuItems.fernflower = rbFernflowerItem;
 		ButtonGroup group = new ButtonGroup();
 		group.add(rbJdCoreItem);
 		group.add(rbProcyonItem);

@@ -34,6 +34,9 @@ class Exception extends JDialog {
 
 	private boolean isShown;
 
+	protected Exception() {
+	}
+
 	Exception(String errMsg, Throwable e) {
 		setIconImage(Resources.getInstance().getLogoImage());
 
@@ -97,14 +100,14 @@ class Exception extends JDialog {
 		pack();
 	}
 
-	private static Component getIconLabel() {
+	protected static Component getIconLabel() {
 		JLabel iconLabel = new JLabel();
 		iconLabel.setIcon(UIManager.getIcon("OptionPane.errorIcon"));
 		iconLabel.setBorder(new EmptyBorder(new Insets(10, 10, 10, 10)));
 		return iconLabel;
 	}
 
-	private static String toString(Throwable e) {
+	protected static String toString(Throwable e) {
 		StringWriter errors = new StringWriter();
 		e.printStackTrace(new PrintWriter(errors));
 		return errors.toString();

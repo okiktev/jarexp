@@ -22,6 +22,7 @@ import org.jetbrains.java.decompiler.main.extern.IResultSaver;
 import org.jetbrains.java.decompiler.struct.StructClass;
 import org.jetbrains.java.decompiler.struct.lazy.LazyLoader;
 
+import com.delfin.jarexp.exception.JarexpDecompilerException;
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.utils.FileUtils;
 
@@ -136,7 +137,11 @@ public class FernflowerDecompiler implements IDecompiler {
 		DecompilerContext.setCurrentContext(context);
 
 		structContext.addSource(archive, path);
-		return decompile(engine, provider, saver);
+		try {
+			return decompile(engine, provider, saver);
+		} catch (Exception e) {
+			throw new JarexpDecompilerException("Unable to decompile class " + path + " from " + archive, e);
+		}
 	}
 
 	@Override
@@ -157,7 +162,11 @@ public class FernflowerDecompiler implements IDecompiler {
 		};
 		Fernflower engine = new Fernflower(provider, saver, DECOMPILE_OPTIONS, logger);
 		engine.addSource(file);
-		return decompile(engine, provider, saver);
+		try {
+			return decompile(engine, provider, saver);
+		} catch (Exception e) {
+			throw new JarexpDecompilerException("An error while decompiling file " + file, e);
+		}
 	}
 
 	private static Result decompile(Fernflower engine, AbstractBytecodeProvider provider, AbstractResultSaver saver) {
