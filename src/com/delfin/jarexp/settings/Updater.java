@@ -40,34 +40,7 @@ public class Updater {
 			checker = new Timer("UpdateChecker");
 			checker.scheduleAtFixedRate(new TimerTask() {
 				public void run() {
-					final String donateUrl = getDonateUrl();
-					if (donateUrl != null) {
-						donate.setVisible(true);
-						donate.addMouseListener(new MouseListener() {
-							@Override
-							public void mouseReleased(MouseEvent e) {
-							}
-							@Override
-							public void mousePressed(MouseEvent event) {
-								if (Desktop.isDesktopSupported()) {
-									try {
-										Desktop.getDesktop().browse(new URI(donateUrl));
-									} catch (Exception e) {
-										throw new JarexpException("Could not redirect to donate page", e);
-									}
-								}
-							}
-							@Override
-							public void mouseExited(MouseEvent e) {
-							}
-							@Override
-							public void mouseEntered(MouseEvent e) {
-							}
-							@Override
-							public void mouseClicked(MouseEvent e) {
-							}
-						});
-					}
+					checkDonate(donate);
 
 					Date now = new Date();
 					String newVersion = null;
@@ -82,6 +55,10 @@ public class Updater {
 						return;
 					}
 					if (newVersion.equals(Version.get())) {
+						return;
+					}
+					if (isNewVersionDeployed(newVersion)) {
+						ActionHistory.loadNewVersion(newVersion);
 						return;
 					}
 					update.setVisible(true);
@@ -111,6 +88,55 @@ public class Updater {
 						public void mouseClicked(MouseEvent e) {
 						}
 					});
+				}
+
+				private boolean isNewVersionDeployed(String newVersion) {
+					String currentVersion = Version.get();
+					try {
+						String[] nvTuple = newVersion.split("\\.");
+						String[] cvTuple = currentVersion.split("\\.");
+						for (int i = 0; i < nvTuple.length; ++i) {
+							Integer n = Integer.valueOf(nvTuple[i]);
+							Integer c = Integer.valueOf(cvTuple[i]);
+							if (n > c) {
+								return true;
+							}
+						}
+					} catch (Exception e) {
+						log.log(Level.SEVERE, "Unable to compare versions. current " + currentVersion + " new " + newVersion, e);
+					}
+					return false;
+				}
+
+				private void checkDonate(JMenu donate) {
+					final String donateUrl = getDonateUrl();
+					if (donateUrl != null) {
+						donate.setVisible(true);
+						donate.addMouseListener(new MouseListener() {
+							@Override
+							public void mouseReleased(MouseEvent e) {
+							}
+							@Override
+							public void mousePressed(MouseEvent event) {
+								if (Desktop.isDesktopSupported()) {
+									try {
+										Desktop.getDesktop().browse(new URI(donateUrl));
+									} catch (Exception e) {
+										throw new JarexpException("Could not redirect to donate page", e);
+									}
+								}
+							}
+							@Override
+							public void mouseExited(MouseEvent e) {
+							}
+							@Override
+							public void mouseEntered(MouseEvent e) {
+							}
+							@Override
+							public void mouseClicked(MouseEvent e) {
+							}
+						});
+					}
 				}
 			}, 1000L, ONE_DAY);
 		} catch (Exception e) {
