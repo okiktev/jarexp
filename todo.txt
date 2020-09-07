@@ -115,9 +115,8 @@ imp improve handling of decompiled error ... done ..............................
 imp fernflower update ... done ....................................................................06Sep2020
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 06_sep_2020
 bug resolve correct version ... done ..............................................................07Sep2020
+bug panel empty after decompiler error ... done ...................................................07Sep2020
 
-
-bug panel empty after decompiler error
 bug clear temp folder, libs
 imp copy buttons on decompiled class
 imp decompile all classes

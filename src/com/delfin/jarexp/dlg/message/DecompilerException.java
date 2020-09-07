@@ -27,6 +27,7 @@ import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.DecompilierMenuItems;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.settings.Settings;
@@ -116,14 +117,25 @@ class DecompilerException extends Exception {
 		okButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (rbJdCore.isSelected()) {
-					DecompilierMenuItems.jdCore.doClick();
-				} else if (rbProcyon.isSelected()) {
-					DecompilierMenuItems.procyon.doClick();
-				} else if (rbFernflower.isSelected()) {
-					DecompilierMenuItems.fernflower.doClick();
-				}
 				dispose();
+
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							throw new JarexpException(e);
+						}
+						if (rbJdCore.isSelected()) {
+							DecompilierMenuItems.jdCore.doClick();
+						} else if (rbProcyon.isSelected()) {
+							DecompilierMenuItems.procyon.doClick();
+						} else if (rbFernflower.isSelected()) {
+							DecompilierMenuItems.fernflower.doClick();
+						}
+					}
+				}).start();
 			}
 		});
 

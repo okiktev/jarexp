@@ -433,8 +433,9 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 	}
 
 	private void setDividerLocation(JSplitPane pane) {
-		pane.setDividerLocation(dividerLocation);
 		try {
+			Thread.sleep(50);
+			pane.setDividerLocation(dividerLocation);
 			// wait something till changing divider event will being fired.
 			Thread.sleep(50);
 		} catch (InterruptedException e) {
