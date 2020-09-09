@@ -60,7 +60,7 @@ public class ActionHistory {
 	}
 
 	private static enum Key {
-		LAST_DIRS_SEL, SEARCH, LAST_UPDATE_CHECK, NEW_VERSION
+		LAST_DIRS_SEL, SEARCH, LAST_UPDATE_CHECK, NEW_VERSION, DONATE_URL
 	};
 
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMM-yyyy");
@@ -151,6 +151,23 @@ public class ActionHistory {
 		List<Object> value = new ArrayList<Object>(1);
 		value.add(version);
 		HISTORY.put(Key.NEW_VERSION, value);
+	}
+
+	public static void loadDonateUrl(String donateUrl) {
+		if (donateUrl == null || donateUrl.isEmpty()) {
+			return;
+		}
+		List<Object> value = new ArrayList<Object>(1);
+		value.add(donateUrl);
+		HISTORY.put(Key.DONATE_URL, value);
+	}
+
+	public static String getDonateUrl() {
+		Collection<Object> value = HISTORY.get(Key.DONATE_URL);
+		if (value == null || value.isEmpty()) {
+			return null;
+		}
+		return (String) value.iterator().next();
 	}
 
 	private static void addToHistory(Object value, Key key) {

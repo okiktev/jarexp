@@ -39,6 +39,7 @@ public class Settings {
 					settings.put("y", String.valueOf(Y));
 					settings.put("search.history", ActionHistory.getSearchHistory());
 					settings.put("new.version", ActionHistory.getNewVersion());
+					settings.put("donate.url", ActionHistory.getDonateUrl());
 					settings.put("last.update.check", ActionHistory.getLastUpdateCheck());
 					try {
 						OutputStream output = new FileOutputStream(new File(SETTINGS_FILE_NAME));
@@ -60,6 +61,7 @@ public class Settings {
 			Y = Integer.valueOf(y == null ? "0" : y);
 			ActionHistory.loadSearchHistory((String)settings.get("search.history"));
 			ActionHistory.loadNewVersion((String)settings.get("new.version"));
+			ActionHistory.loadDonateUrl((String)settings.get("donate.url"));
 			ActionHistory.loadLastUpdateCheck((String)settings.get("last.update.check"));
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Unable to init settings dumper from " + SETTINGS_FILE_NAME, e);

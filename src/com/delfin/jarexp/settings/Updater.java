@@ -125,10 +125,7 @@ public class Updater {
 					update.setVisible(true);
 					update.setToolTipText(
 							"<html>\"Jar Explorer\" update<br/>v<b>" + newVersion + "</b> is available</html>");
-					update.addMouseListener(new MouseListener() {
-						@Override
-						public void mouseReleased(MouseEvent e) {
-						}
+					update.addMouseListener(new MousePressedListener() {
 						@Override
 						public void mousePressed(MouseEvent event) {
 							if (Desktop.isDesktopSupported()) {
@@ -138,15 +135,6 @@ public class Updater {
 									throw new JarexpException("Could not redirect to jar explorer site", e);
 								}
 							}
-						}
-						@Override
-						public void mouseExited(MouseEvent e) {
-						}
-						@Override
-						public void mouseEntered(MouseEvent e) {
-						}
-						@Override
-						public void mouseClicked(MouseEvent e) {
 						}
 					});
 				}
@@ -170,34 +158,26 @@ public class Updater {
 				}
 
 				private void checkDonate(JMenu donate) {
-					final String donateUrl = getDonateUrl();
-					if (donateUrl != null) {
-						donate.setVisible(true);
-						donate.addMouseListener(new MouseListener() {
-							@Override
-							public void mouseReleased(MouseEvent e) {
-							}
-							@Override
-							public void mousePressed(MouseEvent event) {
-								if (Desktop.isDesktopSupported()) {
-									try {
-										Desktop.getDesktop().browse(new URI(donateUrl));
-									} catch (Exception e) {
-										throw new JarexpException("Could not redirect to donate page", e);
-									}
+					if (ActionHistory.getLastUpdateCheckDate().getTime() + ONE_DAY < new Date().getTime()) {						
+						ActionHistory.loadDonateUrl(getDonateUrl());
+					}
+					final String donateUrl = ActionHistory.getDonateUrl();
+					if (donateUrl == null) {
+						return;
+					}
+					donate.setVisible(true);
+					donate.addMouseListener(new MousePressedListener() {
+						@Override
+						public void mousePressed(MouseEvent event) {
+							if (Desktop.isDesktopSupported()) {
+								try {
+									Desktop.getDesktop().browse(new URI(donateUrl));
+								} catch (Exception e) {
+									throw new JarexpException("Could not redirect to donate page", e);
 								}
 							}
-							@Override
-							public void mouseExited(MouseEvent e) {
-							}
-							@Override
-							public void mouseEntered(MouseEvent e) {
-							}
-							@Override
-							public void mouseClicked(MouseEvent e) {
-							}
-						});
-					}
+						}
+					});
 				}
 			}, 1000L, ONE_DAY);
 		} catch (Exception e) {
@@ -255,6 +235,21 @@ public class Updater {
 			}
 		}
 		return null;
+	}
+	
+	private static abstract class MousePressedListener implements MouseListener {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+		}
+		@Override
+		public void mouseReleased(MouseEvent e) {
+		}
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}
 	}
 
 }
