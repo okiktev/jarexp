@@ -236,7 +236,7 @@ public class Updater {
 		}
 		return null;
 	}
-	
+
 	private static abstract class MousePressedListener implements MouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {

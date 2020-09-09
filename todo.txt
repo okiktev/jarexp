@@ -117,6 +117,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 06_sep_2020
 bug resolve correct version ... done ..............................................................07Sep2020
 bug panel empty after decompiler error ... done ...................................................07Sep2020
 bug clear temp folder, libs ... done ..............................................................09Sep2020
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 09_sep_2020
 
 imp list of class structure
 imp copy buttons on decompiled class
