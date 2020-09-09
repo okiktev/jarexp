@@ -35,6 +35,8 @@
 
 		<echo message="The product version is: ${full.version}" />
 
+		<checksum file="${basedir}/lib/${dependency4jarName}" property="MD5.lib.procyon"/>
+		<checksum file="${basedir}/lib/${dependency5jarName}" property="MD5.lib.fernflower"/>
 		<copy todir="${build.dir}/src">
 			<fileset dir="${src.dir}" >
 				<exclude name="**/FieldHelper.java"/>
@@ -43,7 +45,9 @@
 				<filter token="VERSION" value="${full.version}" />
 				<filter token="COPYRIGHT" value="${copyright}" />
 				<filter token="PROCYON_FILE_NAME" value="${dependency4jarName}" />
+				<filter token="PROCYON_FILE_MD5" value="${MD5.lib.procyon}" />
 				<filter token="FERNFLOWER_FILE_NAME" value="${dependency5jarName}" />
+				<filter token="FERNFLOWER_FILE_MD5" value="${MD5.lib.fernflower}" />
 			</filterset>
 		</copy>
 

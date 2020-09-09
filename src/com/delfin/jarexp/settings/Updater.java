@@ -1,9 +1,12 @@
 package com.delfin.jarexp.settings;
 
 import java.awt.Desktop;
+import java.awt.Window;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,11 +18,17 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 
 import com.delfin.jarexp.ActionHistory;
+import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.exception.JarexpException;
+import com.delfin.jarexp.utils.FileUtils;
+import com.delfin.jarexp.utils.Md5Checksum;
 
 public class Updater {
 
@@ -33,6 +42,8 @@ public class Updater {
 
 	private static final String DONATE_URL = Settings.JAREXP_HOST_URL + "/config/donate";
 
+	private static final Pattern JAREXP_TEMP_DIR_PTRN = Pattern.compile("^jarexp[0-9]+$");
+
 	private static Timer checker;
 
 	public Updater(final JMenu update, final JMenu donate) {
@@ -41,7 +52,57 @@ public class Updater {
 			checker.scheduleAtFixedRate(new TimerTask() {
 				public void run() {
 					checkDonate(donate);
+					checkUpdate(update);
+					checkLibs();
+					checkTemp();
+				}
 
+				private void checkTemp() {
+					boolean isSingletone = false;
+					for (Window window : JDialog.getWindows()) {
+						if (window instanceof JFrame && ((JFrame) window).getTitle().startsWith("Jar Explorer")) {
+							if (isSingletone) {
+								isSingletone = false;
+								break;
+							}
+							isSingletone = true;
+						}
+					}
+					if (!isSingletone) {
+						return;
+					}
+					final File jarexpTempDir = Settings.getTmpDir();
+					for (File f : jarexpTempDir.getParentFile().listFiles(new FilenameFilter() {
+						@Override
+						public boolean accept(File dir, String name) {
+							if (name.startsWith("jarexp") && JAREXP_TEMP_DIR_PTRN.matcher(name).find()) {
+								File tmp = new File(dir, name);
+								return tmp.isDirectory() ? !tmp.equals(jarexpTempDir) : false;
+							}
+							return false;
+						}
+					})) {
+						FileUtils.delete(f);
+					};
+				}
+
+				private void checkLibs() {
+					File lib = Decompiler.getLibDir();
+					checkLibFile(new File(lib, Decompiler.FERNFLOWER_FILE_NAME), Decompiler.FERNFLOWER_FILE_MD5);
+					checkLibFile(new File(lib, Decompiler.PROCYON_FILE_NAME), Decompiler.PROCYON_FILE_MD5);
+				}
+
+				private void checkLibFile(File file, String checksum) {
+					if (!file.exists()) {
+						return;
+					}
+					if (checksum.equals(Md5Checksum.get(file))) {
+						return;
+					}
+					file.delete();
+				}
+
+				private void checkUpdate(JMenu update) {
 					Date now = new Date();
 					String newVersion = null;
 					if (ActionHistory.getLastUpdateCheckDate().getTime() + ONE_DAY < now.getTime()) {

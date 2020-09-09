@@ -10,9 +10,11 @@ public class Decompiler {
 
 	private static final String DECOMPILERS_STORE_URL = Settings.JAREXP_HOST_URL + "/downloads/decompilers/";
 
-	private static final String PROCYON_FILE_NAME = "@PROCYON_FILE_NAME@";
-	
-	private static final String FERNFLOWER_FILE_NAME = "@FERNFLOWER_FILE_NAME@";
+	public static final String PROCYON_FILE_NAME = "@PROCYON_FILE_NAME@";
+	public static final String PROCYON_FILE_MD5 = "@PROCYON_FILE_MD5@";
+
+	public static final String FERNFLOWER_FILE_NAME = "@FERNFLOWER_FILE_NAME@";
+	public static final String FERNFLOWER_FILE_MD5 = "@FERNFLOWER_FILE_MD5@";
 
 	public enum DecompilerType {
 		JDCORE, PROCYON, FERNFLOWER
@@ -29,6 +31,10 @@ public class Decompiler {
 		}
 	}
 
+	public static File getLibDir() {
+		return new File(Settings.getInstance().getExecutiveJar().getParentFile(), "lib");
+	}
+
 	public static void prepareBinariesFor(DecompilerType type) throws IOException {
 		String fileName;
 		switch (type) {
@@ -42,7 +48,7 @@ public class Decompiler {
 			throw new IOException("Unable to identify type of decompiler " + type);
 		}
 		try {
-			File lib = new File(Settings.getInstance().getExecutiveJar().getParentFile(), "lib");
+			File lib = getLibDir();
 			if (!lib.exists()) {
 				lib.mkdirs();
 			}

@@ -173,6 +173,21 @@ public class FileUtils {
 		}
 	}
 
+	public static void delete(File f) {
+		if (f.isDirectory()) {
+			for (File c : f.listFiles()) {
+				try {
+					delete(c);
+				} catch (Exception e) {
+					log.log(Level.SEVERE, "An error occurred while deleting the file " + f.getAbsolutePath(), e);
+				}
+			}
+		}
+		if (!f.delete()) {
+			log.log(Level.SEVERE, "Could not delete file " + f.getAbsolutePath());
+		}
+	}
+
 	public static void copy(File src, File dst) {
 		if (dst.isDirectory()) {
 			dst = new File(dst, src.getName());

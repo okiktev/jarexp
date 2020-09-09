@@ -17,7 +17,7 @@ public class Md5Checksum {
 
 	private static final Logger log = Logger.getLogger(Md5Checksum.class.getCanonicalName());
 
-	static String get(File file) {
+	public static String get(File file) {
 		InputStream fis = null;
 		try {
 			fis = new FileInputStream(file);

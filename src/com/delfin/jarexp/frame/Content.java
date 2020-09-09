@@ -23,7 +23,6 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
@@ -65,6 +64,7 @@ import com.delfin.jarexp.frame.search.SearchDlg;
 import com.delfin.jarexp.frame.search.SearchResult;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
+import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
 public class Content extends JPanel {
@@ -228,12 +228,8 @@ public class Content extends JPanel {
 					@Override
 					protected void perform() {
 						statusBar.enableProgress("Exiting...");
-						try {
-							delete(Settings.getTmpDir());
-							isDeleted[0] = true;
-						} catch (IOException e) {
-							throw new JarexpException(e);
-						}
+						FileUtils.delete(Settings.getTmpDir());
+						isDeleted[0] = true;
 					}
 
 					@Override
@@ -250,21 +246,6 @@ public class Content extends JPanel {
 					} catch (InterruptedException e) {
 						throw new JarexpException(e);
 					}
-				}
-			}
-
-			void delete(File f) throws IOException {
-				if (f.isDirectory()) {
-					for (File c : f.listFiles()) {
-						try {
-							delete(c);
-						} catch (Exception e) {
-							log.log(Level.SEVERE, "An error occurred while deleting the file " + f.getAbsolutePath(), e);
-						}
-					}
-				}
-				if (!f.delete()) {
-					log.log(Level.SEVERE, "Could not delete file " + f.getAbsolutePath());
 				}
 			}
 		});
