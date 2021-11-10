@@ -38,7 +38,10 @@ public class Settings {
 					settings.put("x", String.valueOf(X));
 					settings.put("y", String.valueOf(Y));
 					settings.put("search.history", ActionHistory.getSearchHistory());
-					settings.put("new.version", ActionHistory.getNewVersion());
+					String newVersion = ActionHistory.getNewVersion();
+					if (newVersion != null) {
+						settings.put("new.version", newVersion);
+					}
 					settings.put("donate.url", ActionHistory.getDonateUrl());
 					settings.put("last.update.check", ActionHistory.getLastUpdateCheck());
 					try {
