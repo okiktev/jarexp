@@ -18,19 +18,25 @@ class ContentPanel extends JPanel {
 		setBorder(Settings.EMPTY_BORDER);
 	}
 
-	ContentPanel(FilterPanel filter, Component content) {
-		this();
-		add(filter, BorderLayout.NORTH);
-		add(this.content = content, BorderLayout.CENTER);
-	}
-
 	ContentPanel(Component content) {
 		this();
 		add(this.content = content);
 	}
 
-	Component getContent() {
-		return content;
+	public void replaceContentBy(Component content) {
+		removeAll();
+		add(this.content = content);
+	}
+
+	public void showFilterPanel(FilterPanel filter) {
+		removeAll();
+		add(filter, BorderLayout.NORTH);
+		add(this.content, BorderLayout.CENTER);
+	}
+
+	public void removeFilter() {
+		removeAll();
+		add(this.content);
 	}
 
 }

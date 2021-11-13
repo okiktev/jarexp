@@ -27,10 +27,10 @@ import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.DecompilierMenuItems;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.utils.Utils;
 
 class DecompilerException extends Exception {
 
@@ -122,11 +122,7 @@ class DecompilerException extends Exception {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							throw new JarexpException(e);
-						}
+						Utils.sleep(100);
 						if (rbJdCore.isSelected()) {
 							DecompilierMenuItems.jdCore.doClick();
 						} else if (rbProcyon.isSelected()) {

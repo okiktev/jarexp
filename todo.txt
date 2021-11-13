@@ -118,8 +118,15 @@ bug resolve correct version ... done ...........................................
 bug panel empty after decompiler error ... done ...................................................07Sep2020
 bug clear temp folder, libs ... done ..............................................................09Sep2020
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 09_sep_2020
-bug with rendering update button. ... not repr ....................................................10Nov2021
+bug with rendering update button ... not repr .....................................................10Nov2021
+bug with rendering right panel ... done ...........................................................13Nov2021
+bug unable to close filter panel ... done .........................................................13Nov2021
+bug each filter panel appear for each pressing ctrl+f ... done ....................................13Nov2021
 
+
+bug with rendering update button
+bug check license apache2.0
+imp render all processes
 imp update decompilers
 imp add sum sha1
 imp multiply tabs
@@ -132,8 +139,6 @@ imp settings functional
 imp pdf recognizing
 imp duplicate searching for file system
 
-bug unable to close filter panel
-bug each filter panel appear for each pressing ctrl+f
 
 imp handle search results from file system
 imp get all depended classes in the jar

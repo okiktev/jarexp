@@ -41,11 +41,7 @@ public class FileUtils {
 				if (accept()) {
 					break;
 				}
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					throw new JarexpException(e);
-				}
+				Utils.sleep(100);
 			}
 		}
 

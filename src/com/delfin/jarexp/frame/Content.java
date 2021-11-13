@@ -20,12 +20,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JComboBox;
@@ -65,6 +62,7 @@ import com.delfin.jarexp.frame.search.SearchResult;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.utils.FileUtils;
+import com.delfin.jarexp.utils.Utils;
 import com.delfin.jarexp.utils.Zip;
 
 public class Content extends JPanel {
@@ -124,18 +122,6 @@ public class Content extends JPanel {
 						break;
 					}
 				}
-				while(jarTreeSelectionListener.isLocked()) {
-					try {
-						Thread.sleep(50);
-					} catch (InterruptedException ex) {
-						throw new JarexpException(ex);
-					}
-				}
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException ex) {
-					throw new JarexpException(ex);
-				}
 				try {
 					JTextArea area = jarTreeSelectionListener.area;
 					int position = searchResult.position;
@@ -176,35 +162,26 @@ public class Content extends JPanel {
 		if (node == null) {
 			return;
 		}
-
-		new Executor() {
-			@Override
-			protected void perform() {
-				boolean isNotInitiated = false;
-				for (Enumeration<?> childred = node.children(); childred.hasMoreElements();) {
-					JarNode child = (JarNode) childred.nextElement();
-					if (Settings.NAME_PLACEHOLDER.equals(child.path)) {
-						node.removeAllChildren();
-						isNotInitiated = true;
-						break;
-					}
+		try {
+			for (Enumeration<?> childred = node.children(); childred.hasMoreElements();) {
+				JarNode child = (JarNode) childred.nextElement();
+				if (!Settings.NAME_PLACEHOLDER.equals(child.path)) {
+					continue;
 				}
-				if (isNotInitiated) {
-					statusBar.enableProgress("Loading...");
-					File dst = new File(Resources.createTmpDir(), node.name);
-					dst = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), dst);
-					jarTree.addArchive(dst, node);
-					jarTree.update(node);
-				}
-				if (action != null) {
-					action.perform();
-				}
+				node.removeAllChildren();
+				statusBar.enableProgress("Loading...");
+				File dst = new File(Resources.createTmpDir(), node.name);
+				dst = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), dst);
+				jarTree.addArchive(dst, node);
+				jarTree.update(node);
+				break;
 			}
-			@Override
-			protected void doFinally() {
-				statusBar.disableProgress();
+			if (action != null) {
+				action.perform();
 			}
-		}.execute();
+		} finally {
+			statusBar.disableProgress();
+		}
 	}
 
 	public static void createAndShowGUI(File passedFile) throws ResourcesException {
@@ -237,15 +214,8 @@ public class Content extends JPanel {
 						statusBar.disableProgress();
 					}
 				}.execute();
-				while (true) {
-					if (isDeleted[0]) {
-						break;
-					}
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						throw new JarexpException(e);
-					}
+				while (!isDeleted[0]) {
+					Utils.sleep(100);
 				}
 			}
 		});
@@ -457,34 +427,21 @@ public class Content extends JPanel {
 				
 				final JSplitPane pane = getSplitPane();
 				pane.setBorder(Settings.EMPTY_BORDER);
-				Component treeView = pane.getLeftComponent();
-				pane.remove(treeView);
 				
+				Component treeView = pane.getLeftComponent();
+				//pane.remove(treeView);
 				treeView = new JScrollPane(jarTree);
 				((JComponent) treeView).setBorder(Settings.EMPTY_BORDER);
-
 				pane.setLeftComponent(treeView);
+				
 				JScrollPane contentView = new JScrollPane();
 				contentView.setBorder(Settings.EMPTY_BORDER);
-				pane.setRightComponent(contentView);
+				pane.setRightComponent(new ContentPanel(contentView));
 
 				frame.setTitle((title == null ? title = frame.getTitle() : title) + " | " + file.getName());
 
 				frame.validate();
 				frame.repaint();
-				jarTreeSelectionListener.setDividerLocation(treeView.getWidth());
-				pane.addPropertyChangeListener(new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-						int divLocation;
-						if (!jarTreeSelectionListener.isLocked() && (divLocation = pane.getDividerLocation()) != 25) {
-							if (log.isLoggable(Level.FINEST)) {
-								log.finest("Divider location = " + divLocation);
-							}
-							jarTreeSelectionListener.setDividerLocation(divLocation);
-						}
-					}
-				});
 
 				frame.getRootPane().registerKeyboardAction(jarTreeSelectionListener.new FilterAction(),
 						KeyStroke.getKeyStroke("ctrl F"), JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -508,8 +465,7 @@ public class Content extends JPanel {
 		for (Component comp : current.getComponents()) {
 			if (comp instanceof ImgPanel) {
 				frame.remove(comp);
-				JSplitPane pane = new JSplitPane();
-				pane.setRightComponent(new JScrollPane());
+				JSplitPane pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
 				frame.add(pane);
 				return pane;
 			}

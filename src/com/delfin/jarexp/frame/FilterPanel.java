@@ -124,10 +124,8 @@ class FilterPanel extends JPanel {
 				highlight(getTextArea());
 				JSplitPane pane = Content.getSplitPane();
 				ContentPanel rightPanel = (ContentPanel) pane.getRightComponent();
-				pane.setDividerLocation(listener.getDividerLocation());
-				pane.setRightComponent(new ContentPanel(rightPanel.getContent()));
+				rightPanel.removeFilter();
 				pane.validate();
-				pane.repaint();
 			}
 		});
 

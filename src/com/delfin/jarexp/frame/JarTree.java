@@ -39,6 +39,7 @@ import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.search.SearchDlg;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.utils.Utils;
 
 class JarTree extends JTree {
 
@@ -398,11 +399,7 @@ class JarTree extends JTree {
 					if (isArchive) {
 						expandPath(new TreePath(child.getPath()));
 						while (true) {
-							try {
-								Thread.sleep(50);
-							} catch (InterruptedException e) {
-								throw new JarexpException("Error happens while waiting for archive leaf is loaded.", e);
-							}
+							Utils.sleep(50);
 							if (child.children().hasMoreElements() && !Settings.NAME_PLACEHOLDER.equals(((JarNode)child.getLastChild()).name)) {
 								break;
 							}

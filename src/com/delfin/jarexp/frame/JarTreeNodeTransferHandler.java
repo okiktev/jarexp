@@ -15,6 +15,7 @@ import javax.swing.TransferHandler;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.utils.Utils;
 
 class JarTreeNodeTransferHandler extends TransferHandler {
 
@@ -84,11 +85,7 @@ class JarTreeNodeTransferHandler extends TransferHandler {
 						};
 					}.execute();
 					while(extracting[0]) {
-						try {
-							Thread.sleep(50);
-						} catch (InterruptedException e) {
-							log.log(Level.WARNING, "An error occurred while waiting for unzipping " + f, e);
-						}
+						Utils.sleep(50);
 					}
 				}
 				map.add(new Pair(node, file));
