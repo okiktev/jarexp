@@ -72,8 +72,6 @@ public class Resources {
 
 	private String licenseText;
 
-	private String noticeText;
-
 	private String syntaxText;
 
 	private Icon jdCoreIcon;
@@ -221,19 +219,6 @@ public class Resources {
 			return licenseText = FileUtils.toString(getLoader().getResource("LICENSE"));
 		} catch (IOException e) {
 			String msg = "Error while loading license";
-			log.log(Level.SEVERE, msg, e);
-			return msg;
-		}
-	}
-
-	public String getNoticeText() {
-		if (noticeText != null) {
-			return noticeText;
-		}
-		try {
-			return noticeText = FileUtils.toString(getLoader().getResource("NOTICE"));
-		} catch (IOException e) {
-			String msg = "Error while loading notice";
 			log.log(Level.SEVERE, msg, e);
 			return msg;
 		}

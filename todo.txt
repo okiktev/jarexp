@@ -122,9 +122,8 @@ bug with rendering update button ... not repr ..................................
 bug with rendering right panel ... done ...........................................................13Nov2021
 bug unable to close filter panel ... done .........................................................13Nov2021
 bug each filter panel appear for each pressing ctrl+f ... done ....................................13Nov2021
+bug with rendering update button ... done .........................................................13Nov2021
 
-
-bug with rendering update button
 bug check license apache2.0
 imp render all processes
 imp update decompilers

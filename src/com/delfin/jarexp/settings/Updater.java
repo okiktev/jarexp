@@ -10,9 +10,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -47,6 +47,7 @@ public class Updater {
 	private static Timer checker;
 
 	public Updater(final JMenu update, final JMenu donate) {
+		HttpURLConnection.setFollowRedirects(false);
 		try {
 			checker = new Timer("UpdateChecker");
 			checker.scheduleAtFixedRate(new TimerTask() {
@@ -120,23 +121,22 @@ public class Updater {
 					}
 					if (isNewVersionDeployed(newVersion)) {
 						ActionHistory.loadNewVersion(newVersion);
-						return;
-					}
-					update.setVisible(true);
-					update.setToolTipText(
-							"<html>\"Jar Explorer\" update<br/>v<b>" + newVersion + "</b> is available</html>");
-					update.addMouseListener(new MousePressedListener() {
-						@Override
-						public void mousePressed(MouseEvent event) {
-							if (Desktop.isDesktopSupported()) {
-								try {
-									Desktop.getDesktop().browse(new URI(Settings.JAREXP_HOST_URL + "?l=en"));
-								} catch (Exception e) {
-									throw new JarexpException("Could not redirect to jar explorer site", e);
+						update.setVisible(true);
+						update.setToolTipText(
+								"<html>\"Jar Explorer\" update<br/>v<b>" + newVersion + "</b> is available</html>");
+						update.addMouseListener(new MousePressedListener() {
+							@Override
+							public void mousePressed(MouseEvent event) {
+								if (Desktop.isDesktopSupported()) {
+									try {
+										Desktop.getDesktop().browse(new URI(Settings.JAREXP_HOST_URL + "?l=en"));
+									} catch (Exception e) {
+										throw new JarexpException("Could not redirect to jar explorer site", e);
+									}
 								}
 							}
-						}
-					});
+						});
+					}
 				}
 
 				private boolean isNewVersionDeployed(String newVersion) {
@@ -198,8 +198,15 @@ public class Updater {
 		InputStreamReader reader = null;
 		BufferedReader buff = null;
 		try {
-			URLConnection connection = new URL(url).openConnection();
+			HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 			connection.setReadTimeout(CONN_TIMEOUT);
+			int code = connection.getResponseCode();
+			if (code < 200 && code >= 300) {
+				if (code == HttpURLConnection.HTTP_MOVED_TEMP) {
+					log.warning("Code " + code + ". Location header " + connection.getHeaderField("Location"));
+				}
+				return null;
+			}
 			stream = connection.getInputStream();
 			reader = new InputStreamReader(stream);
 			buff = new BufferedReader(reader);
