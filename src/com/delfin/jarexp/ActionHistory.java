@@ -63,7 +63,7 @@ public class ActionHistory {
 		LAST_DIRS_SEL, SEARCH, LAST_UPDATE_CHECK, NEW_VERSION, DONATE_URL
 	};
 
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMM-yyyy");
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMMM-yyyy");
 
 	private static final Map<Key, Collection<Object>> HISTORY = new HashMap<Key, Collection<Object>>();
 
@@ -220,6 +220,14 @@ public class ActionHistory {
 			i--;
 		}
 		return res;
+	}
+
+	public static void main(String[] args) throws ParseException {
+		String d = "14-Nov-2021";
+		DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMMM-yyyy");
+		System.out.println(DATE_FORMAT.format(new Date()));
+		System.out.println(DATE_FORMAT.parse(d));
+		
 	}
 
 }

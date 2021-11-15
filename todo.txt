@@ -125,11 +125,11 @@ bug each filter panel appear for each pressing ctrl+f ... done .................
 bug with rendering update button ... done .........................................................13Nov2021
 imp get all processes command line ... done .......................................................15Nov2021
 bug check license apache2.0 ... done ..............................................................15Nov2021
+bug with loading update date under java 17 ... done ...............................................15Nov2021
 
-bug with loading update date
 
-imp update decompilers
 imp add sum sha1
+imp update decompilers
 imp multiply tabs
 imp list of class structure
 imp graph dependencies
@@ -158,26 +158,7 @@ refactor code
 
 
 
-но€б. 14, 2021 9:48:49 PM com.delfin.jarexp.ActionHistory loadLastUpdateCheck
-SEVERE: Unable to parse date 14-но€-2021
-java.text.ParseException: Unparseable date: "14-но€-2021"
-	at java.base/java.text.DateFormat.parse(DateFormat.java:399)
-	at com.delfin.jarexp.ActionHistory.loadLastUpdateCheck(ActionHistory.java:127)
-	at com.delfin.jarexp.settings.Settings.<clinit>(Settings.java:68)
-	at com.delfin.jarexp.Main$1.run(Main.java:31)
-	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:318)
-	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:771)
-	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:722)
-	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:716)
-	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
-	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:86)
-	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:741)
-	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
-	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
-	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
-	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
-	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
-	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+
 
 
 java.lang.NoClassDefFoundError: Could not initialize class com.strobel.assembler.metadata.MetadataSystem
