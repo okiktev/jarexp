@@ -10,15 +10,15 @@ import java.util.logging.Logger;
 
 import com.delfin.jarexp.exception.JarexpException;
 
-class Cmd {
+public class Cmd {
 
 	private static final Logger log = Logger.getLogger(Cmd.class.getCanonicalName());
 
-	static class Result {
+	public static class Result {
 
-		int code;
-		String out;
-		String err;
+		public int code;
+		public String out;
+		public String err;
 
 		Result(int code, ConsoleReader stdout, ConsoleReader stderr) {
 			this.code = code;
@@ -76,7 +76,7 @@ class Cmd {
 
 	}
 
-	static Result runWithJava6(File workingDir, String...command) {
+	public static Result runWithJava6(File workingDir, String...command) {
 		ProcessBuilder processBuilder = new ProcessBuilder(command);
 		if (workingDir != null) {
 			processBuilder.directory(workingDir);
@@ -88,7 +88,7 @@ class Cmd {
 		}
 	}
 
-	static Result run(String[] command, File workingDir, String... envp) {
+	public static Result run(String[] command, File workingDir, String... envp) {
 		Runtime runtime = Runtime.getRuntime();
 		try {
 			return handle(runtime.exec(command, envp, workingDir));

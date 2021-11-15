@@ -84,9 +84,13 @@ public class Resources {
 
 	private Icon donateIcon;
 
+	private Icon processIcon;
+
 	private Icon environmentIcon;
 
 	private Icon floppyIcon;
+
+	private Image processImage;
 
 	private Image fernflowerImage;
 
@@ -433,6 +437,28 @@ public class Resources {
 			return floppyIcon = new ImageIcon(loadImage("flpy.png"));
 		} catch (IOException e) {
 			throw new ResourcesException("Unable to load floppy icon from class path", e);
+		}
+	}
+
+	public Icon getProcessesIcon() {
+		if (processIcon != null) {
+			return processIcon;
+		}
+		try {
+			return processIcon = new ImageIcon(loadImage("prss.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load process icon from class path", e);
+		}
+	}
+
+	public Image getProcessesImage() {
+		if (processImage != null) {
+			return processImage;
+		}
+		try {
+			return processImage = loadImage("prss.png");
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load process image from class path", e);
 		}
 	}
 

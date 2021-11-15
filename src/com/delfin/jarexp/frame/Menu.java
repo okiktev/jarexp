@@ -20,6 +20,7 @@ import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.settings.Updater;
+import com.delfin.jarexp.settings.Version;
 
 
 class Menu extends JMenuBar {
@@ -29,7 +30,7 @@ class Menu extends JMenuBar {
 	private static final Resources resources = Resources.getInstance();
 
 	Menu(ActionListener openListener, ActionListener searchListener, ActionListener duplicatesListener, ActionListener jdCoreListener, 
-			ActionListener procyonListener, ActionListener fernflowerListener, ActionListener environmentListener, ActionListener aboutListener)
+			ActionListener procyonListener, ActionListener fernflowerListener, ActionListener processesListener, ActionListener environmentListener, ActionListener aboutListener)
 			throws ResourcesException {
 
 		JMenuItem item;
@@ -67,6 +68,13 @@ class Menu extends JMenuBar {
 		item.addActionListener(duplicatesListener);
 		item.setIcon(resources.getDuplicatesIcon());
 		tools.add(item);
+		if (Version.IS_WINDOWS) {
+			item = new JMenuItem("Process Cmd", KeyEvent.VK_R);
+			item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+			item.addActionListener(processesListener);
+			item.setIcon(resources.getProcessesIcon());
+			tools.add(item);
+		}
 		add(tools);
 
 		JMenu decompilers = new JMenu("Decompilers");

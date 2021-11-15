@@ -54,6 +54,7 @@ import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 import com.delfin.jarexp.frame.about.AboutDlg;
 import com.delfin.jarexp.frame.about.EnvironmentDlg;
+import com.delfin.jarexp.frame.about.ProcessesDlg;
 import com.delfin.jarexp.frame.duplicates.DuplicatesDlg;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
@@ -341,6 +342,12 @@ public class Content extends JPanel {
 						}
 					}
 				}.execute();
+			}
+		}
+		, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ProcessesDlg(frame);
 			}
 		}
 		, new ActionListener() {
