@@ -88,12 +88,12 @@
 		
 		<copy todir="${jar.dir}">
 			<fileset dir="${resources.dir}" >
-				<exclude name="**/LICENSE" />
+				<exclude name="**/JAREXP_LICENSE" />
 				<exclude name="**/logging*properties" />
 			</fileset>
 		</copy>
 		<copy todir="${jar.dir}">
-			<fileset dir="${resources.dir}" includes="**/LICENSE" />
+			<fileset dir="${resources.dir}" includes="**/JAREXP_LICENSE" />
 			<filterset>
 				<filter token="COPYRIGHT" value="${copyright}" />
 			</filterset>

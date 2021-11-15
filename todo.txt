@@ -124,9 +124,10 @@ bug unable to close filter panel ... done ......................................
 bug each filter panel appear for each pressing ctrl+f ... done ....................................13Nov2021
 bug with rendering update button ... done .........................................................13Nov2021
 imp get all processes command line ... done .......................................................15Nov2021
+bug check license apache2.0 ... done ..............................................................15Nov2021
 
 bug with loading update date
-bug check license apache2.0
+
 imp update decompilers
 imp add sum sha1
 imp multiply tabs

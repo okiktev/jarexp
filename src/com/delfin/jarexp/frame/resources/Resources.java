@@ -220,7 +220,7 @@ public class Resources {
 			return licenseText;
 		}
 		try {
-			return licenseText = FileUtils.toString(getLoader().getResource("LICENSE"));
+			return licenseText = FileUtils.toString(getLoader().getResource("JAREXP_LICENSE"));
 		} catch (IOException e) {
 			String msg = "Error while loading license";
 			log.log(Level.SEVERE, msg, e);
