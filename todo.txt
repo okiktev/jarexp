@@ -126,9 +126,10 @@ bug with rendering update button ... done ......................................
 imp get all processes command line ... done .......................................................15Nov2021
 bug check license apache2.0 ... done ..............................................................15Nov2021
 bug with loading update date under java 17 ... done ...............................................15Nov2021
+imp add sum sha1 ... done .........................................................................17Nov2021
 
 
-imp add sum sha1
+bug java17 when open info for root jar
 imp update decompilers
 imp multiply tabs
 imp list of class structure
@@ -159,6 +160,16 @@ refactor code
 
 
 
+
+Exception in thread "AWT-EventQueue-0" java.lang.NumberFormatException: For input string: "1 00"
+	at java.base/jdk.internal.math.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:2054)
+	at java.base/jdk.internal.math.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.base/java.lang.Double.parseDouble(Double.java:651)
+	at java.base/java.lang.Double.valueOf(Double.java:614)
+	at com.delfin.jarexp.frame.InfoDlg.getCompressedSize(InfoDlg.java:341)
+	at com.delfin.jarexp.frame.InfoDlg.initComponents(InfoDlg.java:144)
+	at com.delfin.jarexp.frame.InfoDlg.<init>(InfoDlg.java:72)
+	at com.delfin.jarexp.frame.JarTree$JarTreeMouseListener$3.actionPerformed(JarTree.java:121)
 
 
 java.lang.NoClassDefFoundError: Could not initialize class com.strobel.assembler.metadata.MetadataSystem

@@ -123,6 +123,13 @@ class JarTree extends JTree {
 			}
 		};
 
+        private final ActionListener sumsActionListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new HashSumsDlg(getSelectedPaths());
+			}
+		};
+
 		private TreePath[] getSelectedPaths() {
 			TreePath [] paths = getSelectionPaths();
 			if (paths == null) {
@@ -184,7 +191,6 @@ class JarTree extends JTree {
 				popupMenu.add(search);
 				popupMenu.add(copyPath);
 				popupMenu.add(info);
-				popupMenu.show(JarTree.this, e.getX(), e.getY());
 
                 popupMenu.addPopupMenuListener(new PopupMenuListener() {
                     @Override
@@ -209,16 +215,22 @@ class JarTree extends JTree {
 				}
 				if (paths.length == 1) {
 					setSelectionPath(path);
-					JarNode node = (JarNode) paths[0].getLastPathComponent();
+					JarNode node = (JarNode) path.getLastPathComponent();
 					if (node.isDirectory) {
 						unpackNode.setEnabled(false);
 					} else {
 						addNode.setEnabled(node.isArchive());
 						unpackNode.setEnabled(node.isArchive());
+						
+						JarNodeMenuItem sums = new JarNodeMenuItem("Hash sums", path);
+						sums.setIcon(resources.getSumsIcon());
+						sums.addActionListener(sumsActionListener);
+						popupMenu.add(sums);
 					}
 				}
                 deleteNode.setEnabled(!isSingleFileLoaded());
-            } 
+				popupMenu.show(JarTree.this, e.getX(), e.getY());
+            }
             JarTreeClickSelection.setNodes(null);
         }
 

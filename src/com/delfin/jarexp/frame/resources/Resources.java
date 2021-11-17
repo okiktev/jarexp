@@ -90,6 +90,10 @@ public class Resources {
 
 	private Icon floppyIcon;
 
+	private Icon sumsIcon;
+
+	private Image sumsImage;
+
 	private Image processImage;
 
 	private Image fernflowerImage;
@@ -448,6 +452,28 @@ public class Resources {
 			return processIcon = new ImageIcon(loadImage("prss.png"));
 		} catch (IOException e) {
 			throw new ResourcesException("Unable to load process icon from class path", e);
+		}
+	}
+
+	public Icon getSumsIcon() {
+		if (sumsIcon != null) {
+			return sumsIcon;
+		}
+		try {
+			return sumsIcon = new ImageIcon(loadImage("sums.png"));
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load hash sums icon from class path", e);
+		}
+	}
+
+	public Image getSumsImage() {
+		if (sumsImage != null) {
+			return sumsImage;
+		}
+		try {
+			return sumsImage = loadImage("sums.png");
+		} catch (IOException e) {
+			throw new ResourcesException("Unable to load hash sums image from class path", e);
 		}
 	}
 
