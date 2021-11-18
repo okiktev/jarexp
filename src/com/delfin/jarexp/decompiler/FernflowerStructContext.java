@@ -115,7 +115,7 @@ public class FernflowerStructContext extends StructContext {
 				DataInputFullStream in = null;
 				try {
 					in = loader.getClassStream(file.getAbsolutePath(), null);
-					StructClass cl = new StructClass(in, isOwn, loader);
+					StructClass cl = StructClass.create(in, isOwn, loader);
 					classes.put(cl.qualifiedName, cl);
 					unit.addClass(cl, filename);
 					loader.addClassLink(cl.qualifiedName, new LazyLoader.Link(file.getAbsolutePath(), null));
@@ -158,7 +158,7 @@ public class FernflowerStructContext extends StructContext {
 				if (!entry.isDirectory()) {
 					if (name.endsWith(".class")) {
 						byte[] bytes = InterpreterUtil.getBytes(archive, entry);
-						StructClass cl = new StructClass(bytes, isOwn, loader);
+						StructClass cl = StructClass.create(new DataInputFullStream(bytes), isOwn, loader);
 						classes.put(cl.qualifiedName, cl);
 						unit.addClass(cl, name);
 						loader.addClassLink(cl.qualifiedName, new LazyLoader.Link(file.getAbsolutePath(), name));

@@ -21,6 +21,7 @@ import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
 import org.jetbrains.java.decompiler.main.extern.IResultSaver;
 import org.jetbrains.java.decompiler.struct.StructClass;
 import org.jetbrains.java.decompiler.struct.lazy.LazyLoader;
+import org.jetbrains.java.decompiler.util.DataInputFullStream;
 
 import com.delfin.jarexp.exception.JarexpDecompilerException;
 import com.delfin.jarexp.exception.JarexpException;
@@ -100,6 +101,16 @@ public class FernflowerDecompiler implements IDecompiler {
 		DECOMPILE_OPTIONS.put("bsm", "1");
 	}
 
+	private static final Field FIELD_MAJOR_VER;
+	static {
+		try {			
+			FIELD_MAJOR_VER = StructClass.class.getDeclaredField("majorVersion");
+			FIELD_MAJOR_VER.setAccessible(true);
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to reflect majorVersion field", e);
+		}
+	}
+
 	@Override
 	public Result decompile(File archive, String path) {
 		AbstractBytecodeProvider provider = new AbstractBytecodeProvider() {
@@ -111,7 +122,7 @@ public class FernflowerDecompiler implements IDecompiler {
 			        zip = new ZipFile(externalPath);
 			        stream = zip.getInputStream(zip.getEntry(internalPath));
 			        byte[] bytes = FileUtils.toBytes(stream);
-			        structClass = new StructClass(bytes, false, null);
+			        structClass = StructClass.create(new DataInputFullStream(bytes), false, null);
 			        return bytes;
 				} finally {
 					close(stream);
@@ -150,7 +161,7 @@ public class FernflowerDecompiler implements IDecompiler {
 			@Override
 			public byte[] getBytecode(String externalPath, String internalPath) throws IOException {
 				byte[] bytes = FileUtils.toBytes(new File(externalPath));
-				structClass = new StructClass(bytes, false, null);
+				structClass = StructClass.create(new DataInputFullStream(bytes), false, null);
 				return bytes;
 			}
 		};
@@ -175,7 +186,13 @@ public class FernflowerDecompiler implements IDecompiler {
 		} finally {
 			engine.clearContext();
 		}
-		return new Result(saver.content, convertVersion(provider.structClass.getBytecodeVersion()));
+		int majorVersion = -1;
+		try {
+			majorVersion = (Integer) FIELD_MAJOR_VER.get(provider.structClass);
+		} catch (Exception e) {
+			log.log(Level.SEVERE, "Unable to identify bytecode version", e);
+		}
+		return new Result(saver.content, convertVersion(majorVersion));
 	}
 
 	private static void replace(Fernflower engine, String fieldName, Object fieldObject) {
@@ -190,6 +207,16 @@ public class FernflowerDecompiler implements IDecompiler {
 
 	private static String convertVersion(int version) {
 		switch (version) {
+		case 62:
+			return "18";
+		case 61:
+			return "17";
+		case 60:
+			return "16";
+		case 59:
+			return "15";
+		case 58:
+			return "14";
 		case CodeConstants.BYTECODE_JAVA_13:
 			return "13";
 		case CodeConstants.BYTECODE_JAVA_12:
