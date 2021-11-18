@@ -122,6 +122,16 @@ class Version {
 			return "12";
 		case 57:
 			return "13";
+		case 58:
+			return "14";
+		case 59:
+			return "15";
+		case 60:
+			return "16";
+		case 61:
+			return "17";
+		case 62:
+			return "18";
 		default:
 			log.warning("Unknown version of compiled file. Major " + major + ". Minor " + minor);
 			return "~";

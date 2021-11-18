@@ -192,7 +192,7 @@ public class FernflowerDecompiler implements IDecompiler {
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Unable to identify bytecode version", e);
 		}
-		return new Result(saver.content, convertVersion(majorVersion));
+		return new Result(saver.content, Version.getCompiledJava(0, majorVersion));
 	}
 
 	private static void replace(Fernflower engine, String fieldName, Object fieldObject) {
@@ -202,44 +202,6 @@ public class FernflowerDecompiler implements IDecompiler {
 			field.set(engine, fieldObject);
 		} catch (Exception e) {
 			throw new JarexpException("Unable to replace private field " + fieldName, e);
-		}
-	}
-
-	private static String convertVersion(int version) {
-		switch (version) {
-		case 62:
-			return "18";
-		case 61:
-			return "17";
-		case 60:
-			return "16";
-		case 59:
-			return "15";
-		case 58:
-			return "14";
-		case CodeConstants.BYTECODE_JAVA_13:
-			return "13";
-		case CodeConstants.BYTECODE_JAVA_12:
-			return "12";
-		case CodeConstants.BYTECODE_JAVA_11:
-			return "11";
-		case CodeConstants.BYTECODE_JAVA_10:
-			return "10";
-		case CodeConstants.BYTECODE_JAVA_9:
-			return "9";
-		case CodeConstants.BYTECODE_JAVA_8:
-			return "8";
-		case CodeConstants.BYTECODE_JAVA_7:
-			return "7";
-		case CodeConstants.BYTECODE_JAVA_6:
-			return "6";
-		case CodeConstants.BYTECODE_JAVA_5:
-			return "5";
-		case CodeConstants.BYTECODE_JAVA_LE_4:
-			return "<=1.4";
-		default:
-			log.warning("Unknown version of compiled file. Version is " + version);
-			return "~";
 		}
 	}
 
