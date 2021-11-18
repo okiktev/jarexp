@@ -338,7 +338,11 @@ public class InfoDlg extends JDialog {
 		try {
 			ratio = Double.valueOf(DECIMAL_FORMAT.format(ratio));
 		} catch (NumberFormatException e) {
-			ratio = Double.valueOf(DECIMAL_FORMAT_WITH_COMMA.format(ratio));
+			try {
+				ratio = Double.valueOf(DECIMAL_FORMAT_WITH_COMMA.format(ratio));
+			} catch (NumberFormatException ex) {
+				ratio = Double.valueOf(ratio);
+			}
 		}
 		return format(compressedSize + " (" + ratio + "%)");
 	}

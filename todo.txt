@@ -127,9 +127,9 @@ imp get all processes command line ... done ....................................
 bug check license apache2.0 ... done ..............................................................15Nov2021
 bug with loading update date under java 17 ... done ...............................................15Nov2021
 imp add sum sha1 ... done .........................................................................17Nov2021
+bug java17 when open info for root jar ... done ...................................................17Nov2021
 
 
-bug java17 when open info for root jar
 imp update decompilers
 imp multiply tabs
 imp list of class structure
