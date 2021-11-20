@@ -129,9 +129,10 @@ bug with loading update date under java 17 ... done ............................
 imp add sum sha1 ... done .........................................................................17Nov2021
 bug java17 when open info for root jar ... done ...................................................17Nov2021
 imp update decompilers ... done ...................................................................18Nov2021
-
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 11_nov_2021
 
 imp multiply tabs
+imp linux easy download
 imp list of class structure
 imp graph dependencies
 imp copy buttons on decompiled class
