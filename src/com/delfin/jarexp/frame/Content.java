@@ -116,21 +116,25 @@ public class Content extends JPanel {
 					showMessageDialog(frame, "Unknown result code: " + searchResult.line, "Error", ERROR_MESSAGE);
 					break;
 				}
+				String fullPath = null;
 				while (row != -1) {
 					SearchResult fileSearch = (SearchResult) tableModel.getValueAt(--row, 0);
 					if (fileSearch.position == -1) {
-						jarTree.expandTreeLeaf(fileSearch.line);
+						jarTree.expandTreeLeaf(fullPath = fileSearch.line);
 						break;
 					}
 				}
+				ContentPanel contentPanel = (ContentPanel) getSplitPane().getRightComponent();
+				while (!fullPath.equals(contentPanel.getSelectedTabComponent().fullPath)) {
+					Utils.sleep(50);
+				}
+				JTextArea area = contentPanel.getSelectedComponent();
 				try {
-					JTextArea area = jarTreeSelectionListener.area;
 					int position = searchResult.position;
 					area.scrollRectToVisible(area.modelToView(position));
-
 					Highlighter hilit = new RSyntaxTextAreaHighlighter();
 					area.setHighlighter(hilit);
-					hilit.addHighlight(position, position + ((String)cbFind.getSelectedItem()).length()
+					hilit.addHighlight(position, position + ((String) cbFind.getSelectedItem()).length()
 							, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
 				} catch (BadLocationException ex) {
 					throw new JarexpException("Could not scroll to found index.", ex);
@@ -192,10 +196,10 @@ public class Content extends JPanel {
 			frame.setLocation(Settings.X, Settings.Y);
 		}
 		frame.addComponentListener(new ComponentAdapter() {
-		    public void componentMoved(ComponentEvent e) {
-		    	Settings.X = frame.getX();
-		    	Settings.Y = frame.getY();
-		    }
+			public void componentMoved(ComponentEvent e) {
+				Settings.X = frame.getX();
+				Settings.Y = frame.getY();
+			}
 		});
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addWindowListener(new WindowAdapter() {
@@ -255,7 +259,7 @@ public class Content extends JPanel {
 				}
 				searchEntries.add(f, null, f.getAbsolutePath(), f.isDirectory());
 				new SearchDlg(searchEntries) {
-					private static final long serialVersionUID = -838103554183752603L;						
+					private static final long serialVersionUID = -838103554183752603L;
 					@Override
 					protected void initComponents() {
 						super.initComponents();
@@ -365,32 +369,32 @@ public class Content extends JPanel {
 
 		// Create and set up the content pane.
 		Content content = new Content();
-		((JComponent)content).setBorder(Settings.EMPTY_BORDER);
-		//newContentPane.setOpaque(true); // content panes must be opaque
+		((JComponent) content).setBorder(Settings.EMPTY_BORDER);
+		// newContentPane.setOpaque(true); // content panes must be opaque
 		frame.setContentPane(content);
 		frame.setDropTarget(new DropTarget() {
 
 			private static final long serialVersionUID = -2086424207425075731L;
 
 			public synchronized void drop(DropTargetDropEvent evt) {
-		        try {
-		            evt.acceptDrop(DnDConstants.ACTION_COPY);
-		            @SuppressWarnings("unchecked")
-					List<File> droppedFiles = (List<File>)
-		                evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-		            for (File f : droppedFiles) {
-		            	loadJarFile(file = f);
-		            	break;
-		            }
-		        } catch (Exception e) {
-		        	throw new JarexpException("Unable to receive list of dropped files", e);
-		        }
-		    }
+				try {
+					evt.acceptDrop(DnDConstants.ACTION_COPY);
+					@SuppressWarnings("unchecked")
+					List<File> droppedFiles = (List<File>) evt.getTransferable()
+							.getTransferData(DataFlavor.javaFileListFlavor);
+					for (File f : droppedFiles) {
+						loadJarFile(file = f);
+						break;
+					}
+				} catch (Exception e) {
+					throw new JarexpException("Unable to receive list of dropped files", e);
+				}
+			}
 		});
 		frame.setIconImage(Resources.getInstance().getLogoImage());
 		frame.pack();
 		frame.setVisible(true);
-		
+
 		if (passedFile != null) {
 			loadJarFile(file = passedFile);
 		}
@@ -431,19 +435,18 @@ public class Content extends JPanel {
 				jarTree.addTreeSelectionListener(jarTreeSelectionListener = new JarTreeSelectionListener(jarTree, statusBar, frame));
 				jarTree.load(f);
 				jarTree.setBorder(Settings.EMPTY_BORDER);
-				
+
 				final JSplitPane pane = getSplitPane();
 				pane.setBorder(Settings.EMPTY_BORDER);
-				
+
 				Component treeView = pane.getLeftComponent();
-				//pane.remove(treeView);
 				treeView = new JScrollPane(jarTree);
 				((JComponent) treeView).setBorder(Settings.EMPTY_BORDER);
 				pane.setLeftComponent(treeView);
-				
+
 				JScrollPane contentView = new JScrollPane();
 				contentView.setBorder(Settings.EMPTY_BORDER);
-				pane.setRightComponent(new ContentPanel(contentView));
+				pane.setRightComponent(new ContentPanel(contentView, jarTree));
 
 				frame.setTitle((title == null ? title = frame.getTitle() : title) + " | " + file.getName());
 

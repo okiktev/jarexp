@@ -37,6 +37,7 @@ class StatusBar extends JStatusBar {
 	private final JLabel compJava = new JLabel("");
 	private final JLabel children = new JLabel("");
 	private JPanel decompilerImg;
+	private DecompilerType decompilerType;
 
 	StatusBar(Content content) {
 		super();
@@ -53,7 +54,7 @@ class StatusBar extends JStatusBar {
 		JPanel panel = new JPanel(new GridLayout(1, 1));
 		panel.add(progressBar);
 
-		decompilerImg = new ImgPanel(RESOURCES.getJdCoreImage());
+		setDecompiler(DecompilerType.JDCORE);
 
 		add(new StatusBarItem("children", children, "20"));
 		add(new StatusBarItem("comp_java", compJava, "20"));
@@ -75,15 +76,31 @@ class StatusBar extends JStatusBar {
 	}
 
 	void setCompiledVersion(String ver) {
-		this.compJava.setText(ver);
+		compJava.setText(ver);
 	}
 
 	void setChildren(String count) {
-		this.children.setText(count);
+		children.setText(count);
 	}
 
 	void setPath(String path) {
 		this.path.setText(path);
+	}
+
+	String getCompiledVersion() {
+		return compJava.getText();
+	}
+
+	String getChildren() {
+		return children.getText();
+	}
+
+	String getPath() {
+		return path.getText();
+	}
+
+	DecompilerType getDecompilerType() {
+		return decompilerType;
 	}
 
 	void setDecompiler(DecompilerType decompiler) {
@@ -101,8 +118,19 @@ class StatusBar extends JStatusBar {
 		default:
 			throw new JarexpException("Unable to define decompiler type " + decompiler);
 		}
-		((ImgPanel)decompilerImg).setImage(img);
+		if (decompilerImg == null) {
+			decompilerImg = new ImgPanel(img);
+		} else {			
+			((ImgPanel)decompilerImg).setImage(img);
+		}
 		decompilerImg.repaint();
+		this.decompilerType = decompiler;
+	}
+
+	public void empty() {
+		path.setText("");
+		compJava.setText("");
+		children.setText("");
 	}
 
 }

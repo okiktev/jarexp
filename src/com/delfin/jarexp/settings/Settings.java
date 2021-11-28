@@ -175,4 +175,8 @@ public class Settings {
 		return HOME_DIR;
 	}
 
+	public int getTabCount() {
+		return 16;
+	}
+
 }

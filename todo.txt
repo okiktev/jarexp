@@ -129,10 +129,15 @@ bug with loading update date under java 17 ... done ............................
 imp add sum sha1 ... done .........................................................................17Nov2021
 bug java17 when open info for root jar ... done ...................................................17Nov2021
 imp update decompilers ... done ...................................................................18Nov2021
-$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 11_nov_2021
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 20_nov_2021
+imp multiply tabs ... done ........................................................................28Nov2021
 
-imp multiply tabs
+
+imp format content table
+imp do content table row clickable
 imp linux easy download
+bug saving files when digest specified
+imp add discard button to save dialog confirmation
 imp list of class structure
 imp graph dependencies
 imp copy buttons on decompiled class

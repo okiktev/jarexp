@@ -53,12 +53,9 @@ class FilterPanel extends JPanel {
 	private BasicArrowButton btDown = new BasicArrowButton(BasicArrowButton.SOUTH, null, null, Color.BLACK, null);
 
 	private int currPosition;
-	private JarTreeSelectionListener listener;
 
-	public FilterPanel(JarTreeSelectionListener listener) {
+	FilterPanel() {
 		super();
-
-		this.listener = listener;
 
 		initComponents();
 		alignComponents();
@@ -156,9 +153,11 @@ class FilterPanel extends JPanel {
 
 		Content.getSplitPane().getRootPane().setDefaultButton(btDown);
 	}
-	
+
 	private RSyntaxTextArea getTextArea() {
-		return (RSyntaxTextArea)listener.area;
+		JSplitPane pane = Content.getSplitPane();
+		ContentPanel rightPanel = (ContentPanel) pane.getRightComponent();
+		return rightPanel.getSelectedComponent();
 	}
 
 	private void scrollToVisible(RSyntaxTextArea textArea) {
@@ -192,7 +191,7 @@ class FilterPanel extends JPanel {
 	}
 
 	public static void main(String[] args) throws Exception {
-		FilterPanel center = new FilterPanel(null);
+		FilterPanel center = new FilterPanel();
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(center, BorderLayout.CENTER);

@@ -217,8 +217,8 @@ public class Zip {
 	            jarUpdated = true;
 	        }
 	        catch(Exception ex) {
-	            ex.printStackTrace();
-	            tempJarOutputStream.putNextEntry(new JarEntry("stub"));
+	            reset();
+	            throw new RuntimeException(ex);
 	        }
 	        finally {
 	            tempJarOutputStream.close();
