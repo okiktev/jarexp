@@ -136,6 +136,7 @@ imp multiply tabs ... done .....................................................
 imp format content table
 imp do content table row clickable
 imp linux easy download
+imp mark edited tab somehow
 bug saving files when digest specified
 imp add discard button to save dialog confirmation
 imp list of class structure

@@ -40,6 +40,7 @@
 		<copy todir="${build.dir}/src">
 			<fileset dir="${src.dir}" >
 				<exclude name="**/FieldHelper.java"/>
+				<exclude name="**/TableHeaderCustomizer.java"/>
 			</fileset>
 			<filterset>
 				<filter token="VERSION" value="${full.version}" />

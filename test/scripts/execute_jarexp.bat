@@ -10,7 +10,7 @@ echo Running '%JAREXP_FILE_NAME%' under Java '%JAVA_HOME%' from '%JAREXP_DIR%'
 
 rem "%JAVA_HOME%\bin\java.exe" -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=666 -jar "%JAREXP_DIR%\%JAREXP_FILE_NAME%"
 
-"%JAVA_HOME%\bin\java.exe" -XX:+IgnoreUnrecognizedVMOptions --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=666 -jar "%JAREXP_DIR%\%JAREXP_FILE_NAME%"
+"%JAVA_HOME%\bin\java.exe" -XX:+IgnoreUnrecognizedVMOptions --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED --add-exports=java.desktop/sun.swing.table=ALL-UNNAMED -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=666 -jar "%JAREXP_DIR%\%JAREXP_FILE_NAME%"
 
 rem "%JAVA_HOME%\bin\java.exe" -jar "%JAREXP_DIR%\%JAREXP_FILE_NAME%"
 

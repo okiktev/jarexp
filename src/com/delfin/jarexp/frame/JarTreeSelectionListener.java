@@ -1,5 +1,7 @@
 package com.delfin.jarexp.frame;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Event;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -15,6 +17,7 @@ import java.util.zip.ZipFile;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -23,10 +26,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.tree.TreePath;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -43,7 +48,9 @@ import com.delfin.jarexp.frame.ContentPanel.TabComponent;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 import com.delfin.jarexp.icon.Ico;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.utils.TableHeaderCustomizer;
 import com.delfin.jarexp.utils.Zip;
+
 
 class JarTreeSelectionListener implements TreeSelectionListener {
 
@@ -74,6 +81,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 			log.log(Level.SEVERE, "Unable to apply eclipse theme", e);
 		}
 	}
+
+	private static final FolderTableCellRenderer FOLDER_TABLE_CELL_RENDERER = new FolderTableCellRenderer();
 
 	private final JarTree jarTree;
 
@@ -128,6 +137,9 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 								JTable table = new JTable(new JarNodeTableModel(node, statusBar));
 								table.setFillsViewportHeight(true);
 								table.setAutoCreateRowSorter(true);
+								TableHeaderCustomizer.customize(table);
+								table.setDefaultRenderer(Object.class, FOLDER_TABLE_CELL_RENDERER);
+								table.setDefaultRenderer(Number.class, FOLDER_TABLE_CELL_RENDERER);
 
 								JComponent tablePane = new JScrollPane(table);
 								tablePane.setBorder(Settings.EMPTY_BORDER);
@@ -319,6 +331,35 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 			if (!tabComponent.isEdited) {
 				tabComponent.isEdited = true;
 			}
+		}
+	}
+
+	private static class FolderTableCellRenderer extends DefaultTableCellRenderer {
+
+		private static final long serialVersionUID = -3854438137640730745L;
+		
+		private static final Color HIGHLIGHTED = new Color(242, 241, 227);
+		private static final Border BORDER = BorderFactory.createLineBorder(Color.BLACK);
+
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+				boolean hasFocus, int row, int column) {
+
+			Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			if (isSelected) {
+				if (hasFocus) {
+					FolderTableCellRenderer renderer = (FolderTableCellRenderer) component;
+					renderer.setBorder(BORDER);
+					return renderer;
+				}
+				return component;
+			}
+			if (row % 2 == 1) {
+				component.setBackground(HIGHLIGHTED);
+			} else {
+				component.setBackground(Color.WHITE);
+			}
+			return component;
 		}
 	}
 
