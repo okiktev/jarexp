@@ -131,10 +131,10 @@ bug java17 when open info for root jar ... done ................................
 imp update decompilers ... done ...................................................................18Nov2021
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 20_nov_2021
 imp multiply tabs ... done ........................................................................28Nov2021
+imp format content table ... done .................................................................12Dec2021
+imp do content table row clickable ... done .......................................................13Dec2021
 
 
-imp format content table
-imp do content table row clickable
 imp linux easy download
 imp mark edited tab somehow
 bug saving files when digest specified

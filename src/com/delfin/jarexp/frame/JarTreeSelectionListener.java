@@ -4,12 +4,19 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Event;
 import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -20,18 +27,23 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -46,6 +58,7 @@ import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.Content.PreLoadAction;
 import com.delfin.jarexp.frame.ContentPanel.TabComponent;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
+import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.icon.Ico;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.TableHeaderCustomizer;
@@ -140,7 +153,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 								TableHeaderCustomizer.customize(table);
 								table.setDefaultRenderer(Object.class, FOLDER_TABLE_CELL_RENDERER);
 								table.setDefaultRenderer(Number.class, FOLDER_TABLE_CELL_RENDERER);
-
+								table.addMouseListener(new FolderTableMouseAdapter(table, node));
+								
 								JComponent tablePane = new JScrollPane(table);
 								tablePane.setBorder(Settings.EMPTY_BORDER);
 
@@ -334,16 +348,103 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 		}
 	}
 
+	private class FolderTableMouseAdapter extends MouseAdapter {
+
+		private JTable table;
+		private JarNode node;
+
+		FolderTableMouseAdapter(JTable table, JarNode node) {
+			this.table = table;
+			this.node = node;
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			final int row = table.rowAtPoint(e.getPoint());
+			final int col = table.columnAtPoint(e.getPoint());
+			if (row < 0 || col < 0) {
+				table.clearSelection();
+				return;
+			}
+			if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
+				String name = (String) table.getModel().getValueAt(row, 0);
+				JarTreeClickSelection.setNodes(null);
+				jarTree.isNotDraw = true;
+				jarTree.clearSelection();
+				TreeNode[] nodes = new TreeNode[node.getPath().length + 1];
+				for (int i = 0; i < nodes.length; ++i) {
+					if (i == nodes.length - 1) {
+						@SuppressWarnings("unchecked")
+						Enumeration<JarNode> children = node.children();
+						while (children.hasMoreElements()) {
+							JarNode jarNode = children.nextElement();
+							if (name.equals(jarNode.name)) {
+								nodes[i] = jarNode;
+								break;
+							}
+						}
+					} else {
+						nodes[i] = node.getPath()[i];
+					}
+				}
+				jarTree.setSelectionPath(new TreePath(nodes));
+			} else if (SwingUtilities.isRightMouseButton(e)) {
+				if (!table.isRowSelected(row)) {
+					table.setRowSelectionInterval(row, row);
+				}
+				boolean multiplySelection = table.getSelectedRowCount() > 1;
+				Resources resources = Resources.getInstance();
+				JPopupMenu popupMenu = new JPopupMenu();
+				JMenuItem copyCell = new JMenuItem("Copy cell");
+				copyCell.setIcon(resources.getCopyIcon());
+				copyCell.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+						clipboard.setContents(new StringSelection(table.getModel().getValueAt(row, col).toString()),
+								null);
+					}
+				});
+				copyCell.setEnabled(!multiplySelection);
+				JMenuItem copyRow = new JMenuItem(multiplySelection ? "Copy rows" : "Copy row");
+				copyRow.setIcon(resources.getCopyIcon());
+				copyRow.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						StringBuilder out = new StringBuilder();
+						TableModel model = table.getModel();
+						for (int row : table.getSelectedRows()) {
+							for (int i = 0; i < model.getColumnCount(); ++i) {
+								out.append(model.getValueAt(row, i));
+								if (i < model.getColumnCount() - 1) {
+									out.append(';');
+								}
+							}
+							out.append('\n');
+						}
+
+						Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+						clipboard.setContents(new StringSelection(out.toString()), null);
+					}
+				});
+				popupMenu.add(copyCell);
+				popupMenu.add(copyRow);
+
+				popupMenu.show(table, e.getX(), e.getY());
+			}
+		}
+	}
+
 	private static class FolderTableCellRenderer extends DefaultTableCellRenderer {
 
 		private static final long serialVersionUID = -3854438137640730745L;
-		
+
 		private static final Color HIGHLIGHTED = new Color(242, 241, 227);
 		private static final Border BORDER = BorderFactory.createLineBorder(Color.BLACK);
 
 		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-				boolean hasFocus, int row, int column) {
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
 
 			Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 			if (isSelected) {
