@@ -15,10 +15,15 @@ class DuplicatesFileSearchResultTableModel extends AbstractTableModel {
 
 	private List<SearchResult> data = new ArrayList<SearchResult>();
 
+	private boolean isFileSizeRendered;
+
 	DuplicatesFileSearchResultTableModel(Map<String, List<SearchResult>> result) {
 		int i = 1;
 		for (Entry<String, List<SearchResult>> entry : result.entrySet()) {
 			for (SearchResult res : entry.getValue()) {
+				if (!isFileSizeRendered && res instanceof DuplicatesSearchResult) {
+					isFileSizeRendered = true;
+				}
 				res.position = i;
 				data.add(res);
 			}
@@ -32,13 +37,33 @@ class DuplicatesFileSearchResultTableModel extends AbstractTableModel {
 	}
 
 	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		if (isFileSizeRendered && columnIndex == 1) {
+			return DuplicatesSearchResult.class;
+		}
+		return Object.class;
+	}
+
+	@Override
 	public int getColumnCount() {
-		return 1;
+		return isFileSizeRendered ? 2 : 1;
+	}
+
+	@Override
+	public String getColumnName(int column) {
+		if (isFileSizeRendered) {			
+			return column == 0 ? "Path to file" : "File size";
+		}
+		return null;
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		return data.get(rowIndex);
+	}
+
+	boolean isFileSizeRendered() {
+		return isFileSizeRendered;
 	}
 
 }

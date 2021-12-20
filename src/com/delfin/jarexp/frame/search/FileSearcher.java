@@ -25,8 +25,8 @@ class FileSearcher extends AbstractSearcher {
 	private boolean isEmptySearch;
 
 	@Override
-	public void search(SearchCriteria criteria) {
-		super.search(criteria);
+	public void search(final SearchDlg searchDlg) {
+		super.search(searchDlg);
 		String fileName = (String) searchDlg.cbFind.getSelectedItem();
 		if (!isMatchCase) {
 			fileName = fileName.toLowerCase();
@@ -70,13 +70,13 @@ class FileSearcher extends AbstractSearcher {
 		if (Thread.currentThread().isInterrupted()) {
 			return;
 		}
-		Jar seacher;
+		Jar searcher;
 		if (searchRoot.isDirectory()) {
-			seacher = prepareDirectorySearch(searchRoot, (List<SearchResult>)results, dlg);
+			searcher = prepareDirectorySearch(searchRoot, (List<SearchResult>)results, dlg);
 		} else {
-			seacher = prepareArchiveSearch(parent, searchRoot, (List<SearchResult>)results, dlg, pathInJar);
+			searcher = prepareArchiveSearch(parent, searchRoot, (List<SearchResult>)results, dlg, pathInJar);
 		}
-		seacher.bypass();
+		searcher.bypass();
 	}
 
 	private Jar prepareArchiveSearch(final String parent, final File archive, final List<SearchResult> results,
@@ -147,11 +147,6 @@ class FileSearcher extends AbstractSearcher {
 			}
 
 		};
-	}
-
-	@Override
-	protected SearchDlg extractSearchDlg(SearchCriteria criteria) {
-		return ((FileSearchCriteria) criteria).dlg;
 	}
 
 }

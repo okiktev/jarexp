@@ -14,8 +14,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.JarEntry;
 
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.Jar;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.frame.search.Directory;
 import com.delfin.jarexp.frame.search.SearchResult;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Md5Checksum;
@@ -55,18 +57,16 @@ class OnFindBtnClickListener implements ActionListener {
 			@Override
 			public void run() {
 				long start = System.currentTimeMillis();
-				search("", dlg.jarFile, dlg);
+				search("", dlg.folderToFind, dlg);
 				long overall = System.currentTimeMillis() - start;
-				for (Iterator<Entry<String, List<SearchResult>>> it = searchResult.entrySet().iterator(); it
-						.hasNext();) {
+				for (Iterator<Entry<String, List<SearchResult>>> it = searchResult.entrySet().iterator(); it.hasNext();) {
 					Entry<String, List<SearchResult>> entry = it.next();
 					if (entry.getValue().size() < 2) {
 						it.remove();
 					}
 				}
-				dlg.tResult.setModel(new DuplicatesFileSearchResultTableModel(searchResult));
-				String label = "Found " + searchResult.size() + " results for " + overall + "ms:";
-				dlg.lbResult.setText(label);
+				dlg.lbResult.setText("Found " + searchResult.size() + " results for " + overall + "ms:");
+				dlg.spResult.render(searchResult);
 			};
 		});
 		search.start();
@@ -78,9 +78,20 @@ class OnFindBtnClickListener implements ActionListener {
 		});
 	}
 
-	private void search(final String parent, final File archive, final DuplicatesDlg dlg) {
+	private void search(String parent, File archive, DuplicatesDlg dlg) {
+		Jar searcher;
+		if (archive.isDirectory()) {
+			searcher = prepareDirectorySearch(archive);
+		} else if (Zip.isArchive(archive.getAbsolutePath(), true)) {
+			searcher = prepareArchiveSearch(parent, archive, dlg);
+		} else {
+			throw new JarexpException("Unknown file type to search duplicates");
+		}
+		searcher.bypass();
+	}
 
-		new Jar(archive) {
+	private Jar prepareArchiveSearch(final String parent, final File archive, final DuplicatesDlg dlg) {
+		return new Jar(archive) {
 			@Override
 			protected void process(JarEntry entry) throws IOException {
 				String path = entry.getName();
@@ -120,7 +131,26 @@ class OnFindBtnClickListener implements ActionListener {
 				return parent + '/' + path;
 			}
 
-		}.bypass();
+		};
+	}
+
+	private Jar prepareDirectorySearch(File dir) {
+		if  (!isUseMd5) {
+			throw new JarexpException("MD5 checker was not selected.");
+		}
+		return new Directory(dir) {
+			@Override
+			protected void process(File file) throws IOException {
+				dlg.lbResult.setText("Scanning... " + file);
+				String key = Md5Checksum.get(file);
+				List<SearchResult> results = searchResult.get(key);
+				if (results == null) {
+					results = new ArrayList<SearchResult>();
+					searchResult.put(key, results);
+				}
+				results.add(new DuplicatesSearchResult(file.getAbsolutePath(), file.length()));
+			}
+		};
 	}
 
 }

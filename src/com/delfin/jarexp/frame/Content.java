@@ -280,21 +280,16 @@ public class Content extends JPanel {
 					@Override
 					protected void initComponents() {
 						super.initComponents();
-						tResult.addMouseListener(new MouseAdapter() {
+						spResult.addMouseListener(new MouseAdapter() {
 							public void mousePressed(MouseEvent e) {
 								if (e.getClickCount() != 2) {
 									return;
 								}
-								int row = tResult.getSelectedRow();
-								if (row == -1) {
+								SearchResult searchResult = spResult.getSelectedSearchResult();
+								if (searchResult == null) {
 									return;
 								}
-								TableModel tableModel = tResult.getModel();
-								SearchResult searchResult = (SearchResult) tableModel.getValueAt(row, 0);
-								switch (searchResult.position) {
-								case 1:
-								case 2: jarTree.expandTreeLeaf(searchResult.line); break;
-								}
+								jarTree.expandTreeLeaf(searchResult.line);
 							}
 						});
 					}

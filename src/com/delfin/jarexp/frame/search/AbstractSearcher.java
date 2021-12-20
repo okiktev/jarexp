@@ -16,15 +16,15 @@ abstract class AbstractSearcher implements Searcher {
 
 	protected String fullSearchPath;
 
-	protected SearchDlg searchDlg;
+	private SearchDlg searchDlg;
 
 	protected SearchEntries searchEntries;
 
 	protected boolean isSearchInWhole;
 
 	@Override
-	public void search(SearchCriteria criteria) {
-		searchDlg = extractSearchDlg(criteria);
+	public void search(SearchDlg searchDlg) {
+		this.searchDlg = searchDlg;
 		searchEntries = searchDlg.searchEntries;
 		isMatchCase = searchDlg.cbMatchCase.isSelected();
 		isInAll = searchDlg.cbInAllSubArchives.isSelected();
@@ -32,25 +32,22 @@ abstract class AbstractSearcher implements Searcher {
 
 	protected boolean isNotAllowedToSearch(String parent, String path, String pathInJar) {
 		if (isSearchInWhole) {
-			if (pathInJar != null && !path.startsWith(pathInJar)) {
-				return true;
-			}
-		} else {
-			boolean pathIsArchive = Zip.isArchive(path.toLowerCase(), true);
-			String currentFullPath = getCurrentFullPath(parent, path, pathInJar, pathIsArchive);
-			if (!currentFullPath.startsWith(fullSearchPath)) {
-				boolean isForbidden = true;
-				if (pathIsArchive && fullSearchPath.indexOf('!') != -1) {
-					for (String pathPart : fullSearchPath.split("!")) {
-						if (currentFullPath.startsWith(pathPart)) {
-							isForbidden = false;
-							break;
-						}
+			return pathInJar != null && !path.startsWith(pathInJar);
+		}
+		boolean pathIsArchive = Zip.isArchive(path.toLowerCase(), true);
+		String currentFullPath = getCurrentFullPath(parent, path, pathInJar, pathIsArchive);
+		if (!currentFullPath.startsWith(fullSearchPath)) {
+			boolean isForbidden = true;
+			if (pathIsArchive && fullSearchPath.indexOf('!') != -1) {
+				for (String pathPart : fullSearchPath.split("!")) {
+					if (currentFullPath.startsWith(pathPart)) {
+						isForbidden = false;
+						break;
 					}
 				}
-				if (isForbidden) {
-					return true;
-				}
+			}
+			if (isForbidden) {
+				return true;
 			}
 		}
 		return false;
@@ -82,8 +79,6 @@ abstract class AbstractSearcher implements Searcher {
 		}
 		cb.setSelectedIndex(0);
 	}
-
-	protected abstract SearchDlg extractSearchDlg(SearchCriteria criteria);
 
 	protected abstract void search(String parent, File searchRoot, Object results, SearchDlg dlg, String pathInJar);
 

@@ -3,7 +3,7 @@ package com.delfin.jarexp.frame.search;
 import java.awt.Color;
 
 public class SearchResult {
-	
+
 	public static final Color COLOR_ERROR = new Color(255, 149, 149);
 
 	public static final Color COLOR_CONTENT = new Color(239, 228, 176);

@@ -55,8 +55,8 @@ class FileContentSearcher extends AbstractSearcher {
 	private String statement;
 
 	@Override
-	public void search(SearchCriteria criteria) {
-		super.search(criteria);
+	public void search(final SearchDlg searchDlg) {
+		super.search(searchDlg);
 		statement = (String) searchDlg.cbFind.getSelectedItem();
 		if (statement == null || statement.isEmpty()) {
 			showMessageDialog(searchDlg, "Statement for search should not be empty.", "Wrong input", WARNING_MESSAGE);
@@ -280,11 +280,6 @@ class FileContentSearcher extends AbstractSearcher {
 			}
 		}
 		return nonIgnores.isEmpty();
-	}
-
-	@Override
-	protected SearchDlg extractSearchDlg(SearchCriteria criteria) {
-		return ((FileContentSearchCriteria) criteria).dlg;
 	}
 
 }

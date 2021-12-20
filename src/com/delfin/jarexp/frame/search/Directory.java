@@ -7,7 +7,7 @@ import java.util.jar.JarEntry;
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.Jar;
 
-abstract class Directory extends Jar {
+public abstract class Directory extends Jar {
 
 	public Directory(File file) {
 		super(file);
@@ -28,15 +28,15 @@ abstract class Directory extends Jar {
 	}
 
 	private void bypass(File file) throws IOException {
-		if (file.isDirectory()) {
+		if (file.isFile()) {
+			process(file);
+		} else {
 			File[] files = file.listFiles();
 			if (files != null) {
 				for (File f : files) {
 					bypass(f);
 				}
 			}
-		} else {
-			process(file);
 		}
 	}
 
