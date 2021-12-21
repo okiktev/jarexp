@@ -134,8 +134,11 @@ imp multiply tabs ... done .....................................................
 imp format content table ... done .................................................................12Dec2021
 imp do content table row clickable ... done .......................................................13Dec2021
 imp duplicate searching for file system ... done ..................................................20Dec2021
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 21_dec_2021
 
 
+
+bug unable to do file duplicates when archive is not loaded
 imp linux easy download
 imp mark edited tab somehow
 bug saving files when digest specified
