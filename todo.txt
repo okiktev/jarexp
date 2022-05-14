@@ -135,10 +135,14 @@ imp format content table ... done ..............................................
 imp do content table row clickable ... done .......................................................13Dec2021
 imp duplicate searching for file system ... done ..................................................20Dec2021
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 21_dec_2021
+bug unable to do file duplicates when archive is not loaded ... done ..............................14May2022
 
 
-
-bug unable to do file duplicates when archive is not loaded
+bug if try to open file from folder search result
+imp min/max buttons for search dlgs
+imp clear search content when new search has been started
+imp clear search results if nothing found
+imp added compiler icon to content search
 imp linux easy download
 imp mark edited tab somehow
 bug saving files when digest specified

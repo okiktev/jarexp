@@ -57,7 +57,7 @@ class OnFindBtnClickListener implements ActionListener {
 			@Override
 			public void run() {
 				long start = System.currentTimeMillis();
-				search("", dlg.folderToFind, dlg);
+				search("", new File(dlg.tfSearchIn.getText()), dlg);
 				long overall = System.currentTimeMillis() - start;
 				for (Iterator<Entry<String, List<SearchResult>>> it = searchResult.entrySet().iterator(); it.hasNext();) {
 					Entry<String, List<SearchResult>> entry = it.next();

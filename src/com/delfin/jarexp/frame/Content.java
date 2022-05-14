@@ -3,7 +3,6 @@ package com.delfin.jarexp.frame;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
-import static javax.swing.JOptionPane.WARNING_MESSAGE;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -272,10 +271,14 @@ public class Content extends JPanel {
 		, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (isArchiveNotLoaded()) {
-					return;
+				SearchEntries searchEntries = new SearchEntries();
+				File f = file;
+				if (file == null) {
+					List<File> files = ActionHistory.getLastDirSelected();
+					f = files.isEmpty() ? Settings.getUserHome() : files.get(0);
 				}
-				new DuplicatesDlg(file) {
+				searchEntries.add(f, null, f.getAbsolutePath(), f.isDirectory());
+				new DuplicatesDlg(searchEntries) {
 					private static final long serialVersionUID = 7499714177978424203L;
 					@Override
 					protected void initComponents() {
@@ -408,14 +411,6 @@ public class Content extends JPanel {
 		jarTree.isNotDraw = true;
 		jarTree.clearSelection();
 		jarTree.setSelectionPath(new TreePath(node.getPath()));
-	}
-
-	private static boolean isArchiveNotLoaded() {
-		if (file == null) {
-			showMessageDialog(frame, "Archive is not loaded.", "Wrong input", WARNING_MESSAGE);
-			return true;
-		}
-		return false;
 	}
 
 	protected static void loadJarFile(final File f) {

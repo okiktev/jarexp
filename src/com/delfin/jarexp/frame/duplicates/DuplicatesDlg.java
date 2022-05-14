@@ -18,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,6 +38,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.settings.ActionHistory;
 import com.delfin.jarexp.utils.Zip;
 
@@ -47,7 +49,7 @@ public abstract class DuplicatesDlg extends JDialog {
 	private static final long serialVersionUID = 7971966785040198828L;
 
 	private JLabel lbSearchIn = new JLabel("Search In:");
-	protected JTextField tfSearchIn = new JTextField();
+	JTextField tfSearchIn = new JTextField();
 	private JButton btnChangePlace = new JButton("Browse");
 	
 	private JRadioButton rbUseMd5 = new JRadioButton("MD5 check");
@@ -59,12 +61,13 @@ public abstract class DuplicatesDlg extends JDialog {
 
 	protected boolean isUseMd5 = true;
 
-	protected File folderToFind;
+	private SearchEntries searchEntries;
 
-	public DuplicatesDlg(File jarFile) throws HeadlessException {
+	public DuplicatesDlg(SearchEntries searchEntries) throws HeadlessException {
 		super((JDialog) null);
 
-		this.folderToFind = jarFile;
+		this.searchEntries = searchEntries;
+		initLocation();
 
 		initComponents();
 		alignComponents();
@@ -107,7 +110,6 @@ public abstract class DuplicatesDlg extends JDialog {
 		lbResult.setFont(DLG_TEXT_FONT);
 		tfSearchIn.setFont(DLG_TEXT_FONT);
 
-		tfSearchIn.setText(folderToFind.getAbsolutePath());
 		tfSearchIn.setEditable(false);		
 
 		btnChangePlace.addActionListener(new ActionListener() {
@@ -133,8 +135,10 @@ public abstract class DuplicatesDlg extends JDialog {
 					if (!f.isDirectory() && !Zip.isArchive(f.getName())) {
 						showMessageDialog(DuplicatesDlg.this, "Specified file is not archive.", "Wrong input", ERROR_MESSAGE);
 					} else {
-						DuplicatesDlg.this.folderToFind = f;
-						DuplicatesDlg.this.tfSearchIn.setText(f.getAbsolutePath());
+						ActionHistory.addLastDirSelected(f);
+						DuplicatesDlg.this.searchEntries = new SearchEntries();
+						DuplicatesDlg.this.searchEntries.add(f, null, f.getAbsolutePath(), f.isDirectory());
+						initLocation();
 						makeVisibleHide();
 					}
 				}
@@ -174,6 +178,7 @@ public abstract class DuplicatesDlg extends JDialog {
 	}
 
 	private void makeVisibleHide() {
+		File folderToFind = new File(tfSearchIn.getText());
 		if (folderToFind.exists() && folderToFind.isDirectory()) {
 			cbInAllSubArchives.setEnabled(false);
 			rbUseMd5.setSelected(true);
@@ -193,6 +198,17 @@ public abstract class DuplicatesDlg extends JDialog {
 		}
 		List<File> dirs = ActionHistory.getLastDirSelected();
 		return dirs.isEmpty() ? null : dirs.get(0);
+	}
+
+	private void initLocation() {
+		StringBuilder fullNames = new StringBuilder();
+		for (Iterator<SearchEntries> it = searchEntries.iterator();it.hasNext();) {
+			fullNames.append(it.next().fullPath);
+			if (it.hasNext()) {
+				fullNames.append(',').append(' ');
+			}
+		}
+		tfSearchIn.setText(fullNames.toString());
 	}
 
 	public static void main(String[] args) {

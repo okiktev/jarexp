@@ -66,9 +66,10 @@ public abstract class SearchDlg extends JDialog {
 
 	public static class SearchEntries implements Iterable<SearchEntries> {
 
+		public final String fullPath;
+
 		final File archive;
 		final String path;
-		final String fullPath;
 		final boolean isDirectory;
 
 		private List<SearchEntries> entries = new ArrayList<SearchEntries>();
@@ -147,13 +148,14 @@ public abstract class SearchDlg extends JDialog {
 
 	public SearchDlg(SearchEntries searchEntries) {
 		super((JDialog) null);
+
 		this.searchEntries = searchEntries;
+		initLocation();
 
 		initComponents();
 		alignComponents();
 
 		setTitle("Search");
-		initLocation();
 		setIconImage(Resources.getInstance().getSearchImage());
 		setPreferredSize(DLG_DIM);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
