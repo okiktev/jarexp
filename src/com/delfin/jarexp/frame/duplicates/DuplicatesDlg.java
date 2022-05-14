@@ -61,7 +61,7 @@ public abstract class DuplicatesDlg extends JDialog {
 
 	protected boolean isUseMd5 = true;
 
-	private SearchEntries searchEntries;
+	protected SearchEntries searchEntries;
 
 	public DuplicatesDlg(SearchEntries searchEntries) throws HeadlessException {
 		super((JDialog) null);
@@ -136,8 +136,7 @@ public abstract class DuplicatesDlg extends JDialog {
 						showMessageDialog(DuplicatesDlg.this, "Specified file is not archive.", "Wrong input", ERROR_MESSAGE);
 					} else {
 						ActionHistory.addLastDirSelected(f);
-						DuplicatesDlg.this.searchEntries = new SearchEntries();
-						DuplicatesDlg.this.searchEntries.add(f, null, f.getAbsolutePath(), f.isDirectory());
+						DuplicatesDlg.this.searchEntries.replace(f, null, f.getAbsolutePath(), f.isDirectory());
 						initLocation();
 						makeVisibleHide();
 					}

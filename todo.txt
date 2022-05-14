@@ -136,9 +136,11 @@ imp do content table row clickable ... done ....................................
 imp duplicate searching for file system ... done ..................................................20Dec2021
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 21_dec_2021
 bug unable to do file duplicates when archive is not loaded ... done ..............................14May2022
+bug if try to open file from folder search result ... done ........................................14May2022
+imp handle search results from file system ... done ...............................................14May2022
+imp handle duplicates scan from file system ... done ..............................................14May2022
 
 
-bug if try to open file from folder search result
 imp min/max buttons for search dlgs
 imp clear search content when new search has been started
 imp clear search results if nothing found
@@ -157,8 +159,6 @@ imp pdf recognizing
 
 
 
-imp handle search results from file system
-imp handle duplicates scan from file system
 imp get all depended classes in the jar
 imp ribbon
 imp when delete file clear preview and context panel

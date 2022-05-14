@@ -3,9 +3,11 @@ package com.delfin.jarexp.frame;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
@@ -20,6 +22,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
@@ -91,7 +94,10 @@ public class Content extends JPanel {
 
 		private final JTable tResult;
 
-		SearchResultMouseAdapter(JComboBox<String> cbFind, JTable tResult) {
+		private final SearchEntries searchEntries;
+
+		SearchResultMouseAdapter(JComboBox<String> cbFind, JTable tResult, SearchEntries searchEntries) {
+			this.searchEntries = searchEntries;
 			this.cbFind = cbFind;
 			this.tResult = tResult;
 		}
@@ -107,40 +113,59 @@ public class Content extends JPanel {
 			}
 			TableModel tableModel = tResult.getModel();
 			final SearchResult searchResult = (SearchResult) tableModel.getValueAt(row, 0);
-			switch (searchResult.position) {
-			case -1: jarTree.expandTreeLeaf(searchResult.line); break;
-			case -2: showMessageDialog(frame, searchResult.line, "Information", INFORMATION_MESSAGE); break;
-			default:
-				if (searchResult.position < -1) {
-					showMessageDialog(frame, "Unknown result code: " + searchResult.line, "Error", ERROR_MESSAGE);
-					break;
-				}
-				String fullPath = null;
-				while (row != -1) {
-					SearchResult fileSearch = (SearchResult) tableModel.getValueAt(--row, 0);
-					if (fileSearch.position == -1) {
-						jarTree.expandTreeLeaf(fullPath = fileSearch.line);
+			if (searchEntries.getSearchPath().equals(jarTree.getRoot().name)) {
+				switch (searchResult.position) {
+				case -1: jarTree.expandTreeLeaf(searchResult.line); break;
+				case -2: showMessageDialog(frame, searchResult.line, "Information", INFORMATION_MESSAGE); break;
+				default:
+					if (searchResult.position < -1) {
+						showMessageDialog(frame, "Unknown result code: " + searchResult.line, "Error", ERROR_MESSAGE);
 						break;
 					}
+					String fullPath = null;
+					while (row != -1) {
+						SearchResult fileSearch = (SearchResult) tableModel.getValueAt(--row, 0);
+						if (fileSearch.position == -1) {
+							jarTree.expandTreeLeaf(fullPath = fileSearch.line);
+							break;
+						}
+					}
+					ContentPanel contentPanel = (ContentPanel) getSplitPane().getRightComponent();
+					while (!fullPath.equals(contentPanel.getSelectedTabComponent().fullPath)) {
+						Utils.sleep(50);
+					}
+					JTextArea area = contentPanel.getSelectedComponent();
+					try {
+						int position = searchResult.position;
+						area.scrollRectToVisible(area.modelToView(position));
+						Highlighter hilit = new RSyntaxTextAreaHighlighter();
+						area.setHighlighter(hilit);
+						hilit.addHighlight(position, position + ((String) cbFind.getSelectedItem()).length()
+								, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
+					} catch (BadLocationException ex) {
+						throw new JarexpException("Could not scroll to found index.", ex);
+					}
 				}
-				ContentPanel contentPanel = (ContentPanel) getSplitPane().getRightComponent();
-				while (!fullPath.equals(contentPanel.getSelectedTabComponent().fullPath)) {
-					Utils.sleep(50);
-				}
-				JTextArea area = contentPanel.getSelectedComponent();
-				try {
-					int position = searchResult.position;
-					area.scrollRectToVisible(area.modelToView(position));
-					Highlighter hilit = new RSyntaxTextAreaHighlighter();
-					area.setHighlighter(hilit);
-					hilit.addHighlight(position, position + ((String) cbFind.getSelectedItem()).length()
-							, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
-				} catch (BadLocationException ex) {
-					throw new JarexpException("Could not scroll to found index.", ex);
+			} else if (Desktop.isDesktopSupported()) {
+					String pathToFile = searchResult.line;
+					int idx = pathToFile.indexOf('!');
+					if (idx != -1) {
+						pathToFile = pathToFile.substring(0, idx);
+					}
+					File fileToOpen = new File(pathToFile);
+					if (!fileToOpen.exists()) {
+						fileToOpen = new File(searchEntries.getSearchPath());
+					}
+					try {
+						Desktop.getDesktop().open(fileToOpen);
+					} catch (IOException ex) {
+						Msg.showException("Unable to open file " + fileToOpen, ex);
+					}
+				} else {
+					showMessageDialog(frame, "Unable to open file " + searchResult.line, "Information", WARNING_MESSAGE);
 				}
 			}
-		}
-	};
+	}
 
 	static interface PreLoadAction {
 		void perform();
@@ -262,7 +287,7 @@ public class Content extends JPanel {
 					@Override
 					protected void initComponents() {
 						super.initComponents();
-						tResult.addMouseListener(new SearchResultMouseAdapter(cbFind, tResult));
+						tResult.addMouseListener(new SearchResultMouseAdapter(cbFind, tResult, searchEntries));
 					};
 				};
 
@@ -292,7 +317,26 @@ public class Content extends JPanel {
 								if (searchResult == null) {
 									return;
 								}
-								jarTree.expandTreeLeaf(searchResult.line);
+								if (searchEntries.getSearchPath().equals(jarTree.getRoot().name)) {
+									jarTree.expandTreeLeaf(searchResult.line);
+								} else if (Desktop.isDesktopSupported()) {
+									String pathToFile = searchResult.line;
+									int idx = pathToFile.indexOf('!');
+									if (idx != -1) {
+										pathToFile = pathToFile.substring(0, idx);
+									}
+									File fileToOpen = new File(pathToFile);
+									if (!fileToOpen.exists()) {
+										fileToOpen = new File(searchEntries.getSearchPath());
+									}
+									try {
+										Desktop.getDesktop().open(fileToOpen);
+									} catch (IOException ex) {
+										Msg.showException("Unable to open file " + fileToOpen, ex);
+									}
+								} else {
+									showMessageDialog(frame, "Unable to open file " + searchResult.line, "Information", WARNING_MESSAGE);
+								}
 							}
 						});
 					}

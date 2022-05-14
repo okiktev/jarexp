@@ -109,7 +109,19 @@ public abstract class SearchDlg extends JDialog {
 		public int size() {
 			return entries.size();
 		}
+
+		public String getSearchPath() {
+			return entries.iterator().next().fullPath;
+		}
+
+		public void replace(File archive, String path, String fullPath, boolean isDirectory) {
+			entries.clear();
+			entries.add(new SearchEntries(archive, path, fullPath, isDirectory));
+		}
+
 	}
+
+	public SearchEntries searchEntries;
 
 	private JLabel lbSearchIn = new JLabel("Search In:");
 	protected JTextField tfSearchIn = new JTextField();
@@ -131,7 +143,6 @@ public abstract class SearchDlg extends JDialog {
 	protected JTextField tfFileFilter = new JTextField("!.png,!.jpeg,!.jpg,!.bmp,!.gif,!.ico,!.exe");
 
 	protected boolean isFindClass = true;
-	protected SearchEntries searchEntries;
 
 	private ChangeListener setFocusOnInput = new ChangeListener() {
 		@Override
@@ -253,8 +264,7 @@ public abstract class SearchDlg extends JDialog {
 						showMessageDialog(SearchDlg.this, "Specified file is not archive.", "Wrong input", ERROR_MESSAGE);
 					} else {
 						ActionHistory.addLastDirSelected(f);
-						SearchDlg.this.searchEntries = new SearchEntries();
-						SearchDlg.this.searchEntries.add(f, null, f.getAbsolutePath(), f.isDirectory());
+						SearchDlg.this.searchEntries.replace(f, null, f.getAbsolutePath(), f.isDirectory());
 						initLocation();
 						makeVisibleHide();
 					}

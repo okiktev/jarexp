@@ -34,9 +34,9 @@ public class JDuplicatesScrollTable extends JScrollPane {
 			table.setAutoCreateRowSorter(true);
 			TableHeaderCustomizer.customize(table);
 		} else {
-			table.addMouseListener(addMouseListener);
 			table.setTableHeader(null);
 		}
+		table.addMouseListener(addMouseListener);
 		table.setDefaultRenderer(Number.class, TABLE_CELL_RENDERER);
 		table.setDefaultRenderer(Object.class, TABLE_CELL_RENDERER);
 

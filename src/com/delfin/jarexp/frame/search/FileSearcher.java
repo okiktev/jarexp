@@ -1,5 +1,8 @@
 package com.delfin.jarexp.frame.search;
 
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -28,6 +31,10 @@ class FileSearcher extends AbstractSearcher {
 	public void search(final SearchDlg searchDlg) {
 		super.search(searchDlg);
 		String fileName = (String) searchDlg.cbFind.getSelectedItem();
+		if (fileName == null || fileName.isEmpty()) {
+			showMessageDialog(searchDlg, "Nothing to search.", "Wrong input", ERROR_MESSAGE);
+			return;
+		}
 		if (!isMatchCase) {
 			fileName = fileName.toLowerCase();
 		}
