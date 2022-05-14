@@ -14,8 +14,8 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
-import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
+import com.delfin.jarexp.settings.ActionHistory;
 
 class JarTreeAddNodeListener extends PopupMenuListener {
 

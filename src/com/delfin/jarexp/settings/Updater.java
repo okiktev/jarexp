@@ -24,7 +24,6 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 
-import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.utils.FileUtils;

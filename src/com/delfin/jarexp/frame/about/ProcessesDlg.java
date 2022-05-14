@@ -44,9 +44,9 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.table.AbstractTableModel;
 
-import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.settings.ActionHistory;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.Cmd;

@@ -35,9 +35,9 @@ import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.settings.ActionHistory;
 import com.delfin.jarexp.utils.Zip;
 
 public abstract class DuplicatesDlg extends JDialog {

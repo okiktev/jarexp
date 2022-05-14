@@ -7,8 +7,8 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
-import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
+import com.delfin.jarexp.settings.ActionHistory;
 
 abstract class PopupMenuListener implements ActionListener {
 

@@ -46,7 +46,6 @@ import javax.swing.tree.TreePath;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 
-import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.dlg.message.Msg;
@@ -60,6 +59,7 @@ import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
 import com.delfin.jarexp.frame.search.SearchDlg;
 import com.delfin.jarexp.frame.search.SearchResult;
+import com.delfin.jarexp.settings.ActionHistory;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.utils.FileUtils;

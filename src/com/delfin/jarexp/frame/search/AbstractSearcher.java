@@ -4,8 +4,8 @@ import java.io.File;
 
 import javax.swing.JComboBox;
 
-import com.delfin.jarexp.ActionHistory;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
+import com.delfin.jarexp.settings.ActionHistory;
 import com.delfin.jarexp.utils.Zip;
 
 abstract class AbstractSearcher implements Searcher {

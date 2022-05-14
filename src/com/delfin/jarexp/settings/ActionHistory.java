@@ -1,4 +1,4 @@
-package com.delfin.jarexp;
+package com.delfin.jarexp.settings;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.delfin.jarexp.settings.Settings;
 
 public class ActionHistory {
 
