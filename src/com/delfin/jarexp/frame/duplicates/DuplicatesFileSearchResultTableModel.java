@@ -13,11 +13,16 @@ class DuplicatesFileSearchResultTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 5853035076323644398L;
 
-	private List<SearchResult> data = new ArrayList<SearchResult>();
+	private List<SearchResult> data;
 
 	private boolean isFileSizeRendered;
 
+	DuplicatesFileSearchResultTableModel() {
+		data = new ArrayList<SearchResult>();
+	}
+
 	DuplicatesFileSearchResultTableModel(Map<String, List<SearchResult>> result) {
+		this();
 		int i = 1;
 		for (Entry<String, List<SearchResult>> entry : result.entrySet()) {
 			for (SearchResult res : entry.getValue()) {

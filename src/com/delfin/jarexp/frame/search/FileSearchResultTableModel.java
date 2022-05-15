@@ -1,5 +1,6 @@
 package com.delfin.jarexp.frame.search;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -9,6 +10,10 @@ class FileSearchResultTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 2838930607781355845L;
 
 	private List<SearchResult> data;
+
+	FileSearchResultTableModel() {
+		this.data = new ArrayList<SearchResult>();
+	}
 
 	FileSearchResultTableModel(List<SearchResult> data) {
 		this.data = data;

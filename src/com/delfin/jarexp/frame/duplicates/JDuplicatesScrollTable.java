@@ -11,6 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
 
 import com.delfin.jarexp.frame.search.SearchResult;
 import com.delfin.jarexp.utils.TableHeaderCustomizer;
@@ -20,6 +21,7 @@ public class JDuplicatesScrollTable extends JScrollPane {
 	private static final long serialVersionUID = -7929350286330872397L;
 
 	private static final DuplicatesTableCellRenderer TABLE_CELL_RENDERER = new DuplicatesTableCellRenderer();
+	private static final TableModel EMPTY_TABLE_DATA = new DuplicatesFileSearchResultTableModel();
 
 	private JTable table;
 
@@ -57,6 +59,12 @@ public class JDuplicatesScrollTable extends JScrollPane {
 	@Override
 	public synchronized void addMouseListener(MouseListener addMouseListener) {
 		this.addMouseListener = addMouseListener;
+	}
+
+	void clear() {
+		if (table != null) {
+			table.setModel(EMPTY_TABLE_DATA);
+		}
 	}
 
 	public SearchResult getSelectedSearchResult() {

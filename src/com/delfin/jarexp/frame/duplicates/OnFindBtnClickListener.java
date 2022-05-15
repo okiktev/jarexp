@@ -50,6 +50,7 @@ class OnFindBtnClickListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		dlg.spResult.clear();
 		searchResult.clear();
 		isInAll = dlg.cbInAllSubArchives.isSelected();
 		isUseMd5 = dlg.isUseMd5;

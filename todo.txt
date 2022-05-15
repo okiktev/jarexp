@@ -140,10 +140,11 @@ bug if try to open file from folder search result ... done .....................
 imp handle search results from file system ... done ...............................................14May2022
 imp handle duplicates scan from file system ... done ..............................................14May2022
 imp min/max buttons for search dlgs ... done ......................................................15May2022
+imp clear search content when new search has been started ... done ................................15May2022
+imp clear search results if nothing found ... done ................................................15May2022
 
 
-imp clear search content when new search has been started
-imp clear search results if nothing found
+
 imp added compiler icon to content search
 imp linux easy download
 imp mark edited tab somehow

@@ -3,7 +3,11 @@ package com.delfin.jarexp.frame.search;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.table.TableModel;
+
 class OnFindBtnClickListener implements ActionListener {
+
+	private static final TableModel EMPTY_TABLE_DATA = new FileSearchResultTableModel();
 
 	private SearchDlg dlg;
 
@@ -13,6 +17,8 @@ class OnFindBtnClickListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		dlg.tResult.setModel(EMPTY_TABLE_DATA);
+
 		if (dlg.isFindClass) {
 			new FileSearcher().search(dlg);
 		} else {
