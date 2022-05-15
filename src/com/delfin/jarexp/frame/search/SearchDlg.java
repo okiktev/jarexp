@@ -225,6 +225,7 @@ public abstract class SearchDlg extends JFrame {
 			}
 		}
 		tfSearchIn.setText(fullNames.toString());
+		tfSearchIn.setToolTipText(tfSearchIn.getText());
 	}
 
 	protected void initComponents() {
@@ -277,7 +278,7 @@ public abstract class SearchDlg extends JFrame {
 						showMessageDialog(SearchDlg.this, "Specified file is not archive.", "Wrong input", ERROR_MESSAGE);
 					} else {
 						ActionHistory.addLastDirSelected(f);
-						SearchDlg.this.searchEntries.replace(f, null, f.getAbsolutePath(), f.isDirectory());
+						searchEntries.replace(f, null, f.getAbsolutePath(), f.isDirectory());
 						initLocation();
 						makeVisibleHide();
 					}

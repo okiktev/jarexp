@@ -113,7 +113,7 @@ public class Content extends JPanel {
 			}
 			TableModel tableModel = tResult.getModel();
 			final SearchResult searchResult = (SearchResult) tableModel.getValueAt(row, 0);
-			if (searchEntries.getSearchPath().equals(jarTree.getRoot().name)) {
+			if (jarTree != null && searchEntries.getSearchPath().equals(jarTree.getRoot().name)) {
 				switch (searchResult.position) {
 				case -1: jarTree.expandTreeLeaf(searchResult.line); break;
 				case -2: showMessageDialog(frame, searchResult.line, "Information", INFORMATION_MESSAGE); break;
@@ -147,7 +147,11 @@ public class Content extends JPanel {
 					}
 				}
 			} else if (Desktop.isDesktopSupported()) {
-					String pathToFile = searchResult.line;
+					SearchResult sr = searchResult;
+					while (sr.position != -1) {
+						sr = (SearchResult) tableModel.getValueAt(--row, 0);
+					}
+					String pathToFile = sr.line;
 					int idx = pathToFile.indexOf('!');
 					if (idx != -1) {
 						pathToFile = pathToFile.substring(0, idx);
@@ -162,7 +166,7 @@ public class Content extends JPanel {
 						Msg.showException("Unable to open file " + fileToOpen, ex);
 					}
 				} else {
-					showMessageDialog(frame, "Unable to open file " + searchResult.line, "Information", WARNING_MESSAGE);
+					showMessageDialog(frame, "Unable to open path to " + searchResult.line, "Information", WARNING_MESSAGE);
 				}
 			}
 	}
