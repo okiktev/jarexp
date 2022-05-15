@@ -26,8 +26,8 @@ import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -42,7 +42,7 @@ import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.settings.ActionHistory;
 import com.delfin.jarexp.utils.Zip;
 
-public abstract class DuplicatesDlg extends JDialog {
+public abstract class DuplicatesDlg extends JFrame {
 
 	private static final Logger log = Logger.getLogger(DuplicatesDlg.class.getName());
 
@@ -64,7 +64,7 @@ public abstract class DuplicatesDlg extends JDialog {
 	protected SearchEntries searchEntries;
 
 	public DuplicatesDlg(SearchEntries searchEntries) throws HeadlessException {
-		super((JDialog) null);
+		super();
 
 		this.searchEntries = searchEntries;
 		initLocation();

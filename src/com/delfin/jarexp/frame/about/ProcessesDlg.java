@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Scanner;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -53,7 +53,7 @@ import com.delfin.jarexp.utils.Cmd;
 import com.delfin.jarexp.utils.Cmd.Result;
 import com.delfin.jarexp.utils.FileUtils;
 
-public class ProcessesDlg extends JDialog {
+public class ProcessesDlg extends JFrame {
 
 	private static final long serialVersionUID = -1830466068946227746L;
 	private JTable tProcesses = new JTable();
@@ -63,7 +63,7 @@ public class ProcessesDlg extends JDialog {
 	private JButton btnResultToClipboard = new JButton();
 
 	public ProcessesDlg(Component parent) {
-		super((JDialog) null);
+		super();
 		setTitle("Process command lines");
 		setIconImage(Resources.getInstance().getProcessesImage());
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

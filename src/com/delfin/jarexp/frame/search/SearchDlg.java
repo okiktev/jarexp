@@ -36,8 +36,8 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -58,7 +58,7 @@ import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
-public abstract class SearchDlg extends JDialog {
+public abstract class SearchDlg extends JFrame {
 
 	private static final Logger log = Logger.getLogger(SearchDlg.class.getName());
 
@@ -158,7 +158,7 @@ public abstract class SearchDlg extends JDialog {
 	};
 
 	public SearchDlg(SearchEntries searchEntries) {
-		super((JDialog) null);
+		super();
 
 		this.searchEntries = searchEntries;
 		initLocation();
