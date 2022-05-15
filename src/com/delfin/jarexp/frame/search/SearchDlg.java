@@ -26,12 +26,15 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -39,6 +42,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -51,6 +55,9 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import com.delfin.jarexp.decompiler.Decompiler;
+import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
+import com.delfin.jarexp.decompiler.IDecompiler;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.settings.ActionHistory;
@@ -142,6 +149,9 @@ public abstract class SearchDlg extends JFrame {
 	private JLabel lbFileFilter = new JLabel("File Filter:");
 	protected JTextField tfFileFilter = new JTextField("!.png,!.jpeg,!.jpg,!.bmp,!.gif,!.ico,!.exe");
 
+	JComboBox<String> cbDecompiler = new JComboBox<String>();
+	IDecompiler decompiler;
+
 	protected boolean isFindClass = true;
 
 	private ChangeListener setFocusOnInput = new ChangeListener() {
@@ -185,8 +195,9 @@ public abstract class SearchDlg extends JFrame {
 		add(tfSearchIn, 	new GridBagConstraints(1, 0, 1, 1, 1, 0, NORTH, BOTH, new Insets(5, 5, 0, 0), 0, 0));
 		add(btnChangePlace, new GridBagConstraints(2, 0, 1, 1, 0, 0, WEST, NONE, new Insets(5, 5, 0, 5), 0, 0));
 
-		add(rbClass,   new GridBagConstraints(0, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
-		add(rbInFiles, new GridBagConstraints(1, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
+		add(rbClass,      new GridBagConstraints(0, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
+		add(rbInFiles, 	  new GridBagConstraints(1, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
+		add(cbDecompiler, new GridBagConstraints(2, 1, 1, 1, 0, 0, WEST, NONE, new Insets(5, 5, 5, 5), 0, 0));
 
 		add(cbMatchCase,        new GridBagConstraints(0, 2, 1, 1, 0, 0, NORTH, NONE, insets, 0, 0));
 		add(cbInAllSubArchives, new GridBagConstraints(1, 2, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
@@ -219,6 +230,7 @@ public abstract class SearchDlg extends JFrame {
 	protected void initComponents() {
 		rbClass.setFont(DLG_TEXT_FONT);
 		rbInFiles.setFont(DLG_TEXT_FONT);
+		cbDecompiler.setFont(DLG_TEXT_FONT);
 		cbMatchCase.setFont(DLG_TEXT_FONT);
 		cbInAllSubArchives.setFont(DLG_TEXT_FONT);
 		lbFileFilter.setFont(DLG_TEXT_FONT);
@@ -234,6 +246,7 @@ public abstract class SearchDlg extends JFrame {
 		btnChangePlace.setFont(DLG_TEXT_FONT);
 
 		tfSearchIn.setEditable(false);
+		tfSearchIn.setToolTipText(tfSearchIn.getText());
 		for (String token : ActionHistory.getSearchTokens()) {
 			cbFind.addItem(token);
 		}
@@ -305,6 +318,8 @@ public abstract class SearchDlg extends JFrame {
 			}
 		});
 
+		initDecompilerComboBox();
+
 		ButtonGroup group = new ButtonGroup();
 		group.add(rbClass);
 		group.add(rbInFiles);
@@ -375,6 +390,45 @@ public abstract class SearchDlg extends JFrame {
 		getRootPane().setDefaultButton(btnFind);
 	}
 
+	private void initDecompilerComboBox() {
+		cbDecompiler.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switch (cbDecompiler.getSelectedIndex()) {
+				case 0:
+					decompiler = Decompiler.get(DecompilerType.JDCORE); 
+				break;
+				case 1:
+					try {
+						Decompiler.prepareBinariesFor(DecompilerType.PROCYON);
+						decompiler = Decompiler.get(DecompilerType.PROCYON); 
+					} catch (Exception ex) {
+						Msg.showException("Unable to toggle decompiler", ex);
+					}
+				break;
+				case 2:
+					try {
+						Decompiler.prepareBinariesFor(DecompilerType.FERNFLOWER);
+						decompiler = Decompiler.get(DecompilerType.FERNFLOWER); 
+					} catch (Exception ex) {
+						Msg.showException("Unable to toggle decompiler", ex);
+					}
+				break;
+				}
+			}
+		});
+		cbDecompiler.setRenderer(new IconListRenderer());
+		cbDecompiler.addItem("JdCore");
+		cbDecompiler.addItem("Procyon");
+		cbDecompiler.addItem("Fernflower");
+		cbDecompiler.setVisible(false);
+		switch (Settings.getDecompilerType()) {
+		case JDCORE: cbDecompiler.setSelectedIndex(0); break;
+		case PROCYON: cbDecompiler.setSelectedIndex(1); break;
+		case FERNFLOWER: cbDecompiler.setSelectedIndex(2); break;
+		}
+	}
+
 	private File getOpenIn() {
 		try {
 			File place = new File(tfSearchIn.getText());
@@ -403,6 +457,26 @@ public abstract class SearchDlg extends JFrame {
 		}
 		lbFileFilter.setVisible(!isFindClass);
 		tfFileFilter.setVisible(!isFindClass);
+		cbDecompiler.setVisible(!isFindClass);
+	}
+
+	private static class IconListRenderer extends DefaultListCellRenderer {
+
+		private static final long serialVersionUID = -363503412229224693L;
+
+		private static final Map<Object, Icon> ICONS = new HashMap<Object, Icon>(3);
+		static {
+			ICONS.put("JdCore", Resources.getInstance().getJdCoreIcon());
+			ICONS.put("Procyon", Resources.getInstance().getProcyonIcon());
+			ICONS.put("Fernflower", Resources.getInstance().getFernflowerIcon());
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			label.setIcon(ICONS.get(value));
+			return label;
+		}
 	}
 
 	public static void main(String[] args) {

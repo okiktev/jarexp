@@ -20,8 +20,8 @@ public class Decompiler {
 		JDCORE, PROCYON, FERNFLOWER
 	}
 
-	public static IDecompiler get() {
-		switch (Settings.getDecompilerType()) {
+	public static IDecompiler get(DecompilerType type) {
+		switch (type) {
 		case PROCYON:
 			return new ProcyonDecompiler();
 		case FERNFLOWER:
@@ -29,6 +29,10 @@ public class Decompiler {
 		default:
 			return new JdCoreDecompiler();
 		}
+	}
+
+	public static IDecompiler get() {
+		return get(Settings.getDecompilerType());
 	}
 
 	public static File getLibDir() {

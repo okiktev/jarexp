@@ -22,7 +22,6 @@ import javax.swing.table.TableModel;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 
-import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.frame.Jar;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
@@ -131,7 +130,7 @@ class FileContentSearcher extends AbstractSearcher {
 		String fullPath = searchRoot.getAbsolutePath();
 		dlg.lbResult.setText("Searching..." + fullPath);
 		try {
-			String content = Decompiler.get().decompile(searchRoot).content;
+			String content = dlg.decompiler.decompile(searchRoot).content;
 			doSearchInFile(new Scanner(content), fullPath);
 		} catch (Exception e) {
 			handleError(e, fullPath);
@@ -162,7 +161,7 @@ class FileContentSearcher extends AbstractSearcher {
 					Scanner scanner;
 					if (ext.endsWith(".class")) {
 						try {
-							scanner = new Scanner(Decompiler.get().decompile(searchRoot, path).content);
+							scanner = new Scanner(dlg.decompiler.decompile(searchRoot, path).content);
 						} catch (Exception e) {
 							handleError(e, fullPath);
 							return;
@@ -206,7 +205,7 @@ class FileContentSearcher extends AbstractSearcher {
 					Scanner scanner;
 					if (ext.endsWith(".class")) {
 						try {
-							scanner = new Scanner(Decompiler.get().decompile(file).content);
+							scanner = new Scanner(dlg.decompiler.decompile(file).content);
 						} catch (Exception e) {
 							handleError(e, fullPath);
 							return;
