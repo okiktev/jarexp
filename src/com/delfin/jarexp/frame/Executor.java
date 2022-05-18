@@ -1,5 +1,6 @@
 package com.delfin.jarexp.frame;
 
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipException;
@@ -28,8 +29,11 @@ abstract class Executor {
 			protected void done() {
 				try {
 					get();
-				} catch (Exception e) {
-					doCatch(e);
+				} catch (ExecutionException t) {
+					doCatch(t);
+				} catch (InterruptedException e) {
+					log.log(Level.SEVERE, "Thread was interrupted.", e);
+					Thread.currentThread().interrupt();
 				} finally {
 					doFinally();
 				}
@@ -42,7 +46,7 @@ abstract class Executor {
 	protected void doFinally() {
 	}
 
-	protected void doCatch(Exception e) {
+	protected void doCatch(Throwable e) {
 		Throwable exception = e.getCause();
 		Throwable cause = exception.getCause();
 		if (cause instanceof ZipException && "error in opening zip file".equals(cause.getMessage())) {

@@ -131,19 +131,26 @@ public class Content extends JPanel {
 						}
 					}
 					ContentPanel contentPanel = (ContentPanel) getSplitPane().getRightComponent();
+					long start = System.currentTimeMillis();
 					while (!fullPath.equals(contentPanel.getSelectedTabComponent().fullPath)) {
+						if (System.currentTimeMillis() - start >= 500) {
+							start = -1;
+							break;
+						}
 						Utils.sleep(50);
 					}
-					JTextArea area = contentPanel.getSelectedComponent();
-					try {
-						int position = searchResult.position;
-						area.scrollRectToVisible(area.modelToView(position));
-						Highlighter hilit = new RSyntaxTextAreaHighlighter();
-						area.setHighlighter(hilit);
-						hilit.addHighlight(position, position + ((String) cbFind.getSelectedItem()).length()
-								, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
-					} catch (BadLocationException ex) {
-						throw new JarexpException("Could not scroll to found index.", ex);
+					if (start > 0) {
+						JTextArea area = contentPanel.getSelectedComponent();
+						try {
+							int position = searchResult.position;
+							area.scrollRectToVisible(area.modelToView(position));
+							Highlighter hilit = new RSyntaxTextAreaHighlighter();
+							area.setHighlighter(hilit);
+							hilit.addHighlight(position, position + ((String) cbFind.getSelectedItem()).length()
+									, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
+						} catch (BadLocationException ex) {
+							throw new JarexpException("Could not scroll to found index.", ex);
+						}
 					}
 				}
 			} else if (Desktop.isDesktopSupported()) {
