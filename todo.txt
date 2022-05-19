@@ -143,6 +143,7 @@ imp min/max buttons for search dlgs ... done ...................................
 imp clear search content when new search has been started ... done ................................15May2022
 imp clear search results if nothing found ... done ................................................15May2022
 imp added compiler icon to content search ... done ................................................15May2022
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 5_may_2021
 
 
 imp command console

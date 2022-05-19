@@ -9,13 +9,12 @@ placeFooter = function () {
 	var notfooter=document.getElementById('notfooter');
 	var footer=document.getElementById('footer');
 	var about=document.getElementById('about');
-	var lang=document.getElementById('lang');
+	// var lang=document.getElementById('lang');
 	var slides=document.getElementById('slides');
 	var logo=document.getElementById('logo');
+	// var center=document.getElementById('center');
 
-	//console.log('notfooter ' + notfooter.offsetHeight + ' : right ' + right.offsetHeight);
-
-	var nfHight = logo.offsetHeight + 30 + about.offsetHeight + lang.offsetHeight + h1.offsetHeight;
+	var nfHight = logo.offsetHeight + about.offsetHeight;
 
 	if (nfHight + footer.offsetHeight + 20 < right.offsetHeight) {
 		footer.style.display = 'block';
@@ -25,13 +24,12 @@ placeFooter = function () {
 		notfooter.style.height = right.offsetHeight;
 	}
 	
-	
 	var downloads=document.getElementById('downloads');
 	
 	if (downloads.offsetHeight + 40 + slides.offsetHeight > right.offsetHeight) {
 		slides.style.height = right.offsetHeight - downloads.offsetHeight - 40;
 	} else {
-		slides.style.height = 495;
+		slides.style.height = 435;
 	}
 }
 
