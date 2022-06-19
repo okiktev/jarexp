@@ -53,6 +53,7 @@ import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
+import com.delfin.jarexp.frame.JarTreeSelectionListener.ClassItemNode;
 import com.delfin.jarexp.frame.about.AboutDlg;
 import com.delfin.jarexp.frame.about.EnvironmentDlg;
 import com.delfin.jarexp.frame.about.ProcessesDlg;
@@ -78,7 +79,7 @@ public class Content extends JPanel {
 
 		@Override
 		public void treeExpanded(TreeExpansionEvent event) {
-			preLoadArchive((JarNode) event.getPath().getLastPathComponent(), null);
+			preLoadArchive(event.getPath().getLastPathComponent(), null);
 		}
 
 		@Override
@@ -90,13 +91,15 @@ public class Content extends JPanel {
 
 	static class SearchResultMouseAdapter extends MouseAdapter {
 
-		private final JComboBox<String> cbFind;
+		@SuppressWarnings("rawtypes")
+		private final JComboBox cbFind;
 
 		private final JTable tResult;
 
 		private final SearchEntries searchEntries;
 
-		SearchResultMouseAdapter(JComboBox<String> cbFind, JTable tResult, SearchEntries searchEntries) {
+		@SuppressWarnings("rawtypes")
+		SearchResultMouseAdapter(JComboBox cbFind, JTable tResult, SearchEntries searchEntries) {
 			this.searchEntries = searchEntries;
 			this.cbFind = cbFind;
 			this.tResult = tResult;
@@ -130,7 +133,7 @@ public class Content extends JPanel {
 							break;
 						}
 					}
-					ContentPanel contentPanel = (ContentPanel) getSplitPane().getRightComponent();
+					final ContentPanel contentPanel = (ContentPanel) getSplitPane().getRightComponent();
 					long start = System.currentTimeMillis();
 					while (!fullPath.equals(contentPanel.getSelectedTabComponent().fullPath)) {
 						if (System.currentTimeMillis() - start >= 500) {
@@ -140,17 +143,22 @@ public class Content extends JPanel {
 						Utils.sleep(50);
 					}
 					if (start > 0) {
-						JTextArea area = contentPanel.getSelectedComponent();
-						try {
-							int position = searchResult.position;
-							area.scrollRectToVisible(area.modelToView(position));
-							Highlighter hilit = new RSyntaxTextAreaHighlighter();
-							area.setHighlighter(hilit);
-							hilit.addHighlight(position, position + ((String) cbFind.getSelectedItem()).length()
-									, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
-						} catch (BadLocationException ex) {
-							throw new JarexpException("Could not scroll to found index.", ex);
-						}
+						new Executor() {
+							@Override
+							protected void perform() {
+								JTextArea area = contentPanel.getSelectedComponent();
+								try {
+									int position = searchResult.position;
+									area.scrollRectToVisible(area.modelToView(position));
+									Highlighter hilit = new RSyntaxTextAreaHighlighter();
+									area.setHighlighter(hilit);
+									hilit.addHighlight(position, position + ((String) cbFind.getSelectedItem()).length()
+											, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
+								} catch (BadLocationException ex) {
+									throw new JarexpException("Could not scroll to found index.", ex);
+								}
+							}
+						}.execute();
 					}
 				}
 			} else if (Desktop.isDesktopSupported()) {
@@ -198,14 +206,18 @@ public class Content extends JPanel {
 		add(statusBar = new StatusBar(this), BorderLayout.SOUTH);
 	}
 
-	static void preLoadArchive(final JarNode node, final PreLoadAction action) {
-		if (node == null) {
+	static void preLoadArchive(Object object, final PreLoadAction action) {
+		if (object == null || !(object instanceof JarNode)) {
 			return;
 		}
 		try {
+			JarNode node = (JarNode) object;
 			for (Enumeration<?> childred = node.children(); childred.hasMoreElements();) {
-				JarNode child = (JarNode) childred.nextElement();
-				if (!Settings.NAME_PLACEHOLDER.equals(child.path)) {
+				Object obj = childred.nextElement();
+				if (obj instanceof ClassItemNode) {
+					continue;
+				}
+				if (!Settings.NAME_PLACEHOLDER.equals(((JarNode) obj).path)) {
 					continue;
 				}
 				node.removeAllChildren();

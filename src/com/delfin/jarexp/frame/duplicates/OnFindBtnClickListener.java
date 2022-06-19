@@ -13,9 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.jar.JarEntry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.Jar;
+import com.delfin.jarexp.frame.Jar.JarBypassErrorAction;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.search.Directory;
 import com.delfin.jarexp.frame.search.SearchResult;
@@ -35,6 +38,10 @@ class OnFindBtnClickListener implements ActionListener {
 			this.dst = dst;
 		}
 	}
+
+	private static final Logger log = Logger.getLogger(OnFindBtnClickListener.class.getCanonicalName());
+
+	private List<String> errors = new ArrayList<String>();
 
 	private Map<String, List<SearchResult>> searchResult = new LinkedHashMap<String, List<SearchResult>>();
 
@@ -66,8 +73,10 @@ class OnFindBtnClickListener implements ActionListener {
 						it.remove();
 					}
 				}
-				dlg.lbResult.setText("Found " + searchResult.size() + " results for " + overall + "ms:");
-				dlg.spResult.render(searchResult);
+				dlg.lbResult.setText("Found " + searchResult.size() + " results" + 
+						(errors.isEmpty() ? "" : (" with " + errors.size() + " errors")) +
+						" for " + overall + "ms:");
+				dlg.spResult.render(searchResult, errors);
 			};
 		});
 		search.start();
@@ -79,16 +88,23 @@ class OnFindBtnClickListener implements ActionListener {
 		});
 	}
 
-	private void search(String parent, File archive, DuplicatesDlg dlg) {
+	private void search(final String parent, final File searchRoot, DuplicatesDlg dlg) {
 		Jar searcher;
-		if (archive.isDirectory()) {
-			searcher = prepareDirectorySearch(archive);
-		} else if (Zip.isArchive(archive.getAbsolutePath(), true)) {
-			searcher = prepareArchiveSearch(parent, archive, dlg);
+		if (searchRoot.isDirectory()) {
+			searcher = prepareDirectorySearch(searchRoot);
+		} else if (Zip.isArchive(searchRoot.getAbsolutePath(), true)) {
+			searcher = prepareArchiveSearch(parent, searchRoot, dlg);
 		} else {
 			throw new JarexpException("Unknown file type to search duplicates");
 		}
-		searcher.bypass();
+		searcher.bypass(new JarBypassErrorAction() {
+			@Override
+			public RuntimeException apply(Exception e) {
+				log.log(Level.SEVERE, "An error occurred while searching in file " + searchRoot.getAbsolutePath(), e);
+				errors.add("ERROR. " + e.getCause().getMessage());
+				return null;
+			}
+		});
 	}
 
 	private Jar prepareArchiveSearch(final String parent, final File archive, final DuplicatesDlg dlg) {

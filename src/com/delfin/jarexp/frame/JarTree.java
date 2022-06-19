@@ -34,6 +34,7 @@ import javax.swing.tree.TreeSelectionModel;
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.Content.SearchResultMouseAdapter;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
+import com.delfin.jarexp.frame.JarTreeSelectionListener.ClassItemNode;
 import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.search.SearchDlg;
@@ -54,12 +55,14 @@ class JarTree extends JTree {
 
             if (value instanceof JarNode) {
                 JarNode node = (JarNode) value;
-                if (!leaf && !node.isArchive()) {
+                if (!leaf && !node.isArchive() && node.isNotClass()) {
                     return this;
                 }
                 setIcon(node.isDirectory ? Resources.getIconForDir() : Resources.getIconFor(node.name));
             }
-
+            if (value instanceof ClassItemNode) {
+            	setIcon(((ClassItemNode) value).javaItem.getIcon());
+            }
             return this;
         }
     }
@@ -156,6 +159,10 @@ class JarTree extends JTree {
 			if (SwingUtilities.isRightMouseButton(e)) {
 				TreePath path = getPathForLocation(e.getX(), e.getY());
 				if (path == null) {
+					return;
+				}
+				Object obj = path.getLastPathComponent();
+				if (!(obj instanceof JarNode)) {
 					return;
 				}
 				JPopupMenu popupMenu = new JPopupMenu();

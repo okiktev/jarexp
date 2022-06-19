@@ -166,10 +166,14 @@ class JarNodeTableModel extends AbstractTableModel {
 		if (node.isArchive()) {
 			return node.size;
 		}
-		if (!node.isLeaf() || node.isDirectory) {
+		if (node.isNotClass() && (!node.isLeaf() || node.isDirectory)) {
 			long ls = 0;
 			for (Enumeration<?> children = node.children(); children.hasMoreElements();) {
-				ls += calcSize(0, (JarNode) children.nextElement());
+				Object child = children.nextElement();
+				if (!(child instanceof JarNode)) {
+					continue;
+				}
+				ls += calcSize(0, (JarNode) child);
 			}
 			return ls + s;
 		} else {
@@ -181,10 +185,14 @@ class JarNodeTableModel extends AbstractTableModel {
 		if (node.isArchive()) {
 			return node.compSize;
 		}
-		if (!node.isLeaf() || node.isDirectory) {
+		if (node.isNotClass() && (!node.isLeaf() || node.isDirectory)) {
 			long ls = 0;
 			for (Enumeration<?> children = node.children(); children.hasMoreElements();) {
-				ls += calcCompSize(0, (JarNode) children.nextElement());
+				Object child = children.nextElement();
+				if (!(child instanceof JarNode)) {
+					continue;
+				}
+				ls += calcCompSize(0, (JarNode) child);
 			}
 			return ls + s;
 		} else {

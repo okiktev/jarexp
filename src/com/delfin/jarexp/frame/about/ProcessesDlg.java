@@ -56,6 +56,15 @@ import com.delfin.jarexp.utils.FileUtils;
 public class ProcessesDlg extends JFrame {
 
 	private static final long serialVersionUID = -1830466068946227746L;
+	private static final String EOL;
+	static {
+		if (Version.JAVA_MAJOR_VER > 6) {
+			EOL = System.lineSeparator();
+		} else {
+			EOL = System.getProperty("line.separator");
+		}
+	}
+	
 	private JTable tProcesses = new JTable();
 	private JPanel panel = new JPanel();
 	private JScrollPane spResult = new JScrollPane(panel);
@@ -150,7 +159,6 @@ public class ProcessesDlg extends JFrame {
 	}
 
 	private void initComandLines() {
-		String EOL = System.lineSeparator();
 		StringBuilder scriptContent = new StringBuilder();
 		scriptContent.append("set svc=getobject(\"winmgmts:root\\cimv2\")").append(EOL);
 		scriptContent.append("set cproc=svc.execquery(\"select * from win32_process\")").append(EOL);
@@ -330,7 +338,6 @@ public class ProcessesDlg extends JFrame {
 
 		@Override
 		public String toString() {
-			String EOL = System.lineSeparator();
 			StringBuilder out = new StringBuilder();
 			for (int i = 0; i < data.length; ++i) {
 				out.append(data[i][0] + ";" + data[i][1] + ";" + data[i][2]).append(EOL);

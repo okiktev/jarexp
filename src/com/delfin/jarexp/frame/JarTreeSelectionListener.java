@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -43,6 +44,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -51,6 +53,8 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import com.delfin.jarexp.analyzer.Analyzer;
+import com.delfin.jarexp.analyzer.IJavaItem;
 import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.IDecompiler;
 import com.delfin.jarexp.decompiler.IDecompiler.Result;
@@ -131,7 +135,11 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 		new Executor() {
 			@Override
 			protected void perform() {
-				final JarNode node = (JarNode) jarTree.getLastSelectedPathComponent();
+				Object obj = jarTree.getLastSelectedPathComponent();
+				if (obj instanceof ClassItemNode) {
+					return;
+				}
+				final JarNode node = (JarNode) obj;
 				if (node == null) {
 					return;
 				}
@@ -141,7 +149,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				final int dividerLocation = pane.getDividerLocation();
 
 				try {
-					if (!node.isLeaf() || node.isDirectory) {
+					if (node.isNotClass() && (!node.isLeaf() || node.isDirectory)) {
 						statusBar.setPath(node.getFullPath());
 						statusBar.setCompiledVersion("");
 						Content.preLoadArchive(node, new PreLoadAction() {
@@ -167,12 +175,10 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						statusBar.setCompiledVersion("");
 						statusBar.setChildren("");
 
-						String archName = null;
 						File file;
 						String lowPath;
-						if (node.getParent() == null && (archName = node.origArch.getName().toLowerCase()).endsWith(".class")) {
+						if (node.getParent() == null && (lowPath = node.origArch.getName().toLowerCase()).endsWith(".class")) {
 							file = node.origArch;
-							lowPath = archName;
 						} else {
 							file = new File(node.origArch.getParent(), node.path);
 							lowPath = node.path.toLowerCase();
@@ -193,6 +199,13 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							textScrollPane.setBorder(Settings.EMPTY_BORDER);
 
 							contentView.addContent(textScrollPane, node, statusBar);
+
+							try {
+								fillClassStructure(node, Analyzer.analyze(decompiled.content));
+								jarTree.update(node);
+							} catch (Exception e) {
+								log.log(Level.SEVERE, "Unable to grab class structure information for " + node.name, e);
+							}
 						} else if (isImgFile(lowPath)) {
 							ZipFile zip = null;
 							try {
@@ -261,6 +274,22 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					if (pane.getDividerLocation() != dividerLocation) {
 						log.warning("Divider location was changed. Compensating...");
 						pane.setDividerLocation(dividerLocation);
+					}
+				}
+			}
+
+			private void fillClassStructure(JarNode node, List<IJavaItem> classStructure) {
+				node.removeAllChildren();
+				if (classStructure.size() == 1) {
+					IJavaItem item = classStructure.get(0);
+					ClassItemNode child = new ClassItemNode(item);
+					node.add(child);
+					for (IJavaItem m : item.getChildren()) {
+						child.add(new ClassItemNode(m));
+					}
+				} else {
+					for (IJavaItem i : classStructure) {
+						node.add(new ClassItemNode(i));
 					}
 				}
 			}
@@ -463,5 +492,22 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 			return component;
 		}
 	}
+
+	public static class ClassItemNode extends DefaultMutableTreeNode {
+
+		private static final long serialVersionUID = 7470246996120563613L;
+
+		IJavaItem javaItem;
+
+		ClassItemNode(String name, char type) {
+			super(name);
+		}
+
+		ClassItemNode(IJavaItem javaItem) {
+			super(javaItem.getName());
+			this.javaItem = javaItem;
+		}
+
+	} 
 
 }

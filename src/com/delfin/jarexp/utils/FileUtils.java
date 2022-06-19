@@ -428,19 +428,26 @@ public class FileUtils {
 		try {
 			Object urlClassLoader;
 			Method addUrlMethod;
-			if (Version.JAVA_MAJOR_VER < 9) {
-				urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-				addUrlMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+			if (Version.JAVA_MAJOR_VER < 16) {
+				if (Version.JAVA_MAJOR_VER < 9) {
+					urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+					addUrlMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+				} else {
+					Object systemClassLoader = ClassLoader.getSystemClassLoader();
+					Field ucpField = systemClassLoader.getClass().getDeclaredField("ucp");
+					FieldHelper.makeNonFinal(ucpField, Version.JAVA_MAJOR_VER);
+					ucpField.setAccessible(true);
+					urlClassLoader = ucpField.get(systemClassLoader);
+					addUrlMethod = urlClassLoader.getClass().getDeclaredMethod("addURL", URL.class);
+				}
+				addUrlMethod.setAccessible(true);
+				addUrlMethod.invoke(urlClassLoader, jar.toURI().toURL());
 			} else {
-				Object systemClassLoader = ClassLoader.getSystemClassLoader();
-				Field ucpField = systemClassLoader.getClass().getDeclaredField("ucp");
-				FieldHelper.makeNonFinal(ucpField, Version.JAVA_MAJOR_VER);
-				ucpField.setAccessible(true);
-				urlClassLoader = ucpField.get(systemClassLoader);
-				addUrlMethod = urlClassLoader.getClass().getDeclaredMethod("addURL", URL.class);
+				urlClassLoader = ClassLoader.getSystemClassLoader();
+				addUrlMethod = urlClassLoader.getClass().getDeclaredMethod("appendToClassPathForInstrumentation", String.class);
+				addUrlMethod.setAccessible(true);
+				addUrlMethod.invoke(urlClassLoader, jar.getAbsolutePath());
 			}
-			addUrlMethod.setAccessible(true);
-			addUrlMethod.invoke(urlClassLoader, jar.toURI().toURL());
 		} catch (Exception e) {
 			throw new JarexpException("Unable to add jar " + jar + " to classpath", e);
 		}

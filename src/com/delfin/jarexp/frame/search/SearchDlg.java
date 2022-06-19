@@ -137,7 +137,8 @@ public abstract class SearchDlg extends JFrame {
 	protected JCheckBox cbInAllSubArchives = new JCheckBox("In all sub-archives");
 	protected JLabel lbResult = new JLabel("Result");
 	private JLabel lbFind = new JLabel("Find what:");
-	protected JComboBox<String> cbFind = new JComboBox<String>();
+	@SuppressWarnings("rawtypes")
+	protected JComboBox cbFind = new JComboBox();
 	
 	private JButton btnFind = new JButton("Find");
 	private JRadioButton rbClass = new JRadioButton("Find File");
@@ -149,7 +150,8 @@ public abstract class SearchDlg extends JFrame {
 	private JLabel lbFileFilter = new JLabel("File Filter:");
 	protected JTextField tfFileFilter = new JTextField("!.png,!.jpeg,!.jpg,!.bmp,!.gif,!.ico,!.exe");
 
-	JComboBox<String> cbDecompiler = new JComboBox<String>();
+	@SuppressWarnings("rawtypes")
+	JComboBox cbDecompiler = new JComboBox();
 	IDecompiler decompiler;
 
 	protected boolean isFindClass = true;
@@ -228,6 +230,7 @@ public abstract class SearchDlg extends JFrame {
 		tfSearchIn.setToolTipText(tfSearchIn.getText());
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void initComponents() {
 		rbClass.setFont(DLG_TEXT_FONT);
 		rbInFiles.setFont(DLG_TEXT_FONT);
@@ -391,6 +394,7 @@ public abstract class SearchDlg extends JFrame {
 		getRootPane().setDefaultButton(btnFind);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initDecompilerComboBox() {
 		cbDecompiler.addActionListener(new ActionListener() {
 			@Override
@@ -473,7 +477,8 @@ public abstract class SearchDlg extends JFrame {
 		}
 
 		@Override
-		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+		@SuppressWarnings("rawtypes")
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			label.setIcon(ICONS.get(value));
 			return label;

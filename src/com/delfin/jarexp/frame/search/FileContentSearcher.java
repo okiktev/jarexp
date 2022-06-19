@@ -23,6 +23,7 @@ import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 
 import com.delfin.jarexp.frame.Jar;
+import com.delfin.jarexp.frame.Jar.JarBypassErrorAction;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.utils.Zip;
@@ -110,20 +111,26 @@ class FileContentSearcher extends AbstractSearcher {
 	}
 
 	@Override
-	protected void search(String parent, File searchRoot, Object results, SearchDlg dlg, String pathInJar) {
+	protected void search(String parent, final File searchRoot, Object results, SearchDlg dlg, String pathInJar) {
 		if (Thread.currentThread().isInterrupted()) {
 			return;
 		}
-		Jar seacher;
+		Jar searcher;
 		if (searchRoot.isDirectory()) {
-			seacher = prepareDirectorySearch(searchRoot, dlg);
+			searcher = prepareDirectorySearch(searchRoot, dlg);
 		} else if (StringUtils.endsWith(searchRoot.getName(), ".class")) {
 			searchInClass(parent, searchRoot, dlg, pathInJar);
 			return;
 		} else {
-			seacher = prepareArchiveSearch(parent, searchRoot, dlg, pathInJar);
+			searcher = prepareArchiveSearch(parent, searchRoot, dlg, pathInJar);
 		}
-		seacher.bypass();
+		searcher.bypass(new JarBypassErrorAction() {
+			@Override
+			public RuntimeException apply(Exception e) {
+				handleError(e, searchRoot.getAbsolutePath());
+				return null;
+			}
+		});
 	}
 
 	private void searchInClass(String parent, File searchRoot, SearchDlg dlg, String pathInJar) {
@@ -243,8 +250,8 @@ class FileContentSearcher extends AbstractSearcher {
 	}
 
 	private void handleError(Throwable e, String fullPath) {
-		log.log(Level.SEVERE, "An error occurred while decompiling file " + fullPath, e);
-		errors.put(fullPath, "ERROR. Unable to search in the class. Cause: " + e.getMessage());
+		log.log(Level.SEVERE, "An error occurred while searching in file " + fullPath, e);
+		errors.put(fullPath, "ERROR. Unable to search in file " + fullPath + ". Cause: " + e.getMessage());
 	}
 
 	private void initFileFilters(String fileFilter) {

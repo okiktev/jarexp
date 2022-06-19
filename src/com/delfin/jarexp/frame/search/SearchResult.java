@@ -11,7 +11,7 @@ public class SearchResult {
 	public int position;
 	public String line;
 
-	SearchResult(String line, int position) {
+	public SearchResult(String line, int position) {
 		this.position = position;
 		this.line = line;
 	}

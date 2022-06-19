@@ -27,8 +27,8 @@ public class JDuplicatesScrollTable extends JScrollPane {
 
 	private MouseListener addMouseListener;
 
-	void render(Map<String, List<SearchResult>> searchResult) {
-		DuplicatesFileSearchResultTableModel model = new DuplicatesFileSearchResultTableModel(searchResult);
+	void render(Map<String, List<SearchResult>> searchResult, List<String> errors) {
+		DuplicatesFileSearchResultTableModel model = new DuplicatesFileSearchResultTableModel(searchResult, errors);
 
 		table = new JTable(model);
 		if (model.isFileSizeRendered()) {
@@ -93,12 +93,18 @@ public class JDuplicatesScrollTable extends JScrollPane {
 					component.setBackground(Color.WHITE);
 				} else if (pos == 2) {
 					component.setBackground(SearchResult.COLOR_CONTENT);
+				} else if (pos == -2) {
+					component.setBackground(SearchResult.COLOR_ERROR);
 				}
 			}
 			if (column == 1 && value instanceof DuplicatesSearchResult) {
 				setValue(((DuplicatesSearchResult) searchResult).size);
 			} else {
-				setValue(searchResult.line);
+				if (searchResult.position == -2 && column == 1) {
+					setValue("");
+				} else {
+					setValue(searchResult.line);
+				}
 			}
 			return component;
 		}

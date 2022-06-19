@@ -21,7 +21,7 @@ class DuplicatesFileSearchResultTableModel extends AbstractTableModel {
 		data = new ArrayList<SearchResult>();
 	}
 
-	DuplicatesFileSearchResultTableModel(Map<String, List<SearchResult>> result) {
+	DuplicatesFileSearchResultTableModel(Map<String, List<SearchResult>> result, List<String> errors) {
 		this();
 		int i = 1;
 		for (Entry<String, List<SearchResult>> entry : result.entrySet()) {
@@ -33,6 +33,9 @@ class DuplicatesFileSearchResultTableModel extends AbstractTableModel {
 				data.add(res);
 			}
 			i = i == 1 ? 2 : 1;
+		}
+		for (String err : errors) {
+			data.add(new SearchResult(err, -2));
 		}
 	}
 

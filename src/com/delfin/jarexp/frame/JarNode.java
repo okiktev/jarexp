@@ -19,6 +19,7 @@ import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.Enumerator;
 import com.delfin.jarexp.utils.FileUtils;
+import com.delfin.jarexp.utils.StringUtils;
 import com.delfin.jarexp.utils.Zip;
 
 class JarNode extends DefaultMutableTreeNode {
@@ -50,6 +51,8 @@ class JarNode extends DefaultMutableTreeNode {
 
 	private Boolean isArchive;
 
+	private Boolean isClass;
+
 	JarNode(String name, String path, File tempArch, File origArch, boolean isDirectory) {
 		this.name = name;
 		this.path = path;
@@ -64,6 +67,13 @@ class JarNode extends DefaultMutableTreeNode {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	boolean isNotClass() {
+		if (isClass == null) {
+			isClass = StringUtils.endsWith(name, ".class");
+		}
+		return !isClass;
 	}
 
 	File getTempArchive() {
@@ -132,7 +142,8 @@ class JarNode extends DefaultMutableTreeNode {
 		return isArchive.booleanValue();
 	}
 
-    void unzip(final File file) {
+    @SuppressWarnings("unchecked")
+	void unzip(final File file) {
 		if (getParent() == null) {
 			return;
 		}

@@ -70,8 +70,9 @@ abstract class AbstractSearcher implements Searcher {
 		return parent + '/' + path;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void manageSearchHistory() {
-		JComboBox<String> cb = searchDlg.cbFind;
+		JComboBox cb = searchDlg.cbFind;
 		ActionHistory.addSearch((String) cb.getSelectedItem());
 		cb.removeAllItems();
 		for (String token : ActionHistory.getSearchTokens()) {

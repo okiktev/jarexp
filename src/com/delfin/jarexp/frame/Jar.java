@@ -28,6 +28,10 @@ public abstract class Jar {
 	}
 
 	public void bypass() {
+		bypass(null);
+	}
+
+	public void bypass(JarBypassErrorAction errorAction) {
 		JarFile jarFile = null;
 		try {
 			jarFile = new JarFile(file);
@@ -36,7 +40,13 @@ public abstract class Jar {
 				process(entries.nextElement());
 			}
 		} catch (Exception e) {
-			throw new JarexpException("An error occurred while processing jar file " + file, e);
+			if (errorAction == null) {
+				throw new JarexpException("An error occurred while processing jar file " + file, e);
+			}
+			RuntimeException toThrow = errorAction.apply(e);
+			if (toThrow != null) {
+				throw toThrow;
+			}
 		} finally {
 			if (jarFile != null) {
 				try {
@@ -133,7 +143,8 @@ public abstract class Jar {
 		}
 	}
 
-    private static void clearArchive(JarNode node) {
+    @SuppressWarnings("unchecked")
+	private static void clearArchive(JarNode node) {
 	    node.setTempArchive(null);
 	    new Enumerator<TreeNode>(node.children()) {
             @Override
@@ -149,5 +160,11 @@ public abstract class Jar {
 	}
 
 	protected abstract void process(JarEntry entry) throws IOException;
+
+	public static abstract class JarBypassErrorAction {
+
+		public abstract RuntimeException apply(Exception e);
+
+	}
 
 }

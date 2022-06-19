@@ -20,10 +20,21 @@ public abstract class Directory extends Jar {
 
 	@Override
 	public void bypass() {
+		this.bypass((JarBypassErrorAction) null);
+	}
+
+	@Override
+	public void bypass(JarBypassErrorAction errorAction) {
 		try {
 			bypass(file);
 		} catch (Exception e) {
-			throw new JarexpException("An error occurred while bypassing directory " + file, e);
+			if (errorAction == null) {
+				throw new JarexpException("An error occurred while bypassing directory " + file, e);
+			}
+			RuntimeException toThrow = errorAction.apply(e);
+			if (toThrow != null) {
+				throw new RuntimeException(toThrow);
+			}
 		}
 	}
 
