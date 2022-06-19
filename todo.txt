@@ -150,10 +150,8 @@ imp list of class structure... done ............................................
 bug many minor bug-fixes for java 7, 6... done ....................................................19Jun2022
 bug with loading libraries under Java 16, 17, 18... done ..........................................19Jun2022
 bug in duplicates searching when error happens... done ............................................19Jun2022
+bug with java compilers in search for java 6, 7... done ...........................................19Jun2022
 
-
-bug with saving settings under java 6
-bug with java compilers in search for java 6, 7
 
 
 imp methods in the classes when two or more classes (procyon only)

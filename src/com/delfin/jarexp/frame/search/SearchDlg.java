@@ -62,6 +62,7 @@ import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.settings.ActionHistory;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
@@ -199,7 +200,9 @@ public abstract class SearchDlg extends JFrame {
 
 		add(rbClass,      new GridBagConstraints(0, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
 		add(rbInFiles, 	  new GridBagConstraints(1, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
-		add(cbDecompiler, new GridBagConstraints(2, 1, 1, 1, 0, 0, WEST, NONE, new Insets(5, 5, 5, 5), 0, 0));
+		if (Version.JAVA_MAJOR_VER >= 7) {			
+			add(cbDecompiler, new GridBagConstraints(2, 1, 1, 1, 0, 0, WEST, NONE, new Insets(5, 5, 5, 5), 0, 0));
+		}
 
 		add(cbMatchCase,        new GridBagConstraints(0, 2, 1, 1, 0, 0, NORTH, NONE, insets, 0, 0));
 		add(cbInAllSubArchives, new GridBagConstraints(1, 2, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
@@ -425,7 +428,9 @@ public abstract class SearchDlg extends JFrame {
 		cbDecompiler.setRenderer(new IconListRenderer());
 		cbDecompiler.addItem("JdCore");
 		cbDecompiler.addItem("Procyon");
-		cbDecompiler.addItem("Fernflower");
+		if (Version.JAVA_MAJOR_VER >= 8) {			
+			cbDecompiler.addItem("Fernflower");
+		}
 		cbDecompiler.setVisible(false);
 		switch (Settings.getDecompilerType()) {
 		case JDCORE: cbDecompiler.setSelectedIndex(0); break;
