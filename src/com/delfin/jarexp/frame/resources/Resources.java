@@ -200,7 +200,10 @@ public class Resources {
 	}
 
 	public Image getEnvironmentImage() {
-		return getImage("env.png", "Unable to load environment image from class path");
+		return getImage(System.getProperty("java.runtime.name").toLowerCase().contains("openjdk")
+				? "envoj.png"
+				: "envor.png"
+				, "Unable to load environment image from class path");
 	}
 
 	public Icon getSearchIcon() {
@@ -212,7 +215,10 @@ public class Resources {
 	}
 
 	public Icon getEnvironmentIcon() {
-		return getIcon("env.png", "Unable to load environment menu icon from class path");
+		return getIcon(System.getProperty("java.vm.name").toLowerCase().contains("openjdk")
+				? "envoj.png"
+				: "envor.png"
+				, "Unable to load environment menu icon from class path");
 	}
 
 	public Icon getJdCoreIcon() {

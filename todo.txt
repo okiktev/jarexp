@@ -146,16 +146,15 @@ imp added compiler icon to content search ... done .............................
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 19_may_2021
 bug with processes in java 6 ... done .............................................................04Jun2022
 imp render class default icon if not associated in OS ... done ....................................04Jun2022
-imp list of class structure... done ...............................................................18Jun2022
-bug many minor bug-fixes for java 7, 6... done ....................................................19Jun2022
-bug with loading libraries under Java 16, 17, 18... done ..........................................19Jun2022
-bug in duplicates searching when error happens... done ............................................19Jun2022
-bug with java compilers in search for java 6, 7... done ...........................................19Jun2022
-
+imp list of class structure ... done ..............................................................18Jun2022
+bug many minor bug-fixes for java 7, 6 ... done ...................................................19Jun2022
+bug with loading libraries under Java 16, 17, 18 ... done .........................................19Jun2022
+bug in duplicates searching when error happens ... done ...........................................19Jun2022
+bug with java compilers in search for java 6, 7 ... done ..........................................19Jun2022
+imp java help icon ... done .......................................................................21Jun2022
 
 
 imp methods in the classes when two or more classes (procyon only)
-imp java help icon
 imp maven tool
 
 imp command console
