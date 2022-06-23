@@ -9,12 +9,14 @@ import com.delfin.jarexp.frame.resources.Resources;
 
 public class JavaInterface implements IJavaItem {
 
-	private String name;
+	private final String name;
+	private final int position; 
 
-	private List<IJavaItem> children = new ArrayList<IJavaItem>();
+	private List<IJavaItem> children = new ArrayList<IJavaItem>(5);
 
-	JavaInterface(String name) {
+	JavaInterface(String name, int position) {
 		this.name = name;
+		this.position = position;
 	}
 
 	@Override
@@ -39,6 +41,11 @@ public class JavaInterface implements IJavaItem {
 	@Override
 	public TYPE getType() {
 		return TYPE.INTERFACE;
+	}
+
+	@Override
+	public int getPosition() {
+		return position;
 	}
 
 }

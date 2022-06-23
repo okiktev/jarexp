@@ -152,9 +152,10 @@ bug with loading libraries under Java 16, 17, 18 ... done ......................
 bug in duplicates searching when error happens ... done ...........................................19Jun2022
 bug with java compilers in search for java 6, 7 ... done ..........................................19Jun2022
 imp java help icon ... done .......................................................................21Jun2022
+imp methods in the classes when two or more classes (procyon only) ... done .......................23Jun2022
 
 
-imp methods in the classes when two or more classes (procyon only)
+imp show method in the code when clicked on method in tree
 imp maven tool
 
 imp command console

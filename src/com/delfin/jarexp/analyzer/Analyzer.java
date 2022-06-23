@@ -41,79 +41,104 @@ public class Analyzer {
 					continue;
 				}
 			}
+			int position = content.indexOf(classMatcher.group(0));
 			if ("class".equals(classMatcher.group(2))) {
-				res.add(new JavaClass(classMatcher.group(3)));
+				res.add(new JavaClass(classMatcher.group(3), position));
 			} else if ("enum".equals(classMatcher.group(2))) {
-				res.add(new JavaEnum(classMatcher.group(3)));				
+				res.add(new JavaEnum(classMatcher.group(3), position));				
 			} else {
-				res.add(new JavaInterface(classMatcher.group(3)));
+				res.add(new JavaInterface(classMatcher.group(3), position));
 			}
 		}
 
-		if (res.size() == 1) {
-			IJavaItem holder = res.get(0);
-			List<IJavaItem> methods = new ArrayList<IJavaItem>(5);
-			Matcher methodMatcher = method_Ptrn.matcher(content);
-			while (methodMatcher.find()) {
-				String modifiers = methodMatcher.group(1);
-				int nl = modifiers.lastIndexOf('\n');
-				if (nl != -1) {
-					modifiers = modifiers.substring(nl + 1, modifiers.length());
-				}
-				if (modifiers.lastIndexOf('=') != -1 || modifiers.lastIndexOf('}') != -1) {
-					continue;
-				}
+		IJavaItem previousHolder = getHolder(res, null, 0, content);
+		IJavaItem holder = null;
+		List<IJavaItem> methods = new ArrayList<IJavaItem>(5);
+		Matcher methodMatcher = method_Ptrn.matcher(content);
+		while (methodMatcher.find()) {
+			int methodPosition = content.indexOf(methodMatcher.group(0));
 
-				String methodName = methodMatcher.group(8);
-				if (methodName == null || methodName.isEmpty()) {
-					continue;
-				}
-				if ("if".equals(methodName) || "while".equals(methodName) 
-						|| "return".equals(methodName) || "switch".equals(methodName)) {
-					continue;
-				}
-				String tail = methodMatcher.group(10).trim();
-				if (!tail.isEmpty()) {
-					char fs = tail.charAt(0);
-					if (fs == ';') {
-						if (!modifiers.contains("abstract") && holder.getType() != TYPE.INTERFACE) {
-							continue;
-						}
-					}
-					if (!(fs == ';' || fs == '{' || fs == 't')) {
+			holder = getHolder(res, previousHolder, methodPosition, content);
+			if (holder != previousHolder) {
+				previousHolder.getChildren().addAll(methods);
+				methods.clear();
+				previousHolder = holder;
+			}
+			
+			String modifiers = methodMatcher.group(1);
+			int nl = modifiers.lastIndexOf('\n');
+			if (nl != -1) {
+				modifiers = modifiers.substring(nl + 1, modifiers.length());
+			}
+			if (modifiers.lastIndexOf('=') != -1 || modifiers.lastIndexOf('}') != -1) {
+				continue;
+			}
+
+			String methodName = methodMatcher.group(8);
+			if (methodName == null || methodName.isEmpty()) {
+				continue;
+			}
+			if ("if".equals(methodName) || "while".equals(methodName) 
+					|| "return".equals(methodName) || "switch".equals(methodName)) {
+				continue;
+			}
+			String tail = methodMatcher.group(10).trim();
+			if (!tail.isEmpty()) {
+				char fs = tail.charAt(0);
+				if (fs == ';') {
+					if (!modifiers.contains("abstract") && holder.getType() != TYPE.INTERFACE) {
 						continue;
 					}
 				}
-
-				String returnType = recognizeReturnType(methodMatcher);
-				if (returnType == null) {
+				if (!(fs == ';' || fs == '{' || fs == 't')) {
 					continue;
 				}
-
-				ACCESS access = holder.getType() == TYPE.INTERFACE ? ACCESS.PUBLIC : ACCESS.DEF;
-				if (modifiers.contains("public")) {
-					access = ACCESS.PUBLIC;
-				} else if (modifiers.contains("private")) {
-					access = ACCESS.PRIVATE;
-				} else if (modifiers.contains("protected")) {
-					access = ACCESS.PROTECTED;
-				}
-				List<String> params = new ArrayList<String>(4);
-				String paramsGroup = methodMatcher.group(9);
-				parseMethodParameters(params, paramsGroup.length() - 1, paramsGroup);
-				Collections.reverse(params);
-				params = removeFinals(params);
-
-				methods.add(new JavaMethod(methodName, access, params
-						, returnType.trim()
-						, holder.getName().equals(methodName)));
 			}
+
+			String returnType = recognizeReturnType(methodMatcher);
+			if (returnType == null) {
+				continue;
+			}
+
+			ACCESS access = holder.getType() == TYPE.INTERFACE ? ACCESS.PUBLIC : ACCESS.DEF;
+			if (modifiers.contains("public")) {
+				access = ACCESS.PUBLIC;
+			} else if (modifiers.contains("private")) {
+				access = ACCESS.PRIVATE;
+			} else if (modifiers.contains("protected")) {
+				access = ACCESS.PROTECTED;
+			}
+			List<String> params = new ArrayList<String>(4);
+			String paramsGroup = methodMatcher.group(9);
+			parseMethodParameters(params, paramsGroup.length() - 1, paramsGroup);
+			Collections.reverse(params);
+			params = removeFinals(params);
+
+			methods.add(new JavaMethod(methodName, access, params
+					, returnType.trim()
+					, holder.getName().equals(methodName)
+					, methodPosition));
+		}
+		if (holder != null && !methods.isEmpty()) {
 			holder.getChildren().addAll(methods);
-		} else {
-			// check potential case when no or many classes
 		}
 
 		return res;
+	}
+
+	private static IJavaItem getHolder(List<IJavaItem> res, IJavaItem previousHolder, int methodPosition, String content) {
+		if (res.size() == 0 || previousHolder == null) {
+			return res.get(0);
+		}
+		for (int i = 0; i < res.size(); ++i) {
+			if (i == res.size() - 1) {
+				return res.get(i);
+			}
+			if (methodPosition > res.get(i).getPosition() && methodPosition < res.get(i + 1).getPosition()) {
+				return res.get(i);
+			}
+		}
+		throw new RuntimeException("Unexpected end of method. No holder was found");
 	}
 
 	private static String recognizeReturnType(Matcher methodMatcher) {

@@ -9,12 +9,14 @@ import com.delfin.jarexp.frame.resources.Resources;
 
 public class JavaClass implements IJavaItem {
 
-	private String name;
+	private final String name;
+	private final int position; 
 
-	private List<IJavaItem> children = new ArrayList<IJavaItem>();
+	private List<IJavaItem> children = new ArrayList<IJavaItem>(5);
 
-	JavaClass(String name) {
+	JavaClass(String name, int position) {
 		this.name = name;
+		this.position = position;
 	}
 
 	@Override
@@ -39,6 +41,11 @@ public class JavaClass implements IJavaItem {
 	@Override
 	public TYPE getType() {
 		return TYPE.CLASS;
+	}
+
+	@Override
+	public int getPosition() {
+		return position;
 	}
 
 }

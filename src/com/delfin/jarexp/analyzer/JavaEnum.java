@@ -9,12 +9,14 @@ import com.delfin.jarexp.frame.resources.Resources;
 
 public class JavaEnum implements IJavaItem {
 
-	private String name;
+	private final String name;
+	private final int position; 
 
-	private List<IJavaItem> children = new ArrayList<IJavaItem>();
+	private List<IJavaItem> children = new ArrayList<IJavaItem>(5);
 
-	public JavaEnum(String name) {
+	public JavaEnum(String name, int position) {
 		this.name = name;
+		this.position = position;
 	}
 
 	@Override
@@ -39,6 +41,11 @@ public class JavaEnum implements IJavaItem {
 
 	public void setChildren(List<IJavaItem> children) {
 		this.children = children;
+	}
+
+	@Override
+	public int getPosition() {
+		return position;
 	}
 
 }

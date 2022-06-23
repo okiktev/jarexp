@@ -280,16 +280,11 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 			private void fillClassStructure(JarNode node, List<IJavaItem> classStructure) {
 				node.removeAllChildren();
-				if (classStructure.size() == 1) {
-					IJavaItem item = classStructure.get(0);
+				for (IJavaItem item : classStructure) {
 					ClassItemNode child = new ClassItemNode(item);
 					node.add(child);
 					for (IJavaItem m : item.getChildren()) {
 						child.add(new ClassItemNode(m));
-					}
-				} else {
-					for (IJavaItem i : classStructure) {
-						node.add(new ClassItemNode(i));
 					}
 				}
 			}

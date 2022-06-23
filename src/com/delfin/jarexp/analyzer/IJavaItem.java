@@ -18,4 +18,6 @@ public interface IJavaItem {
 
 	List<IJavaItem> getChildren();
 
+	int getPosition();
+
 }
