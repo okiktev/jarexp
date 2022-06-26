@@ -26,7 +26,7 @@ public class Analyzer {
 			"(public|private)*[^A-Za-z](class|interface|enum)\\s+([A-Za-z0-9$]+?[ ]?)([\\s]|$|<)+(.*)", Pattern.MULTILINE);
 
 	private static final Pattern method_Ptrn = Pattern.compile(
-			"((public|final|protected|abstract|private|static|synchronized|\\s|=|})*)(\\s<([A-Za-z\\s])*>\\s)*([A-Za-z0-9\\.]*(<[\\s,A-Za-z0-9<>\\?\\[\\]]*>)*[\\.\\?\\[\\]]*)\\s+(([$A-Za-z0-9]*)\\s*\\(([A-Za-z$_0-9,\\.<>\\[\\]\\?\\s]*)\\))(.*)", Pattern.MULTILINE);
+			"((public|final|protected|abstract|private|static|synchronized|\\s|=|})*)(\\s<([A-Za-z\\s])*>\\s)*([A-Za-z0-9\\.]*(<[\\s\\.,A-Za-z0-9<>\\?\\[\\]]*>)*[\\.\\?\\[\\]]*)\\s+(([$A-Za-z0-9]*)\\s*\\(([A-Za-z$_0-9,\\.<>\\[\\]\\?\\s]*)\\))(.*)", Pattern.MULTILINE);
 
 	public static List<IJavaItem> analyze(String content) {
 		List<IJavaItem> res = new ArrayList<IJavaItem>(2);
@@ -96,7 +96,7 @@ public class Analyzer {
 			}
 
 			String returnType = recognizeReturnType(methodMatcher);
-			if (returnType == null) {
+			if (returnType == null || "return".equals(returnType)) {
 				continue;
 			}
 
@@ -110,6 +110,9 @@ public class Analyzer {
 			}
 			List<String> params = new ArrayList<String>(4);
 			String paramsGroup = methodMatcher.group(9);
+			if (isNotParams(paramsGroup)) {
+				continue;
+			}
 			parseMethodParameters(params, paramsGroup.length() - 1, paramsGroup);
 			Collections.reverse(params);
 			params = removeFinals(params);
@@ -124,6 +127,21 @@ public class Analyzer {
 		}
 
 		return res;
+	}
+
+	private static boolean isNotParams(String paramsGroup) {
+		paramsGroup = paramsGroup.trim();
+		if (paramsGroup.isEmpty()) {
+			return false;
+		}
+		if (paramsGroup.indexOf('<') != -1) {
+			return false;
+		}
+		int c = paramsGroup.indexOf(',');
+		if (c != -1) {			
+			paramsGroup = paramsGroup.substring(0, c).trim();
+		}
+		return paramsGroup.indexOf(' ') == -1;
 	}
 
 	private static IJavaItem getHolder(List<IJavaItem> res, IJavaItem previousHolder, int methodPosition, String content) {
@@ -152,7 +170,7 @@ public class Analyzer {
 			return null;
 		}
 		int dt = returnType.lastIndexOf('.');
-		if (dt != -1) {
+		if (dt != -1 && returnType.lastIndexOf('<') == -1) {
 			returnType = returnType.substring(dt + 1, returnType.length());
 		}
 		for (String key : KEY_WORDS) {
