@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.delfin.jarexp.analyzer.IJavaItem.Position;
 import com.delfin.jarexp.analyzer.IJavaItem.TYPE;
 import com.delfin.jarexp.analyzer.JavaMethod.ACCESS;
 
@@ -41,7 +42,8 @@ public class Analyzer {
 					continue;
 				}
 			}
-			int position = content.indexOf(classMatcher.group(0));
+			String entire = classMatcher.group(0);
+			Position position = new Position(content.indexOf(entire), entire.length());
 			if ("class".equals(classMatcher.group(2))) {
 				res.add(new JavaClass(classMatcher.group(3), position));
 			} else if ("enum".equals(classMatcher.group(2))) {
@@ -56,7 +58,8 @@ public class Analyzer {
 		List<IJavaItem> methods = new ArrayList<IJavaItem>(5);
 		Matcher methodMatcher = method_Ptrn.matcher(content);
 		while (methodMatcher.find()) {
-			int methodPosition = content.indexOf(methodMatcher.group(0));
+			String entire = methodMatcher.group(0);
+			int methodPosition = content.indexOf(entire);
 
 			holder = getHolder(res, previousHolder, methodPosition, content);
 			if (holder != previousHolder) {
@@ -120,7 +123,7 @@ public class Analyzer {
 			methods.add(new JavaMethod(methodName, access, params
 					, returnType.trim()
 					, holder.getName().equals(methodName)
-					, methodPosition));
+					, new Position(methodPosition, entire.length())));
 		}
 		if (holder != null && !methods.isEmpty()) {
 			holder.getChildren().addAll(methods);
@@ -152,7 +155,8 @@ public class Analyzer {
 			if (i == res.size() - 1) {
 				return res.get(i);
 			}
-			if (methodPosition > res.get(i).getPosition() && methodPosition < res.get(i + 1).getPosition()) {
+			if (methodPosition > res.get(i).getPosition().position
+					&& methodPosition < res.get(i + 1).getPosition().position) {
 				return res.get(i);
 			}
 		}

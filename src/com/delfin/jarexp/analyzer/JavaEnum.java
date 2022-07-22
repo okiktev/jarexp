@@ -10,11 +10,11 @@ import com.delfin.jarexp.frame.resources.Resources;
 public class JavaEnum implements IJavaItem {
 
 	private final String name;
-	private final int position; 
+	private final Position position; 
 
 	private List<IJavaItem> children = new ArrayList<IJavaItem>(5);
 
-	public JavaEnum(String name, int position) {
+	public JavaEnum(String name, Position position) {
 		this.name = name;
 		this.position = position;
 	}
@@ -44,7 +44,7 @@ public class JavaEnum implements IJavaItem {
 	}
 
 	@Override
-	public int getPosition() {
+	public Position getPosition() {
 		return position;
 	}
 

@@ -21,9 +21,9 @@ public class JavaMethod implements IJavaItem {
 
 	private boolean isConstuctor;
 
-	private int position;
+	private Position position;
 
-	JavaMethod(String name, ACCESS access, List<String> params, String returnType, boolean isConstuctor, int position) {
+	JavaMethod(String name, ACCESS access, List<String> params, String returnType, boolean isConstuctor, Position position) {
 		this.name = name;
 		this.access = access;
 		this.params = params;
@@ -75,7 +75,7 @@ public class JavaMethod implements IJavaItem {
 	}
 
 	@Override
-	public int getPosition() {
+	public Position getPosition() {
 		return position;
 	}
 

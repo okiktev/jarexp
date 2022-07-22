@@ -13,6 +13,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -25,7 +27,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.text.BadLocationException;
@@ -169,7 +173,6 @@ class FilterPanel extends JPanel {
 	}
 
 	private static void highlight(JTextField searchField, RSyntaxTextArea textArea) {
-		highlight(textArea);
 		String token = searchField.getText();
 		if (token == null || token.isEmpty()) {
 			return;
@@ -188,6 +191,22 @@ class FilterPanel extends JPanel {
 
 	private static void highlight(RSyntaxTextArea textArea) {
 		textArea.setHighlighter(new RSyntaxTextAreaHighlighter());
+	}
+
+	static void highlight(JTextArea area, int position, int length) throws BadLocationException {
+		JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, area);
+		int extentHeight = viewport.getExtentSize().height;
+		int viewHeight = viewport.getViewSize().height;
+
+		Rectangle r = area.modelToView(position);
+		int y = Math.max(0, r.y - (extentHeight - r.height) / 2);
+		y = Math.min(y, viewHeight - extentHeight);
+
+		viewport.setViewPosition(new Point(0, y));
+
+		Highlighter hilit = new RSyntaxTextAreaHighlighter();
+		area.setHighlighter(hilit);
+		hilit.addHighlight(position, position + length, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
 	}
 
 	public static void main(String[] args) throws Exception {

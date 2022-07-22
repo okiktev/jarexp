@@ -153,10 +153,15 @@ bug in duplicates searching when error happens ... done ........................
 bug with java compilers in search for java 6, 7 ... done ..........................................19Jun2022
 imp java help icon ... done .......................................................................21Jun2022
 imp methods in the classes when two or more classes (procyon only) ... done .......................23Jun2022
+imp show method in the code when clicked on method in tree ... done ...............................22Jul2022
 
-
-imp show method in the code when clicked on method in tree
+bug class is not rendered when clicking on class item
+imp javadoc
+imp libs and settings to temp
+imp update jdcore
 imp maven tool
+imp open class in jar
+bug close button in filter under java 6
 
 imp command console
 imp graph dependencies
@@ -301,7 +306,7 @@ Caused by: java.lang.StringIndexOutOfBoundsException: String index out of range:
 	
 fixed at 10Aug2017:
 com.delfin.jarexp.JarexpException: An error occurred while copying file C:\Users\OLEH~1.KIK\AppData\Local\Temp\jarexp1499713915267\1499713927388\C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\sample\WEB-INF\lib\rsso-agent-all.jar into C:\Users\OLEH~1.KIK\AppData\Local\Temp\jarexp1499713915267\1499713930557\rsso-agent-all.jar
-	at com.delfin.jarexp.utils.FileUtils.copy(FileUtils.java:127)
+	at com.delfin.jarexp.utils.FileUtils.copy(FileUtils.java:1279161499100)
 	at com.delfin.jarexp.frame.JarTree.load(JarTree.java:171)
 	at com.delfin.jarexp.frame.Content$7.perform(Content.java:246)
 	at com.delfin.jarexp.frame.Executor$1.doInBackground(Executor.java:23)

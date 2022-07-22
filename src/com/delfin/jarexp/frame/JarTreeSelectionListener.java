@@ -35,6 +35,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
@@ -44,6 +45,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
+import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -55,6 +57,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import com.delfin.jarexp.analyzer.Analyzer;
 import com.delfin.jarexp.analyzer.IJavaItem;
+import com.delfin.jarexp.analyzer.IJavaItem.Position;
 import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.IDecompiler;
 import com.delfin.jarexp.decompiler.IDecompiler.Result;
@@ -133,10 +136,25 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 		}
 
 		new Executor() {
+			
 			@Override
 			protected void perform() {
 				Object obj = jarTree.getLastSelectedPathComponent();
 				if (obj instanceof ClassItemNode) {
+					Content current = (Content) frame.getContentPane();
+					for (Component comp : current.getComponents()) {
+						if (comp instanceof JSplitPane) {
+							JTextArea area = ((ContentPanel)((JSplitPane) comp).getRightComponent()).getSelectedComponent();
+							try {
+								Position position = ((ClassItemNode) obj).getPosition();
+								FilterPanel.highlight(area, position.position, position.length);
+							} catch (BadLocationException ex) {
+								throw new JarexpException("Could not scroll to found index.", ex);
+							}
+							frame.repaint();
+							break;
+						}
+					}
 					return;
 				}
 				final JarNode node = (JarNode) obj;
@@ -494,13 +512,13 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 		IJavaItem javaItem;
 
-		ClassItemNode(String name, char type) {
-			super(name);
-		}
-
 		ClassItemNode(IJavaItem javaItem) {
 			super(javaItem.getName());
 			this.javaItem = javaItem;
+		}
+
+		Position getPosition() {
+			return javaItem.getPosition();
 		}
 
 	} 

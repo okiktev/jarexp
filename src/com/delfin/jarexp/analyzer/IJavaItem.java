@@ -6,6 +6,15 @@ import javax.swing.Icon;
 
 public interface IJavaItem {
 
+	static class Position {
+		public int position;
+		public int length;
+		Position(int position, int length) {
+			this.position = position;
+			this.length = length;
+		}
+	}
+
 	enum TYPE {
 		CLASS, INTERFACE, METHOD, ENUM;
 	};
@@ -18,6 +27,6 @@ public interface IJavaItem {
 
 	List<IJavaItem> getChildren();
 
-	int getPosition();
+	Position getPosition();
 
 }

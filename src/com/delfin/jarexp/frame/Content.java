@@ -43,10 +43,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableModel;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Highlighter;
 import javax.swing.tree.TreePath;
-
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 
 import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
@@ -149,11 +146,7 @@ public class Content extends JPanel {
 								JTextArea area = contentPanel.getSelectedComponent();
 								try {
 									int position = searchResult.position;
-									area.scrollRectToVisible(area.modelToView(position));
-									Highlighter hilit = new RSyntaxTextAreaHighlighter();
-									area.setHighlighter(hilit);
-									hilit.addHighlight(position, position + ((String) cbFind.getSelectedItem()).length()
-											, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
+									FilterPanel.highlight(area, position, ((String) cbFind.getSelectedItem()).length());
 								} catch (BadLocationException ex) {
 									throw new JarexpException("Could not scroll to found index.", ex);
 								}
