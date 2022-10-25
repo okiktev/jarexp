@@ -54,7 +54,8 @@ class FilterPanel extends JPanel {
 
 	static final DefaultHighlightPainter DEFAULT_HIGHLIGHT_PAINTER = new DefaultHighlightPainter(Color.LIGHT_GRAY);
 
-	private JButton btClose = new JButton("\u2A2F");
+	private JButton btClose = new JButton(Version.JAVA_MAJOR_VER <= 7 ? "\u0058" : "\u2A2F");
+
 	private JTextField tfSearch = new JTextField();
 	private BasicArrowButton btUp = new BasicArrowButton(BasicArrowButton.NORTH, null, null, Color.BLACK, null);
 	private BasicArrowButton btDown = new BasicArrowButton(BasicArrowButton.SOUTH, null, null, Color.BLACK, null);
