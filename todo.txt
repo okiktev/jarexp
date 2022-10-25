@@ -159,6 +159,7 @@ bug class is not rendered when clicking on class item  ... done ................
 
 bug close button in filter under java 6
 bug jar tree selection stuck if quickly click on tree leaves
+bug rendering leaf when clicking on folding cross
 imp javadoc
 imp libs and settings to temp
 imp update jdcore
