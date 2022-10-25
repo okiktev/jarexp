@@ -95,6 +95,10 @@ class ContentPanel extends JPanel {
 		throw new JarexpException("Unable to find RSyntaxTextArea");
 	}
 
+	void setSelected(String fullPath) {
+		tabbedPane.setSelected(fullPath, true);
+	}
+
 	TabComponent getSelectedTabComponent() {
 		int indx = tabbedPane.getSelectedIndex();
 		if (indx < 0) {

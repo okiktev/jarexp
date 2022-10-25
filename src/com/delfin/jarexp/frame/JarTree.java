@@ -341,7 +341,11 @@ class JarTree extends JTree {
 
 	JarNode getNodeByLocation(Point point) {
 		TreePath path = getPathForLocation(point.x, point.y);
-		return path == null ? null : (JarNode) path.getLastPathComponent();
+		Object comp = path.getLastPathComponent();
+		if (comp instanceof JarNode) {
+			return path == null ? null : (JarNode) path.getLastPathComponent();
+		}
+		return null;
 	}
 
 	static void put(JarNode node, List<File> files) {

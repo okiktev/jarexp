@@ -8,6 +8,7 @@ import static java.awt.GridBagConstraints.WEST;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -41,7 +42,9 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaHighlighter;
 
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.StringUtils;
+import com.delfin.jarexp.utils.Utils;
 
 class FilterPanel extends JPanel {
 
@@ -158,7 +161,7 @@ class FilterPanel extends JPanel {
 		Content.getSplitPane().getRootPane().setDefaultButton(btDown);
 	}
 
-	private RSyntaxTextArea getTextArea() {
+	private static RSyntaxTextArea getTextArea() {
 		JSplitPane pane = Content.getSplitPane();
 		ContentPanel rightPanel = (ContentPanel) pane.getRightComponent();
 		return rightPanel.getSelectedComponent();
@@ -193,20 +196,62 @@ class FilterPanel extends JPanel {
 		textArea.setHighlighter(new RSyntaxTextAreaHighlighter());
 	}
 
-	static void highlight(JTextArea area, int position, int length) throws BadLocationException {
+	static void highlight(JTextArea area, int position, int length) {
+		try {
+			Rectangle r = area.modelToView(position);
+			if (Version.JAVA_MAJOR_VER <= 8 && area instanceof RSyntaxTextArea) {
+				doCenterAlignForJavaLess9((RSyntaxTextArea) area, r);
+			} else {
+				doCenterAlign(area, r);
+			}
+			Highlighter hilit = new RSyntaxTextAreaHighlighter();
+			area.setHighlighter(hilit);
+			while(area.getHighlighter() != hilit) {
+				Utils.sleep(50);
+			}
+			hilit.addHighlight(position, position + length, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
+			area.getParent().getParent().repaint();
+		} catch (BadLocationException e) {
+			throw new JarexpException("Could not scroll to found index. position=" + position + "; length=" + length, e);
+		}
+	}
+
+	static void doCenterAlign(Component comp, Rectangle r) {
+		JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, comp);
+		int extentHeight = viewport.getExtentSize().height;
+		int y = Math.max(0, r.y - (extentHeight - r.height) / 2);
+		y = Math.min(y, viewport.getViewSize().height - extentHeight);
+		viewport.setViewPosition(new Point(0, y));
+	}
+
+	private static void doCenterAlignForJavaLess9(RSyntaxTextArea area, Rectangle r) {
+		area.getHighlighter().removeAllHighlights();
+
 		JViewport viewport = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, area);
 		int extentHeight = viewport.getExtentSize().height;
-		int viewHeight = viewport.getViewSize().height;
-
-		Rectangle r = area.modelToView(position);
 		int y = Math.max(0, r.y - (extentHeight - r.height) / 2);
-		y = Math.min(y, viewHeight - extentHeight);
+		y = Math.min(y, viewport.getViewSize().height - extentHeight);
 
-		viewport.setViewPosition(new Point(0, y));
-
-		Highlighter hilit = new RSyntaxTextAreaHighlighter();
-		area.setHighlighter(hilit);
-		hilit.addHighlight(position, position + length, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
+		Utils.sleep(150);
+		try {
+			viewport.setViewPosition(new Point(0, y));
+		} catch (Throwable e) {
+			StackTraceElement[] st = e.getStackTrace();
+			if (st.length == 0) {
+				if (e instanceof NullPointerException) {
+					doCenterAlignForJavaLess9(area, r);
+				} else {					
+					throw new JarexpException(e);
+				}
+			}
+			String stLine = st[0].toString();
+			if (stLine.startsWith("org.fife.ui.rsyntax")) {
+				log.log(Level.WARNING, "Some bug in RSyntaxText with java 6, 7, 8. Ignoring...", e);
+			} else {
+				throw e instanceof NullPointerException ? (NullPointerException) e : new JarexpException(e);
+			}
+		}
+		area.repaint();
 	}
 
 	public static void main(String[] args) throws Exception {

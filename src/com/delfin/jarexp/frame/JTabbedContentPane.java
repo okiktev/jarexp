@@ -48,6 +48,11 @@ class JTabbedContentPane extends JTabbedPane {
 
 	private final ContentPanel contentPanel;
 
+	//sometimes we don't want to tree rendering. especially if we trigger this event from tree listener.
+	private boolean suppressTreeRendering;
+
+	private boolean suppressTreeCenterAlign;
+
 	JTabbedContentPane(final JarTree jarTree, final ContentPanel contentPanel) {
 		super();
 		this.closeTabListener = new ActionListener() {
@@ -61,6 +66,11 @@ class JTabbedContentPane extends JTabbedPane {
 						if (tab.isEdited) {
 							tab.saveChanges();
 						}
+						if (tab.node.name.toLowerCase().endsWith(".class")) {
+							tab.node.removeAllChildren();
+							jarTree.update(tab.node);
+						}
+						tab.node.selectedChild = null;
 						it.remove();
 						break;
 					}
@@ -83,7 +93,6 @@ class JTabbedContentPane extends JTabbedPane {
 					contentPanel.removeAll();
 					contentPanel.repaint();
 					JarTreeClickSelection.setNodes(null);
-					jarTree.isNotDraw = true;
 					jarTree.clearSelection();
 				}
 			}
@@ -100,11 +109,26 @@ class JTabbedContentPane extends JTabbedPane {
 					selectionOrder.add(fullPath);
 					TabComponent selectedTabComponent = getSelectedTabComponent(fullPath);
 					if (selectedTabComponent != null) {
-						JarTreeClickSelection.setNodes(null);
-						jarTree.isNotDraw = true;
-						jarTree.clearSelection();
-						jarTree.isNotDraw = true;
-						jarTree.setSelectionPath(new TreePath(selectedTabComponent.node.getPath()));
+						if (suppressTreeRendering) {
+							suppressTreeRendering = false;
+						} else {
+							JarTreeClickSelection.setNodes(null);
+							jarTree.isNotDraw = true;
+							jarTree.clearSelection();
+							jarTree.isNotDraw = true;
+							TreePath treePath;
+							if (selectedTabComponent.node.selectedChild != null) {
+								treePath = new TreePath(selectedTabComponent.node.selectedChild.getPath());
+							} else {
+								treePath = new TreePath(selectedTabComponent.node.getPath());
+							}
+							jarTree.setSelectionPath(treePath);
+							if (suppressTreeCenterAlign) {
+								suppressTreeCenterAlign = false;
+							} else {								
+								FilterPanel.doCenterAlign(jarTree, jarTree.getPathBounds(treePath));
+							}
+						}
 						jarTree.statusBar.empty();
 						jarTree.statusBar.setChildren(selectedTabComponent.filesCount);
 						jarTree.statusBar.setCompiledVersion(selectedTabComponent.compiledVersion);
@@ -193,7 +217,18 @@ class JTabbedContentPane extends JTabbedPane {
 		setTabComponentAt(index, new TabHeader(title, icon, tip));
 	}
 
+	void setSelected(String fullPath, boolean suppressTreeRendering) {
+		this.suppressTreeRendering = suppressTreeRendering;
+		for (int i = 0; i < getTabCount(); ++i) {
+			if (fullPath.equals(getToolTipTextAt(i))) {
+				setSelectedIndex(i);
+				break;
+			}
+		}
+	}
+
 	void add(TabComponent content) {
+		suppressTreeCenterAlign = true;
 		if (tabContent.isEmpty()) {
 			contentPanel.removeAll();
 			contentPanel.add(this);

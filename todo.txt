@@ -154,14 +154,16 @@ bug with java compilers in search for java 6, 7 ... done .......................
 imp java help icon ... done .......................................................................21Jun2022
 imp methods in the classes when two or more classes (procyon only) ... done .......................23Jun2022
 imp show method in the code when clicked on method in tree ... done ...............................22Jul2022
+bug class is not rendered when clicking on class item  ... done ...................................25Oct2022
 
-bug class is not rendered when clicking on class item
+
+bug close button in filter under java 6
+bug jar tree selection stuck if quickly click on tree leaves
 imp javadoc
 imp libs and settings to temp
 imp update jdcore
 imp maven tool
-imp open class in jar
-bug close button in filter under java 6
+imp cmd open class in jar
 
 imp command console
 imp graph dependencies

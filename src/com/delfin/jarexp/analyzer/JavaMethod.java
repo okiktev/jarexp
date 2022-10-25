@@ -11,17 +11,19 @@ public class JavaMethod implements IJavaItem {
 
 	public enum ACCESS {DEF, PUBLIC, PRIVATE, PROTECTED}
 
-	String name;
+	final String name;
 
-	ACCESS access;
+	final ACCESS access;
 
-	private List<String> params;
+	private final List<String> params;
 
-	private String returnType;
+	private final String returnType;
 
-	private boolean isConstuctor;
+	private final boolean isConstuctor;
 
-	private Position position;
+	private final Position position;
+
+	private final String fullName;
 
 	JavaMethod(String name, ACCESS access, List<String> params, String returnType, boolean isConstuctor, Position position) {
 		this.name = name;
@@ -30,6 +32,23 @@ public class JavaMethod implements IJavaItem {
 		this.returnType = returnType;
 		this.isConstuctor = isConstuctor;
 		this.position = position;
+		this.fullName = generateFullName();
+	}
+
+	private String generateFullName() {
+		StringBuilder out = new StringBuilder(name);
+		out.append('(');
+		for(int i = 0; i < params.size(); ++i) {
+			out.append(params.get(i));
+			if (i != params.size() - 1) {
+				out.append(',').append(' ');
+			}
+		}
+		out.append(')');
+		if (!isConstuctor) {
+			out.append(' ').append(':').append(' ').append(returnType);
+		}
+		return out.toString();
 	}
 
 	@Override
@@ -45,19 +64,7 @@ public class JavaMethod implements IJavaItem {
 
 	@Override
 	public String getName() {
-		StringBuilder out = new StringBuilder(name);
-		out.append('(');
-		for(int i = 0; i < params.size(); ++i) {
-			out.append(params.get(i));
-			if (i != params.size() - 1) {
-				out.append(',').append(' ');
-			}
-		}
-		out.append(')');
-		if (!isConstuctor) {
-			out.append(' ').append(':').append(' ').append(returnType);
-		}
-		return out.toString();
+		return fullName;
 	}
 
 	@Override

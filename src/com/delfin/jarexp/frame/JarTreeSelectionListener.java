@@ -45,7 +45,6 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
-import javax.swing.text.BadLocationException;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -118,6 +117,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 	@Override
 	public void valueChanged(TreeSelectionEvent event) {
+		jarTree.repaint();
 		if (jarTree.isNotDraw) {
 			jarTree.isNotDraw = false;
 			return;
@@ -134,34 +134,44 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 		if (jarTree.isDragging()) {
 			return;
 		}
+		final Object obj = jarTree.getLastSelectedPathComponent();
+		if (obj == null) {
+			return;
+		}
 
 		new Executor() {
-			
+
 			@Override
 			protected void perform() {
-				Object obj = jarTree.getLastSelectedPathComponent();
 				if (obj instanceof ClassItemNode) {
-					Content current = (Content) frame.getContentPane();
-					for (Component comp : current.getComponents()) {
-						if (comp instanceof JSplitPane) {
-							JTextArea area = ((ContentPanel)((JSplitPane) comp).getRightComponent()).getSelectedComponent();
-							try {
-								Position position = ((ClassItemNode) obj).getPosition();
-								FilterPanel.highlight(area, position.position, position.length);
-							} catch (BadLocationException ex) {
-								throw new JarexpException("Could not scroll to found index.", ex);
-							}
-							frame.repaint();
-							break;
+					ClassItemNode itemNode = (ClassItemNode) obj;
+					for (Component comp : ((Content) frame.getContentPane()).getComponents()) {
+						if (!(comp instanceof JSplitPane)) {
+							continue;
 						}
+						TreeNode parent = itemNode.getParent();
+						while (parent instanceof ClassItemNode) {
+							parent = parent.getParent();
+						}
+						ContentPanel contentPanel = (ContentPanel)((JSplitPane) comp).getRightComponent();
+						if (parent != null) {
+							String fullPath = ((JarNode) parent).getFullPath();
+							TabComponent tabComponent = contentPanel.getSelectedTabComponent();
+							if (!fullPath.equals(tabComponent.node.getFullPath())) {
+								contentPanel.setSelected(fullPath);
+								break;
+							}
+						}
+						JTextArea area = contentPanel.getSelectedComponent();
+						Position position = itemNode.getPosition();
+						((JarNode)parent).selectedChild = itemNode; 
+						FilterPanel.highlight(area, position.position, position.length);
+						break;
 					}
 					return;
 				}
-				final JarNode node = (JarNode) obj;
-				if (node == null) {
-					return;
-				}
 
+				final JarNode node = (JarNode) obj;
 				final JSplitPane pane = Content.getSplitPane();
 				final ContentPanel contentView = (ContentPanel) pane.getRightComponent();
 				final int dividerLocation = pane.getDividerLocation();
@@ -220,7 +230,6 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 							try {
 								fillClassStructure(node, Analyzer.analyze(decompiled.content));
-								jarTree.update(node);
 							} catch (Exception e) {
 								log.log(Level.SEVERE, "Unable to grab class structure information for " + node.name, e);
 							}
@@ -298,6 +307,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 			private void fillClassStructure(JarNode node, List<IJavaItem> classStructure) {
 				node.removeAllChildren();
+				node.selectedChild = null;
 				for (IJavaItem item : classStructure) {
 					ClassItemNode child = new ClassItemNode(item);
 					node.add(child);
@@ -305,6 +315,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						child.add(new ClassItemNode(m));
 					}
 				}
+				jarTree.update(node);
 			}
 
 			private Result decompile(JarNode node) {
@@ -506,19 +517,26 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 		}
 	}
 
-	public static class ClassItemNode extends DefaultMutableTreeNode {
+	static class ClassItemNode extends DefaultMutableTreeNode {
 
 		private static final long serialVersionUID = 7470246996120563613L;
 
 		IJavaItem javaItem;
 
+		private final String name;
+
 		ClassItemNode(IJavaItem javaItem) {
-			super(javaItem.getName());
 			this.javaItem = javaItem;
+			this.name = javaItem.getName();
 		}
 
 		Position getPosition() {
 			return javaItem.getPosition();
+		}
+
+		@Override
+		public String toString() {
+			return name;
 		}
 
 	} 

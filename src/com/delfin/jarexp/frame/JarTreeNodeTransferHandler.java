@@ -118,7 +118,10 @@ class JarTreeNodeTransferHandler extends TransferHandler {
 	@Override
 	protected Transferable createTransferable(JComponent c) {
 		for (TreePath path : ((JarTree) c).getSelectionPaths()) {
-			nodes.add((JarNode) path.getLastPathComponent());
+			Object component = path.getLastPathComponent();
+			if (component instanceof JarNode) {
+				nodes.add((JarNode) component);
+			}
 		}
 		return new JarNodeTransferable();
 	}

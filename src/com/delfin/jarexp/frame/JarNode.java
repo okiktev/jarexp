@@ -16,6 +16,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.exception.JarexpException;
+import com.delfin.jarexp.frame.JarTreeSelectionListener.ClassItemNode;
 import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.Enumerator;
 import com.delfin.jarexp.utils.FileUtils;
@@ -52,6 +53,8 @@ class JarNode extends DefaultMutableTreeNode {
 	private Boolean isArchive;
 
 	private Boolean isClass;
+
+	ClassItemNode selectedChild;
 
 	JarNode(String name, String path, File tempArch, File origArch, boolean isDirectory) {
 		this.name = name;

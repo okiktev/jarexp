@@ -42,7 +42,6 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableModel;
-import javax.swing.text.BadLocationException;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.decompiler.Decompiler;
@@ -144,12 +143,9 @@ public class Content extends JPanel {
 							@Override
 							protected void perform() {
 								JTextArea area = contentPanel.getSelectedComponent();
-								try {
-									int position = searchResult.position;
-									FilterPanel.highlight(area, position, ((String) cbFind.getSelectedItem()).length());
-								} catch (BadLocationException ex) {
-									throw new JarexpException("Could not scroll to found index.", ex);
-								}
+								int position = searchResult.position;
+								FilterPanel.highlight(area, position, ((String) cbFind.getSelectedItem()).length());
+
 							}
 						}.execute();
 					}
