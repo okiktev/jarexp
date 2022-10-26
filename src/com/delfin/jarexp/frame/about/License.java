@@ -11,7 +11,10 @@ import javax.swing.JTextArea;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.frame.resources.Resources;
 
-
+/**
+ * Changed license to GPLv3 since:
+ * https://www.apache.org/licenses/GPL-compatibility.html
+ */
 class License extends JPanel {
 
 	private static final long serialVersionUID = 538464150145085703L;
