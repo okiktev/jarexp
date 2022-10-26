@@ -35,8 +35,14 @@ public class AboutDlg extends JDialog {
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_G);
 		tabbedPane.addTab("License", null, new License(), "License information");
 		tabbedPane.setMnemonicAt(1, KeyEvent.VK_N);
-		tabbedPane.addTab("RSyntaxTextArea license", null, new SyntaxLicense(), "RSyntaxTextArea license");
+		tabbedPane.addTab("RSyntaxTextArea license", null, new RstaLicense(), "RSyntaxTextArea license");
 		tabbedPane.setMnemonicAt(2, KeyEvent.VK_R);
+		tabbedPane.addTab("Procyon license", null, new ProcyonLicense(), "Procyon license");
+		tabbedPane.setMnemonicAt(3, KeyEvent.VK_P);
+		tabbedPane.addTab("Fernflower license", null, new FernflowerLicense(), "Fernflower license");
+		tabbedPane.setMnemonicAt(4, KeyEvent.VK_F);
+		tabbedPane.addTab("JavaDecompiler license", null, new JavaDecompilerLicense(), "JavaDecompiler license");
+		tabbedPane.setMnemonicAt(5, KeyEvent.VK_J);
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
 		add(tabbedPane, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(2, 2, 2, 2), 0, 0));

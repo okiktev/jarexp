@@ -11,16 +11,16 @@ import javax.swing.JTextArea;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.settings.Settings;
 
-class SyntaxLicense extends JPanel {
+class FernflowerLicense extends JPanel {
 
 	private static final long serialVersionUID = 538464150145085703L;
 
-	SyntaxLicense() {
+	FernflowerLicense() {
 
 		JTextArea license = new JTextArea();
 		license.setEditable(false);
 		license.setOpaque(false);
-		license.setText(Resources.getInstance().getSyntaxTextLicense());
+		license.setText(Resources.getInstance().getFernflowerLicense());
 		license.setFont(Settings.DLG_TEXT_FONT);
 		license.setBorder(Settings.EMPTY_BORDER);
 

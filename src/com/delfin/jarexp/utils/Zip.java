@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -172,7 +173,18 @@ public class Zip {
 		bos.close();
 	}
 	
-	
+	private static String readFile(ZipInputStream zipIn) throws IOException {
+		// BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+		StringBuilder out = new StringBuilder();
+		byte[] bytesIn = new byte[4096];
+		int read = 0;
+		while ((read = zipIn.read(bytesIn)) != -1) {
+			out.append(new String(bytesIn));
+			// bos.write(bytesIn, 0, read);
+		}
+		//bos.close();
+		return out.toString();
+	}
 	
 
 	 private static void makeParentDirs(File file) {
@@ -362,6 +374,31 @@ public class Zip {
 		//add("META-INF/", new File("hibernate.jar"), files);
 		add("", new File("bookstore.ear"), files);
 	 }
+	
+	public static Map<String, String> unzip(InputStream stream) {
+		Map<String, String> content = new HashMap<String, String>();
+		ZipInputStream is = null;
+		try {
+			is = new ZipInputStream(stream);
+			ZipEntry entry = is.getNextEntry();
+			while (entry != null) {
+				content.put(entry.getName(), readFile(is));
+				is.closeEntry();
+				entry = is.getNextEntry();
+			}
+			return content;
+		} catch (Exception e) {
+			throw new JarexpException("An error occurred while unpacking stream.", e);
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					log.log(Level.WARNING, "An error occurred while closing zip stream to stream.", e);
+				}
+			}
+		}
+	}
 
 	public static void unzip(File archive, File dir) {
 		if (!dir.exists()) {

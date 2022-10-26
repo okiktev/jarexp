@@ -1,0 +1,6 @@
+For class decompiling Jar Explorer uses Fernflower decompiler. See more details at
+https://github.com/JetBrains/intellij-community/blob/5b98789f041023d76c19178b581a7461abf9d7c4/plugins/java-decompiler/engine/README.md
+
+
+Fernflower is licenced under the Apache Licence Version 2.0.
+https://www.apache.org/licenses/LICENSE-2.0

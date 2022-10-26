@@ -8,19 +8,19 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.settings.Settings;
 
-
-class License extends JPanel {
+class ProcyonLicense extends JPanel {
 
 	private static final long serialVersionUID = 538464150145085703L;
 
-	License() {
+	ProcyonLicense() {
+
 		JTextArea license = new JTextArea();
 		license.setEditable(false);
 		license.setOpaque(false);
-		license.setText(Resources.getInstance().getLicence());
+		license.setText(Resources.getInstance().getProcyonLicense());
 		license.setFont(Settings.DLG_TEXT_FONT);
 		license.setBorder(Settings.EMPTY_BORDER);
 

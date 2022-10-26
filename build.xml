@@ -89,17 +89,28 @@
 		
 		<copy todir="${jar.dir}">
 			<fileset dir="${resources.dir}" >
-				<exclude name="**/JAREXP_LICENSE" />
+				<exclude name="**/LICENSE" />
 				<exclude name="**/logging*properties" />
+				<exclude name="licenses.zip" />
 			</fileset>
 		</copy>
 		<copy todir="${jar.dir}">
-			<fileset dir="${resources.dir}" includes="**/JAREXP_LICENSE" />
+			<fileset dir="${resources.dir}" includes="**/LICENSE" />
 			<filterset>
 				<filter token="COPYRIGHT" value="${copyright}" />
 			</filterset>
 		</copy>
 		<copy file="${resources.dir}/logging-prod.properties" tofile="${jar.dir}/logging.properties" />
+		<zip destfile="${jar.dir}/licenses.zip">
+			<zipfileset dir="${jar.dir}">
+				<include name="*.license" />
+				<include name="LICENSE" />
+			</zipfileset>
+		</zip>
+		<delete dir="${jar.dir}">
+			<include name="*.license" />
+			<include name="LICENSE" />
+		</delete>
 	</target>
 
 	<target name="generate-build-num">

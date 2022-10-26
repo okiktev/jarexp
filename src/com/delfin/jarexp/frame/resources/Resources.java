@@ -18,7 +18,7 @@ import javax.swing.filechooser.FileSystemView;
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.settings.Version;
-import com.delfin.jarexp.utils.FileUtils;
+import com.delfin.jarexp.utils.Zip;
 
 
 public class Resources {
@@ -41,9 +41,7 @@ public class Resources {
 
 	private Image logoImage;
 
-	private String licenseText;
-
-	private String syntaxText;
+	private static Map<String, String> licenses;
 
 	private static Map<String, Icon> defaultIcons = new HashMap<String, Icon>();
 
@@ -110,29 +108,50 @@ public class Resources {
 		return getImage("drag.png", "Unable to load drag and drop image from class path");
 	}
 
-	public String getLicenceText() {
-		if (licenseText != null) {
-			return licenseText;
-		}
-		try {
-			return licenseText = FileUtils.toString(getLoader().getResource("JAREXP_LICENSE"));
-		} catch (IOException e) {
-			String msg = "Error while loading license";
-			log.log(Level.SEVERE, msg, e);
-			return msg;
-		}
+	public String getLicence() {
+		return loadLicense("LICENSE");
 	}
 
-	public String getSyntaxTextLicense() {
-		if (syntaxText != null) {
-			return syntaxText;
+	public String getRstaLicense() {
+		return loadLicense("rsta.license");
+	}
+
+	public String getProcyonLicense() {
+		return loadLicense("procyon.license");
+	}
+
+	public String getFernflowerLicense() {
+		return loadLicense("fernflower.license");
+	}
+
+	public String getJavaDecompilerLicense() {
+		return loadLicense("java-decompiler.license");
+	}
+
+	private String loadLicense(String fileName) {
+		if (licenses == null) {			
+			loadLicenses();
 		}
-		try {
-			return syntaxText = FileUtils.toString(getLoader().getResource("syntax.txt"));
-		} catch (IOException e) {
-			String msg = "Error while loading syntax text license";
-			log.log(Level.SEVERE, msg, e);
-			return msg;
+		return licenses.get(fileName);
+	}
+
+	private synchronized void loadLicenses() {
+		if (licenses == null) {
+			InputStream is = null;
+			try {
+				is = Resources.class.getClassLoader().getResourceAsStream("licenses.zip");
+				licenses = Zip.unzip(is);
+			} catch (Exception e) {
+				throw new JarexpException("Unable to load licenses.", e);
+			} finally {
+				if (is != null) {
+					try {
+						is.close();
+					} catch (IOException e) {
+						log.log(Level.WARNING, "Unable to close stream to licenses.zip", e);
+					}
+				}
+			}
 		}
 	}
 
@@ -359,6 +378,13 @@ public class Resources {
 	}
 
 	public static void main(String[] args) throws Exception {
+		 InputStream is =
+		 Resources.class.getClassLoader().getResourceAsStream("licenses.zip");
+		
+		System.out.println(Zip.unzip(is));
+		is.close();
+		
+		
 		// InputStream is =
 		// Resources.class.getClassLoader().getResourceAsStream("img/icon.png");
 		//
@@ -380,7 +406,7 @@ public class Resources {
 		// // String s = DatatypeConverter.parseBase64Binary(new
 		// // String(buffer.toByteArray()));
 
-		System.out.println(getExtension("dfafas.exe"));
+		//System.out.println(getExtension("dfafas.exe"));
 
 	}
 
