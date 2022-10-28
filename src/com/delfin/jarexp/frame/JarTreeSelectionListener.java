@@ -109,6 +109,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 	private final JFrame frame;
 
+	TreePath collapsed;
+
 	JarTreeSelectionListener(JarTree jarTree, StatusBar statusBar, JFrame frame) {
 		this.jarTree = jarTree;
 		this.statusBar = statusBar;
@@ -117,9 +119,13 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 	@Override
 	public void valueChanged(TreeSelectionEvent event) {
-		jarTree.repaint();
 		if (jarTree.isNotDraw) {
 			jarTree.isNotDraw = false;
+			return;
+		}
+		if (collapsed != null && collapsed.equals(event.getPath())) {
+			jarTree.clearSelection();
+			collapsed = null;
 			return;
 		}
 		TreePath[] path = JarTreeClickSelection.getNodes();

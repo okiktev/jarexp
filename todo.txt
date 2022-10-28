@@ -157,11 +157,11 @@ imp show method in the code when clicked on method in tree ... done ............
 bug class is not rendered when clicking on class item .... done ...................................25Oct2022
 bug close button in filter under java 6 ... done ..................................................25Oct2022
 imp update licenses ... done ......................................................................26Oct2022
+bug rendering leaf when clicking on folding cross ... done ........................................28Oct2022
 
 
 
 bug jar tree selection stuck if quickly click on tree leaves
-bug rendering leaf when clicking on folding cross
 imp javadoc
 imp libs and settings to temp
 imp update jdcore

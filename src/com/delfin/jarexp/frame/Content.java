@@ -479,6 +479,7 @@ public class Content extends JPanel {
 
 				jarTree = new JarTree(treeExpansionListener, statusBar, frame);
 				jarTree.addTreeSelectionListener(jarTreeSelectionListener = new JarTreeSelectionListener(jarTree, statusBar, frame));
+				jarTree.addTreeWillExpandListener(new JarTreeWillExpandListener(jarTreeSelectionListener, jarTree));
 				jarTree.load(f);
 				jarTree.setBorder(Settings.EMPTY_BORDER);
 
