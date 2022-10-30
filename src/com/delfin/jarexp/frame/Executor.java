@@ -29,6 +29,7 @@ abstract class Executor {
 			protected void done() {
 				try {
 					get();
+					worker.cancel(false);
 				} catch (ExecutionException t) {
 					doCatch(t);
 				} catch (InterruptedException e) {
