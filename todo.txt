@@ -159,9 +159,9 @@ bug close button in filter under java 6 ... done ...............................
 imp update licenses ... done ......................................................................26Oct2022
 bug rendering leaf when clicking on folding cross ... done ........................................28Oct2022
 bug jar tree selection stuck if quickly click on tree leaves ... done .............................30Oct2022
+imp search javadoc ... done .......................................................................30Oct2022
 
 
-imp javadoc
 imp libs and settings to temp
 imp update jdcore
 imp maven tool
@@ -179,6 +179,7 @@ imp settings functional
 imp pdf recognizing
 
 
+imp javadoc handler
 imp get all depended classes in the jar
 imp ribbon
 imp when delete file clear preview and context panel

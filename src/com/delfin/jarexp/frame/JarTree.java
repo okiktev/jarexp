@@ -1,6 +1,7 @@
 package com.delfin.jarexp.frame;
 
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -13,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -161,7 +163,7 @@ class JarTree extends JTree {
 				if (path == null) {
 					return;
 				}
-				Object obj = path.getLastPathComponent();
+				final Object obj = path.getLastPathComponent();
 				if (!(obj instanceof JarNode)) {
 					return;
 				}
@@ -184,6 +186,22 @@ class JarTree extends JTree {
 				search.setIcon(resources.getSearchIcon());
 				search.addActionListener(searchActionListener);
 
+				JarNodeMenuItem searchJavaDoc = new JarNodeMenuItem("Search JavaDoc", path);
+				searchJavaDoc.setIcon(resources.getJavaIcon());
+				searchJavaDoc.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						if (Desktop.isDesktopSupported()) {
+							try {
+								Desktop.getDesktop().browse(new URI("https://www.google.com/search?q=" 
+										+ ((JarNode)obj).name.replace(".class", "") + "+javadoc"));
+							} catch (Exception ex) {
+								throw new JarexpException("Could not redirect to google search", ex);
+							}
+						}
+					}
+				});
+
 				JarNodeMenuItem copyPath = new JarNodeMenuItem("Copy Path", path);
 				copyPath.setIcon(resources.getCopyIcon());
 				copyPath.addActionListener(copyPathActionListener);
@@ -196,6 +214,9 @@ class JarTree extends JTree {
 				popupMenu.add(deleteNode);
 				popupMenu.add(unpackNode);
 				popupMenu.add(search);
+				if (!((JarNode)obj).isNotClass()) {
+					popupMenu.add(searchJavaDoc);
+				}
 				popupMenu.add(copyPath);
 				popupMenu.add(info);
 

@@ -225,6 +225,10 @@ public class Resources {
 				, "Unable to load environment image from class path");
 	}
 
+	public Icon getJavaIcon() {
+		return getIcon("envoj.png", "Unable to load java icon from class path");
+	}
+
 	public Icon getSearchIcon() {
 		return getIcon("srch.png", "Unable to load search menu icon from class path");
 	}
