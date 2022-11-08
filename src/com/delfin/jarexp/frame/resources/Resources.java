@@ -49,7 +49,7 @@ public class Resources {
 
 	private static Map<String, Image> images = new HashMap<String, Image>();
 
-	private static File TMP_DIR = Settings.getTmpDir();
+	private static File TMP_DIR = Settings.getJarexpTmpDir();
 
 	private Resources() {
 

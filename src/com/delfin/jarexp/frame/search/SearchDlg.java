@@ -59,6 +59,7 @@ import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.decompiler.IDecompiler;
 import com.delfin.jarexp.dlg.message.Msg;
+import com.delfin.jarexp.frame.LibraryManager;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.settings.ActionHistory;
 import com.delfin.jarexp.settings.Settings;
@@ -408,7 +409,7 @@ public abstract class SearchDlg extends JFrame {
 				break;
 				case 1:
 					try {
-						Decompiler.prepareBinariesFor(DecompilerType.PROCYON);
+						LibraryManager.prepareBinariesFor(DecompilerType.PROCYON);
 						decompiler = Decompiler.get(DecompilerType.PROCYON); 
 					} catch (Exception ex) {
 						Msg.showException("Unable to toggle decompiler", ex);
@@ -416,7 +417,7 @@ public abstract class SearchDlg extends JFrame {
 				break;
 				case 2:
 					try {
-						Decompiler.prepareBinariesFor(DecompilerType.FERNFLOWER);
+						LibraryManager.prepareBinariesFor(DecompilerType.FERNFLOWER);
 						decompiler = Decompiler.get(DecompilerType.FERNFLOWER); 
 					} catch (Exception ex) {
 						Msg.showException("Unable to toggle decompiler", ex);

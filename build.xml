@@ -35,6 +35,8 @@
 
 		<echo message="The product version is: ${full.version}" />
 
+		<checksum file="${basedir}/lib/${dependency1jarName}" property="MD5.lib.rsta"/>
+		<checksum file="${basedir}/lib/${dependency2jarName}" property="MD5.lib.jdecompiler071"/>
 		<checksum file="${basedir}/lib/${dependency4jarName}" property="MD5.lib.procyon"/>
 		<checksum file="${basedir}/lib/${dependency5jarName}" property="MD5.lib.fernflower"/>
 		<copy todir="${build.dir}/src">
@@ -45,10 +47,6 @@
 			<filterset>
 				<filter token="VERSION" value="${full.version}" />
 				<filter token="COPYRIGHT" value="${copyright}" />
-				<filter token="PROCYON_FILE_NAME" value="${dependency4jarName}" />
-				<filter token="PROCYON_FILE_MD5" value="${MD5.lib.procyon}" />
-				<filter token="FERNFLOWER_FILE_NAME" value="${dependency5jarName}" />
-				<filter token="FERNFLOWER_FILE_MD5" value="${MD5.lib.fernflower}" />
 			</filterset>
 		</copy>
 
@@ -75,22 +73,12 @@
 			<fileset dir="${classes.dir}" />
 			<fileset dir="${build.res.dir}" />
 		</copy>
-
-		<unjar src="${dependency1}" dest="${jar.dir}" />
-		<delete dir="${jar.dir}/META-INF" />
-		<unjar src="${dependency2}" dest="${jar.dir}" />
-		<delete dir="${jar.dir}/META-INF" />
-		<unjar src="${dependency3}" dest="${jar.dir}" />
-		<delete dir="${jar.dir}/META-INF" />
-		<unjar src="${dependency4}" dest="${jar.dir}" />
-		<delete dir="${jar.dir}/META-INF" />
-		<unjar src="${dependency5}" dest="${jar.dir}" />
-		<delete dir="${jar.dir}/META-INF" />
 		
 		<copy todir="${jar.dir}">
 			<fileset dir="${resources.dir}" >
 				<exclude name="**/LICENSE" />
 				<exclude name="**/logging*properties" />
+				<exclude name="**/dependencies*" />
 				<exclude name="licenses.zip" />
 			</fileset>
 		</copy>
@@ -101,6 +89,18 @@
 			</filterset>
 		</copy>
 		<copy file="${resources.dir}/logging-prod.properties" tofile="${jar.dir}/logging.properties" />
+		<copy file="${resources.dir}/dependencies-prod" tofile="${jar.dir}/dependencies" >
+			<filterset>
+				<filter token="RSTA_FILE_NAME" value="${dependency1jarName}" />
+				<filter token="RSTA_FILE_MD5" value="${MD5.lib.rsta}" />
+				<filter token="JDECOMPILER071_FILE_NAME" value="${dependency2jarName}" />
+				<filter token="JDECOMPILER071_FILE_MD5" value="${MD5.lib.jdecompiler071}" />
+				<filter token="PROCYON_FILE_NAME" value="${dependency4jarName}" />
+				<filter token="PROCYON_FILE_MD5" value="${MD5.lib.procyon}" />
+				<filter token="FERNFLOWER_FILE_NAME" value="${dependency5jarName}" />
+				<filter token="FERNFLOWER_FILE_MD5" value="${MD5.lib.fernflower}" />
+			</filterset>
+		</copy>
 		<zip destfile="${jar.dir}/licenses.zip">
 			<zipfileset dir="${jar.dir}">
 				<include name="*.license" />
@@ -158,7 +158,6 @@
 				<attribute name="Built-By" value="delfin" />
 				<attribute name="Application-Version" value="${full.version}" />
 				<attribute name="Main-Class" value="com.delfin.jarexp.Main" />
-				<attribute name="Class-Path" value="lib/${dependency4jarName} lib/${dependency5jarName}"/>
 			</manifest>
 
 			<fileset dir="${jar.dir}" >
@@ -169,7 +168,41 @@
 		</jar>
 	</target>
 
-	<target name="pack" depends="jar">
+	<target name="fullJar" depends="jar">
+		<echo message="Making full jar file into ${artifacts.dir}" />
+
+		<loadfile srcfile="${build.num.file}" property="build">
+			<filterchain>
+				<tokenfilter>
+					<filetokenizer />
+					<replacestring from=" " to="" />
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
+
+		<unjar src="${dependency1}" dest="${jar.dir}" />
+		<delete dir="${jar.dir}/META-INF" />
+		<unjar src="${dependency2}" dest="${jar.dir}" />
+		<delete dir="${jar.dir}/META-INF" />
+		<unjar src="${dependency4}" dest="${jar.dir}" />
+		<delete dir="${jar.dir}/META-INF" />
+		<unjar src="${dependency5}" dest="${jar.dir}" />
+		<delete dir="${jar.dir}/META-INF" />
+
+		<delete file="${jar.dir}/dependencies" />
+
+		<jar destfile="${artifacts.dir}/jar-explorer-${full.version}-full.jar">
+			<manifest>
+				<attribute name="Built-By" value="delfin" />
+				<attribute name="Application-Version" value="${full.version}" />
+				<attribute name="Main-Class" value="com.delfin.jarexp.Main" />
+			</manifest>
+
+			<fileset dir="${jar.dir}" />
+		</jar>
+	</target>
+
+	<target name="pack" depends="fullJar">
 		<copy todir="${artifacts.dir}">
 			<fileset dir="${build.exe.dir}" >
 				<include name="jarexp.xml" />
@@ -223,6 +256,53 @@
 		</exec> -->
 	</target>
 
+	<target name="fullPack" depends="pack">
+		<property name="full.pack.dir" value="${artifacts.dir}/fullpack" />
+		<mkdir dir="${full.pack.dir}" />
+		<copy todir="${full.pack.dir}">
+			<fileset dir="${build.exe.dir}" >
+				<include name="jarexp.xml" />
+				<include name="Jar Explorer.sh" />
+			</fileset>
+			<filterset>
+				<filter token="ARTIFACTS_DIR" value="${full.pack.dir}" />
+				<filter token="JARNAME" value="jar-explorer-${full.version}.jar" />
+				<filter token="BUILD_EXE_DIR" value="${build.exe.dir}" />
+			</filterset>
+		</copy>
+		<move file="${artifacts.dir}/jar-explorer-${full.version}-full.jar" tofile="${full.pack.dir}/lib/jar-explorer-${full.version}.jar" />
+		<echo message="Making full exe file in ${full.pack.dir}" />
+		<exec executable="${launch4j.dir}/windows/launch4j.exe" dir="${launch4j.dir}/windows" failonerror="true" osfamily="windows">
+			<arg value="${full.pack.dir}/jarexp.xml" />
+		</exec>
+		<exec executable="${launch4j.dir}/linux/launch4j" dir="${launch4j.dir}/linux" failonerror="true" osfamily="unix">
+			<arg value="${full.pack.dir}/jarexp.xml" />
+		</exec>
+
+		<waitfor maxwait="30" maxwaitunit="second">
+		    <available file="${full.pack.dir}/Jar Explorer.exe"/>
+		</waitfor>
+		<delete file="${full.pack.dir}/jarexp.xml" />
+		<property name="win.full.archive.name" value="JarExplorer.${full.version}.full.zip"/>
+		<property name="lin.full.archive.name" value="JarExplorer.${full.version}.full.tar.gz"/>
+		<zip destfile="${full.pack.dir}/${win.full.archive.name}" >
+			<fileset dir="${full.pack.dir}" >
+				<include name="Jar Explorer.exe" />
+			</fileset>
+		</zip>
+		<tar destfile="${full.pack.dir}/JarExplorer.${full.version}.tar" >
+			<fileset dir="${full.pack.dir}" >
+				<include name="Jar Explorer.sh" />
+				<include name="lib/**"/>
+			</fileset>
+		</tar>
+		<gzip destfile="${full.pack.dir}/${lin.full.archive.name}" src="${full.pack.dir}/JarExplorer.${full.version}.tar" />
+		<delete file="${full.pack.dir}/JarExplorer.${full.version}.tar" />
+
+		<move file="${full.pack.dir}/${win.full.archive.name}" todir="${artifacts.dir}" />
+		<move file="${full.pack.dir}/${lin.full.archive.name}" todir="${artifacts.dir}" />
+	</target>
+
 	<target name="site">
 		<property name="site.dir" value="${artifacts.dir}/site" />
 		<delete dir="${site.dir}" file="${site.dir}" />
@@ -262,8 +342,11 @@
 			</fileset>
 		</copy>
 
+		<!-- leave these properties for separate task running -->
 		<property name="win.archive.name" value="JarExplorer.${full.version}.zip"/>
 		<property name="lin.archive.name" value="JarExplorer.${full.version}.tar.gz"/>
+		<property name="win.full.archive.name" value="JarExplorer.${full.version}.full.zip"/>
+		<property name="lin.full.archive.name" value="JarExplorer.${full.version}.full.tar.gz"/>
 
 		<copy todir="${jarexp.dir}" encoding="cp1251">
 			<fileset dir="${basedir}/www/jarexp">
@@ -273,7 +356,9 @@
 			<filterset>
 				<filter token="COPYRIGHT" value="${copyright}" />
 				<filter token="DOWNLOAD_WIN_ARCHIVE" value="${win.archive.name}" />
+				<filter token="DOWNLOAD_WIN_FULL_ARCHIVE" value="${win.full.archive.name}" />
 				<filter token="DOWNLOAD_LIN_ARCHIVE" value="${lin.archive.name}" />
+				<filter token="DOWNLOAD_LIN_FULL_ARCHIVE" value="${lin.full.archive.name}" />
 				<filter token="SITE_VER" value="${full.site.version}" />
 			</filterset>
 		</copy>
@@ -282,23 +367,21 @@
 				<exclude name="**/*.zip" />
 				<exclude name=".htaccess" />
 			</fileset>
-			<filterset>
-				<filter token="COPYRIGHT" value="${copyright}" />
-				<filter token="DOWNLOAD_WIN_ARCHIVE" value="${win.archive.name}" />
-				<filter token="DOWNLOAD_LIN_ARCHIVE" value="${lin.archive.name}" />
-				<filter token="SITE_VER" value="${full.site.version}" />
-			</filterset>
 		</copy>
 		<copy todir="${jarexp.dir}/downloads">
 			<fileset dir="${artifacts.dir}">
 				<include name="${win.archive.name}" />
+				<include name="${win.full.archive.name}" />
 				<include name="${lin.archive.name}" />
+				<include name="${lin.full.archive.name}" />
 			</fileset>
 		</copy>
-		<property name="decompilers.dir" value="${jarexp.dir}/downloads/decompilers"/>
-		<mkdir dir="${decompilers.dir}" />
-		<copy todir="${decompilers.dir}">
+		<property name="libraries.dir" value="${jarexp.dir}/downloads/libraries"/>
+		<mkdir dir="${libraries.dir}" />
+		<copy todir="${libraries.dir}">
 			<fileset dir="${basedir}/lib">
+				<include name="${dependency1jarName}" />
+				<include name="${dependency2jarName}" />
 				<include name="${dependency4jarName}" />
 				<include name="${dependency5jarName}" />
 			</fileset>

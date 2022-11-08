@@ -83,6 +83,8 @@ public class Settings {
 	private String version = Version.get();
 
 	private static File tmpDir;
+	private static File tmpJarexpDir;
+	private static File appDir;
 
 	public static final Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
 
@@ -117,10 +119,25 @@ public class Settings {
 		return version;
 	}
 
-	public static File getTmpDir() {
+	public static File getJarexpTmpDir() {
+		if (tmpJarexpDir == null) {
+			tmpJarexpDir = new File(getAppDir(), "" + System.currentTimeMillis());
+			tmpJarexpDir.mkdirs();
+		}
+		return tmpJarexpDir;
+	}
+
+	public static File getAppDir() {
+		if (appDir == null) {
+			appDir = new File(getTmpDir(), "jarexp");
+			appDir.mkdirs();
+		}
+		return appDir;
+	}
+
+	private static File getTmpDir() {
 		if (tmpDir == null) {
-			tmpDir = new File(System.getProperty("java.io.tmpdir"), "jarexp" + System.currentTimeMillis());
-			tmpDir.mkdirs();
+			tmpDir = new File(System.getProperty("java.io.tmpdir"));
 		}
 		return tmpDir;
 	}

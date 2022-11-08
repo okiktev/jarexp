@@ -25,7 +25,7 @@ class ClassFileIcon {
 
 	private static Icon defaultFileIcon;
 	static {
-		File file = new File(Settings.getTmpDir(), "jarexp" + System.currentTimeMillis());
+		File file = new File(Settings.getJarexpTmpDir(), "jarexp" + System.currentTimeMillis());
 		try {
 			file.createNewFile();
 		} catch (IOException e) {

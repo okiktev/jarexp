@@ -401,7 +401,7 @@ public class FileUtils {
 
 	public static void download(final String from, File dst) {
 		try {
-			File tmp = File.createTempFile("jarexp", "download", Settings.getTmpDir());
+			File tmp = File.createTempFile("jarexp", "download", Settings.getJarexpTmpDir());
 			new Stream(new BufferedInputStream(new URL(from).openStream())) {
 				@Override
 				protected String pathToSourceForError() {

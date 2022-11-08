@@ -160,15 +160,18 @@ imp update licenses ... done ...................................................
 bug rendering leaf when clicking on folding cross ... done ........................................28Oct2022
 bug jar tree selection stuck if quickly click on tree leaves ... done .............................30Oct2022
 imp search javadoc ... done .......................................................................30Oct2022
+imp libs to temp ... done .........................................................................08Nov2022
 
-
-imp libs and settings to temp
+imp settings to temp
+bug default methods are not visible in jar tree
+bug stack trace error 
+bug refresh content tab after switching decompilers
 imp update jdcore
 imp maven tool
 imp cmd open class in jar
+imp command console
 
 imp kotlin lib support
-imp command console
 imp graph dependencies
 imp linux easy download
 imp decompile all classes

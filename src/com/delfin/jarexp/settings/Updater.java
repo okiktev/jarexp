@@ -1,5 +1,7 @@
 package com.delfin.jarexp.settings;
 
+import static com.delfin.jarexp.frame.LibraryManager.*;
+
 import java.awt.Desktop;
 import java.awt.Window;
 import java.awt.event.MouseEvent;
@@ -24,10 +26,9 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 
-import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.exception.JarexpException;
+import com.delfin.jarexp.frame.LibraryManager.DependencyType;
 import com.delfin.jarexp.utils.FileUtils;
-import com.delfin.jarexp.utils.Md5Checksum;
 
 public class Updater {
 
@@ -71,7 +72,7 @@ public class Updater {
 					if (!isSingletone) {
 						return;
 					}
-					final File jarexpTempDir = Settings.getTmpDir();
+					final File jarexpTempDir = Settings.getJarexpTmpDir();
 					for (File f : jarexpTempDir.getParentFile().listFiles(new FilenameFilter() {
 						@Override
 						public boolean accept(File dir, String name) {
@@ -87,19 +88,8 @@ public class Updater {
 				}
 
 				private void checkLibs() {
-					File lib = Decompiler.getLibDir();
-					checkLibFile(new File(lib, Decompiler.FERNFLOWER_FILE_NAME), Decompiler.FERNFLOWER_FILE_MD5);
-					checkLibFile(new File(lib, Decompiler.PROCYON_FILE_NAME), Decompiler.PROCYON_FILE_MD5);
-				}
-
-				private void checkLibFile(File file, String checksum) {
-					if (!file.exists()) {
-						return;
-					}
-					if (checksum.equals(Md5Checksum.get(file))) {
-						return;
-					}
-					file.delete();
+					isNeedToDownload(getDependency(DependencyType.FERNFLOWER));
+					isNeedToDownload(getDependency(DependencyType.PROCYON));
 				}
 
 				private void checkUpdate(JMenu update) {

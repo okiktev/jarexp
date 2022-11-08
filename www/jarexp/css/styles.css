@@ -1,10 +1,10 @@
 *{margin:0;padding:0}
 
-body{font-size:11pt;font-family:'Segoe UI Light';font-weight:lighter;}
+body{font-size:11pt;font-family:'Segoe UI Light';font-weight:lighter;overflow:hidden}
 
 #wrapper{float:left;width:100%;height:100%;}
 
-#center{margin-left:400px;margin-right:25%;}
+#center{margin-left:400px;margin-right:20%;}
 
 #left{
 	float:left;
@@ -15,8 +15,8 @@ body{font-size:11pt;font-family:'Segoe UI Light';font-weight:lighter;}
 
 #right{
 	float:left;
-	width:25%;
-	margin-left:-25%;
+	width:20%;
+	margin-left:-20%;
 	height:100%;
 	overflow:auto;
 	background:linear-gradient(270deg, #ddd, transparent)
@@ -31,7 +31,7 @@ body{font-size:11pt;font-family:'Segoe UI Light';font-weight:lighter;}
 }
 
 
-ul{padding-left:20px}
+ul{padding-left:10px;padding-right:10px}
 
 h1{
 font-weight:lighter;
@@ -45,7 +45,9 @@ margin-right:10px;
 h2{
 margin-top: 30px;
 margin-bottom: 10px;
-background:linear-gradient(90deg, #a5bdda, transparent)
+background:linear-gradient(90deg, #b1ceeb, transparent);
+border-radius:0.25em;
+padding-left:0.5em
 }
 
 h3{font-weight:lighter;}
@@ -71,6 +73,8 @@ text-align:justify;
 	padding-left:40px;
 }
 
+.dbtn div{padding-top:0.5em}
+
 #downloads .dwbtn{
 background-image: URL(../img/wl.png);
 background-repeat: no-repeat;
@@ -81,9 +85,11 @@ text-align:center;
 padding:0px 10px 0px 10px;
 display:inline-block;
 text-decoration:none;
-height:40px;
-font-size:1.7em;
-padding-left: 45px;
+height:35px;
+font-size:1.4em;
+padding-left:45px;
+padding-top:5px;
+border-radius:0.25em
 }
 #downloads .dwbtn:hover{background-color:#c1e0ec;}
 
@@ -97,32 +103,36 @@ text-align:center;
 padding:0px 10px 0px 10px;
 display:inline-block;
 text-decoration:none;
-height:40px;
-font-size:1.7em;
-padding-left: 45px;
+height:35px;
+font-size:1.4em;
+padding-left:45px;
+padding-top:5px;
+border-radius:0.25em
 }
-#downloads .dlbtn:hover{background-color:#c1e0ec;}
+#downloads .dlbtn:hover{background-color:#c1e0ec}
 
-.dlbtns{
-float:left;width:420px
-}
+#downloads form{padding-top:2em}
+
+.dlbtns{float:left;width:100%}
 
 .dntbtn{
 float:left;padding-top:60px
 }
 
-.info{padding-top:30px;padding-left:40px;}
+.info{padding-top:30px;padding-left:40px;padding-right:11em}
 
 .info .text{
 float:left;
 padding-right:10px;
 }
 .text div{
-border-right-width:1px;
-border-right-style:double;
-border-right-color:black;
 padding-right:10px;
+padding-left:10px;
+padding-bottom:5px;
+border-radius:5px;
+background-color:#dbf1f9
 }
+
 .info .text p{
 padding-top:0px !important;
 }

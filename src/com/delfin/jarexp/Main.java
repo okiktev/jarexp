@@ -32,7 +32,7 @@ public class Main {
 				Zip.setTempFileCreator(new TempFileCreator() {
 					@Override
 					public File create(String prefix, String suffix) throws IOException {
-						return File.createTempFile(prefix, suffix, Settings.getTmpDir());
+						return File.createTempFile(prefix, suffix, Settings.getJarexpTmpDir());
 					}
 				});
 				try {

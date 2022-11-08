@@ -44,7 +44,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableModel;
 import javax.swing.tree.TreePath;
 
-import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.exception.JarexpException;
@@ -246,7 +245,7 @@ public class Content extends JPanel {
 					@Override
 					protected void perform() {
 						statusBar.enableProgress("Exiting...");
-						FileUtils.delete(Settings.getTmpDir());
+						FileUtils.delete(Settings.getJarexpTmpDir());
 						isDeleted[0] = true;
 					}
 
@@ -370,7 +369,7 @@ public class Content extends JPanel {
 					protected void perform() {
 						try {
 							statusBar.enableProgress("Downloading...");
-							Decompiler.prepareBinariesFor(DecompilerType.PROCYON);
+							LibraryManager.prepareBinariesFor(DecompilerType.PROCYON);
 							changeDecompiler(DecompilerType.PROCYON);
 							statusBar.setDecompiler(DecompilerType.PROCYON);
 						} catch (Exception ex) {
@@ -390,7 +389,7 @@ public class Content extends JPanel {
 					protected void perform() {
 						try {
 							statusBar.enableProgress("Downloading...");
-							Decompiler.prepareBinariesFor(DecompilerType.FERNFLOWER);
+							LibraryManager.prepareBinariesFor(DecompilerType.FERNFLOWER);
 							changeDecompiler(DecompilerType.FERNFLOWER);
 							statusBar.setDecompiler(DecompilerType.FERNFLOWER);
 						} catch (Exception ex) {
@@ -423,6 +422,7 @@ public class Content extends JPanel {
 
 		// Create and set up the content pane.
 		Content content = new Content();
+		LibraryManager.prepareLibraries(statusBar);
 		((JComponent) content).setBorder(Settings.EMPTY_BORDER);
 		// newContentPane.setOpaque(true); // content panes must be opaque
 		frame.setContentPane(content);

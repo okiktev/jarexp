@@ -160,7 +160,7 @@ class ContentPanel extends JPanel {
 								"Error saving...", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
 						return;
 					}
-					File tmp = File.createTempFile("edit", node.name, Settings.getTmpDir());
+					File tmp = File.createTempFile("edit", node.name, Settings.getJarexpTmpDir());
 
 					String content = ((RTextScrollPane) this.content).getTextArea().getText();
 					if (name.toLowerCase().endsWith(".mf")) {
