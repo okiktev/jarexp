@@ -162,20 +162,20 @@ bug jar tree selection stuck if quickly click on tree leaves ... done ..........
 imp search javadoc ... done .......................................................................30Oct2022
 imp libs to temp ... done .........................................................................08Nov2022
 imp settings to temp ... done .....................................................................09Nov2022
+bug CCE if switching decompiler when selected class item in the tree ... done .....................09Nov2022
 
 
 bug default methods are not visible in jar tree
-bug stack trace error 
 bug refresh content tab after switching decompilers
 imp update jdcore
-imp maven tool
+imp decompile all classes
 imp cmd open class in jar
 imp command console
 
+imp maven tool
 imp kotlin lib support
 imp graph dependencies
 imp linux easy download
-imp decompile all classes
 imp mark edited tab somehow
 bug saving files when digest specified
 imp add discard button to save dialog confirmation

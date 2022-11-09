@@ -42,6 +42,7 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
@@ -460,7 +461,11 @@ public class Content extends JPanel {
 			return;
 		}
 		JarTreeClickSelection.setNodes(null);
-		JarNode node = (JarNode) jarTree.getLastSelectedPathComponent();
+		Object obj = jarTree.getLastSelectedPathComponent();
+		while (obj instanceof ClassItemNode) {
+			obj = ((DefaultMutableTreeNode)obj).getParent();
+		}
+		JarNode node = (JarNode) obj;
 		if (node == null) {
 			return;
 		}
