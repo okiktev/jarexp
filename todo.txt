@@ -161,8 +161,9 @@ bug rendering leaf when clicking on folding cross ... done .....................
 bug jar tree selection stuck if quickly click on tree leaves ... done .............................30Oct2022
 imp search javadoc ... done .......................................................................30Oct2022
 imp libs to temp ... done .........................................................................08Nov2022
+imp settings to temp ... done .....................................................................09Nov2022
 
-imp settings to temp
+
 bug default methods are not visible in jar tree
 bug stack trace error 
 bug refresh content tab after switching decompilers

@@ -27,10 +27,11 @@ public class Settings {
 
 	private static final Logger log = Logger.getLogger(Settings.class.getName());
 
-	private static final String SETTINGS_FILE_NAME = "settings.properties";
 	private static final long AUTO_SAVE_DELAY = 30000L;
+	private static File settingsFile;
 	static {
 		try {
+			final File settingsFile = getSettingsFile();
 			new Timer("SettingsDumper").scheduleAtFixedRate(new TimerTask() {
 				public void run() {
 					Properties settings = new Properties();
@@ -44,17 +45,17 @@ public class Settings {
 					settings.put("donate.url", ActionHistory.getDonateUrl());
 					settings.put("last.update.check", ActionHistory.getLastUpdateCheck());
 					try {
-						OutputStream output = new FileOutputStream(new File(SETTINGS_FILE_NAME));
+						OutputStream output = new FileOutputStream(settingsFile);
 						settings.store(output, null);
 						output.close();
 					} catch (Exception e) {
-						log.log(Level.SEVERE, "Unable to save settings into " + SETTINGS_FILE_NAME, e);
+						log.log(Level.SEVERE, "Unable to save settings into " + settingsFile, e);
 					}
 				}
 			}, AUTO_SAVE_DELAY, AUTO_SAVE_DELAY);
 
 			Properties settings = new Properties();
-			InputStream input = new FileInputStream(new File(SETTINGS_FILE_NAME));
+			InputStream input = new FileInputStream(settingsFile);
 			settings.load(input);
 			input.close();
 			String x = (String)settings.get("x");
@@ -66,7 +67,7 @@ public class Settings {
 			ActionHistory.loadDonateUrl((String)settings.get("donate.url"));
 			ActionHistory.loadLastUpdateCheck((String)settings.get("last.update.check"));
 		} catch (Exception e) {
-			log.log(Level.SEVERE, "Unable to init settings dumper from " + SETTINGS_FILE_NAME, e);
+			log.log(Level.SEVERE, "Unable to init settings dumper from " + settingsFile, e);
 		}
 	}
 
@@ -106,6 +107,13 @@ public class Settings {
 
 	private Settings() {
 
+	}
+
+	private static File getSettingsFile() {
+		if (settingsFile == null) {
+			settingsFile = new File(getAppDir(), "settings.properties");
+		}
+		return settingsFile;
 	}
 
 	public static Settings getInstance() {
