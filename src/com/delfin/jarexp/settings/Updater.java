@@ -1,7 +1,5 @@
 package com.delfin.jarexp.settings;
 
-import static com.delfin.jarexp.frame.LibraryManager.*;
-
 import java.awt.Desktop;
 import java.awt.Window;
 import java.awt.event.MouseEvent;
@@ -27,7 +25,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 
 import com.delfin.jarexp.exception.JarexpException;
-import com.delfin.jarexp.frame.LibraryManager.DependencyType;
 import com.delfin.jarexp.utils.FileUtils;
 
 public class Updater {
@@ -54,7 +51,6 @@ public class Updater {
 				public void run() {
 					checkDonate(donate);
 					checkUpdate(update);
-					checkLibs();
 					checkTemp();
 				}
 
@@ -85,11 +81,6 @@ public class Updater {
 					})) {
 						FileUtils.delete(f);
 					};
-				}
-
-				private void checkLibs() {
-					isNeedToDownload(getDependency(DependencyType.FERNFLOWER));
-					isNeedToDownload(getDependency(DependencyType.PROCYON));
 				}
 
 				private void checkUpdate(JMenu update) {

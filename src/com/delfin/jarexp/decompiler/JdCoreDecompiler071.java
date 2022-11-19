@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import com.delfin.jarexp.decompiler.IDecompiler.Result;
 import com.delfin.jarexp.exception.JarexpDecompilerException;
 import com.delfin.jarexp.utils.FileUtils;
 
@@ -30,9 +31,9 @@ import jd.core.process.deserializer.ClassFileDeserializer;
 import jd.core.process.layouter.ClassFileLayouter;
 import jd.core.process.writer.ClassFileWriter;
 
-public class JdCoreDecompiler implements IDecompiler {
+public class JdCoreDecompiler071 implements IDecompiler {
 
-	private static final Logger log = Logger.getLogger(JdCoreDecompiler.class.getCanonicalName());
+	private static final Logger log = Logger.getLogger(JdCoreDecompiler071.class.getCanonicalName());
 
 	@Override
 	public Result decompile(File archive, String path) {

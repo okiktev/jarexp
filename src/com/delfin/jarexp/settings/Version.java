@@ -39,15 +39,15 @@ public class Version {
 	public static final int JAVA_MAJOR_VER;
 	static {
 		String javaVersion = System.getProperty("java.version", "1.8.0_162");
-		int i, j;
 		if (javaVersion.startsWith("1.")) {
-			i = 2;
-			j = javaVersion.lastIndexOf('.');
+			int j = javaVersion.lastIndexOf('.');
+			JAVA_MAJOR_VER = Integer.parseInt(javaVersion.substring(2, j));
+		} else if (javaVersion.indexOf('.') == -1) {
+			JAVA_MAJOR_VER = Integer.parseInt(javaVersion);
 		} else {
-			i = 0;
-			j = javaVersion.indexOf('.');
+			int j = javaVersion.indexOf('.');
+			JAVA_MAJOR_VER = Integer.parseInt(javaVersion.substring(0, j));
 		}
-		JAVA_MAJOR_VER = Integer.parseInt(javaVersion.substring(i, j));
 	}
 
 	static String get() {

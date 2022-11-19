@@ -26,6 +26,7 @@ import javax.swing.plaf.basic.BasicProgressBarUI;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.settings.Settings;
 
 class StatusBar extends JStatusBar {
 
@@ -54,7 +55,7 @@ class StatusBar extends JStatusBar {
 		JPanel panel = new JPanel(new GridLayout(1, 1));
 		panel.add(progressBar);
 
-		setDecompiler(DecompilerType.JDCORE);
+		setDecompiler(Settings.getDecompilerType());
 
 		add(new StatusBarItem("children", children, "20"));
 		add(new StatusBarItem("comp_java", compJava, "20"));

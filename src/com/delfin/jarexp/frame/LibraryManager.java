@@ -12,9 +12,11 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Md5Checksum;
 
@@ -23,7 +25,7 @@ public class LibraryManager {
 	private static final Logger log = Logger.getLogger(LibraryManager.class.getCanonicalName());
 
 	public enum DependencyType {
-		RSTA, FERNFLOWER, JD071, PROCYON
+		RSTA, FERNFLOWER, JD071, JD113, PROCYON
 	}
 
 	private static final String LIBRARIES_STORE_URL = 
@@ -56,6 +58,7 @@ public class LibraryManager {
 	private static Map<String, Dependency> dependencies;
 
 	public static void prepareLibraries(final StatusBar statusBar) {
+		initDefaultDecompiler();
 		if (isDisabled) {
 			return;
 		}
@@ -71,9 +74,9 @@ public class LibraryManager {
 					check(libDir, rstaJarDep, statusBar);
 					FileUtils.addJarToClasspath(new File(libDir, rstaJarDep.fileName));
 
-					Dependency jdecJarDep = getDependency(DependencyType.JD071);
-					check(libDir, jdecJarDep, statusBar);
-					FileUtils.addJarToClasspath(new File(libDir, jdecJarDep.fileName));
+					Dependency decompilerDep = getDefaultDecompilerDepdendency(statusBar);
+					check(libDir, decompilerDep, statusBar);
+					FileUtils.addJarToClasspath(new File(libDir, decompilerDep.fileName));
 
 					isDone = true;
 				} catch (RuntimeException e) {
@@ -84,6 +87,22 @@ public class LibraryManager {
 				}
 			}
 
+			private Dependency getDefaultDecompilerDepdendency(StatusBar statusBar) {
+				int ver = Version.JAVA_MAJOR_VER;
+				Dependency res;
+				if (ver == 6) {
+					res = getDependency(DependencyType.JD071);
+				} else if (ver == 7) {
+					res = getDependency(DependencyType.PROCYON);
+				} else if (ver >= 8) {
+					res = getDependency(DependencyType.FERNFLOWER);
+				} else {
+					throw new JarexpException("Unable to select decompiler for java with version " + ver);
+				}
+				statusBar.setDecompiler(Settings.getDecompilerType());
+				return res;
+			}
+
 			private void check(File libDir, Dependency jarDep, StatusBar statusBar) {
 				if (isNeedToDownload(jarDep)) {
 					statusBar.enableProgress("Downloading");
@@ -91,23 +110,36 @@ public class LibraryManager {
 							, new File(libDir, jarDep.fileName));
 				}
 			}
+
+			private boolean isNeedToDownload(Dependency dep) {
+				if (isDisabled) {
+					return false;
+				}
+				File jar = new File(getLibDir(), dep.fileName);
+				if (!jar.exists()) {
+					return true;
+				}
+				if (dep.md5.equals(Md5Checksum.get(jar))) {
+					return false;
+				}
+				log.info("Removing previous version of lib " + dep.fileName);
+				jar.delete();
+				return true;
+			}
 		});
 	}
 
-	public static boolean isNeedToDownload(Dependency dep) {
-		if (isDisabled) {
-			return false;
+	private static void initDefaultDecompiler() {
+		int ver = Version.JAVA_MAJOR_VER;
+		if (ver == 6) {
+			Settings.setDecompilerType(DecompilerType.JDCORE);
+		} else if (ver == 7) {
+			Settings.setDecompilerType(DecompilerType.PROCYON);
+		} else if (ver >= 8) {
+			Settings.setDecompilerType(DecompilerType.FERNFLOWER);
+		} else {
+			throw new JarexpException("Unable to select decompiler for java with version " + ver);
 		}
-		File jar = new File(getLibDir(), dep.fileName);
-		if (!jar.exists()) {
-			return true;
-		}
-		if (dep.md5.equals(Md5Checksum.get(jar))) {
-			return false;
-		}
-		log.info("Removing previous version of lib " + dep.fileName);
-		jar.delete();
-		return true;
 	}
 
 	public static File getLibDir() {
@@ -122,25 +154,17 @@ public class LibraryManager {
 		if (isDisabled) {
 			return;
 		}
-		String fileName;
-		switch (type) {
-		case PROCYON:
-			fileName = getDependency(DependencyType.PROCYON).fileName;
-			break;
-		case FERNFLOWER:
-			fileName = getDependency(DependencyType.FERNFLOWER).fileName;
-			break;
-		default:
-			throw new IOException("Unable to identify type of decompiler " + type);
-		}
+		String fileName = getDependency(type).fileName;
 		try {
 			File lib = getLibDir();
 			if (!lib.exists()) {
 				lib.mkdirs();
 			}
 			File jar = new File(lib, fileName);
-			if (!jar.exists()) {
+			if (!jar.exists() || isNotUptodated(jar, type)) {
 				FileUtils.download(LIBRARIES_STORE_URL + fileName, jar);
+			}
+			if (Decompiler.isNotLoaded(type)) {				
 				FileUtils.addJarToClasspath(jar);
 			}
 		} catch (Exception e) {
@@ -148,16 +172,26 @@ public class LibraryManager {
 		}
 	}
 
-	public static Dependency getDependency(DecompilerType type) {
+	private static boolean isNotUptodated(File jar, DecompilerType type) {
+		Dependency dep = getDependency(type);
+		if (dep.md5.equals(Md5Checksum.get(jar))) {
+			return false;
+		}
+		log.info("Removing previous version of lib " + dep.fileName);
+		jar.delete();
+		return true;
+	}
+
+	private static Dependency getDependency(DecompilerType type) {
 		switch (type) {
+		case PROCYON:
+			return getDependency(DependencyType.PROCYON);
 		case FERNFLOWER:
 			return getDependency(DependencyType.FERNFLOWER);
 		case JDCORE:
-			return getDependency(DependencyType.JD071);
-		case PROCYON:
-			return getDependency(DependencyType.PROCYON);
+			return getDependency(getJavaDecompilerType());
 		default:
-			throw new JarexpException("Unknown decompiler type " + type);
+			throw new JarexpException("Unable to identify type of decompiler " + type);
 		}
 	}
 
@@ -172,11 +206,17 @@ public class LibraryManager {
 			return dependencies.get("fernflower");
 		case JD071:
 			return dependencies.get("java.decompiler.071");
+		case JD113:
+			return dependencies.get("java.decompiler.113");
 		case PROCYON:
 			return dependencies.get("procyon");
 		default:
 			throw new JarexpException("Unknown dependency type " + type);
 		}
+	}
+
+	private static DependencyType getJavaDecompilerType() {
+		return Version.JAVA_MAJOR_VER >= 8 ? DependencyType.JD113 : DependencyType.JD071;
 	}
 
 	private static synchronized void loadDependencies() {

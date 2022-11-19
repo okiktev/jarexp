@@ -37,6 +37,7 @@
 
 		<checksum file="${basedir}/lib/${dependency1jarName}" property="MD5.lib.rsta"/>
 		<checksum file="${basedir}/lib/${dependency2jarName}" property="MD5.lib.jdecompiler071"/>
+		<checksum file="${basedir}/lib/${dependency3jarName}" property="MD5.lib.jdecompiler113"/>
 		<checksum file="${basedir}/lib/${dependency4jarName}" property="MD5.lib.procyon"/>
 		<checksum file="${basedir}/lib/${dependency5jarName}" property="MD5.lib.fernflower"/>
 		<copy todir="${build.dir}/src">
@@ -95,6 +96,8 @@
 				<filter token="RSTA_FILE_MD5" value="${MD5.lib.rsta}" />
 				<filter token="JDECOMPILER071_FILE_NAME" value="${dependency2jarName}" />
 				<filter token="JDECOMPILER071_FILE_MD5" value="${MD5.lib.jdecompiler071}" />
+				<filter token="JDECOMPILER113_FILE_NAME" value="${dependency3jarName}" />
+				<filter token="JDECOMPILER113_FILE_MD5" value="${MD5.lib.jdecompiler113}" />
 				<filter token="PROCYON_FILE_NAME" value="${dependency4jarName}" />
 				<filter token="PROCYON_FILE_MD5" value="${MD5.lib.procyon}" />
 				<filter token="FERNFLOWER_FILE_NAME" value="${dependency5jarName}" />
@@ -382,6 +385,7 @@
 			<fileset dir="${basedir}/lib">
 				<include name="${dependency1jarName}" />
 				<include name="${dependency2jarName}" />
+				<include name="${dependency3jarName}" />
 				<include name="${dependency4jarName}" />
 				<include name="${dependency5jarName}" />
 			</fileset>

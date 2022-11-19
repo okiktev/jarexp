@@ -163,11 +163,15 @@ imp search javadoc ... done ....................................................
 imp libs to temp ... done .........................................................................08Nov2022
 imp settings to temp ... done .....................................................................09Nov2022
 bug CCE if switching decompiler when selected class item in the tree ... done .....................09Nov2022
+imp update jdcore ... done ........................................................................19Nov2022
+bug default decompiler selection in menu ... done .................................................19Nov2022
 
 
+bug procyon with java19
+bug able to select other decompiler for java6 when decompiling error 
 bug default methods are not visible in jar tree
-bug refresh content tab after switching decompilers
-imp update jdcore
+bug sometimes temp folders are not being deleted (java 7,8)
+
 imp decompile all classes
 imp cmd open class in jar
 imp command console

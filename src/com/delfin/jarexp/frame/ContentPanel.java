@@ -134,7 +134,7 @@ class ContentPanel extends JPanel {
 			this.fullPath = statusBar.getPath();
 			this.filesCount = statusBar.getChildren();
 			this.compiledVersion = statusBar.getCompiledVersion();
-			this.decompilerType = statusBar.getDecompilerType();
+			this.decompilerType = Settings.getDecompilerType();
 			this.name = node.name;
 			this.node = node;
 			this.isDirectory = isDirectory;

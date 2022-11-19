@@ -261,6 +261,11 @@ public class Content extends JPanel {
 			}
 		});
 
+		// Create and set up the content pane.
+		Content content = new Content();
+		LibraryManager.prepareLibraries(statusBar);
+		((JComponent) content).setBorder(Settings.EMPTY_BORDER);
+
 		frame.setJMenuBar(new Menu(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -358,8 +363,21 @@ public class Content extends JPanel {
 		, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				changeDecompiler(DecompilerType.JDCORE);
-				statusBar.setDecompiler(DecompilerType.JDCORE);
+				new Executor() {
+					@Override
+					protected void perform() {
+						try {
+							statusBar.enableProgress("Downloading...");
+							LibraryManager.prepareBinariesFor(DecompilerType.JDCORE);
+							changeDecompiler(DecompilerType.JDCORE);
+							statusBar.setDecompiler(DecompilerType.JDCORE);
+						} catch (Exception ex) {
+							Msg.showException("Unable to toggle decompiler", ex);
+						} finally {
+							statusBar.disableProgress();
+						}
+					}
+				}.execute();
 			}
 		}
 		, new ActionListener() {
@@ -421,11 +439,6 @@ public class Content extends JPanel {
 			}
 		}));
 
-		// Create and set up the content pane.
-		Content content = new Content();
-		LibraryManager.prepareLibraries(statusBar);
-		((JComponent) content).setBorder(Settings.EMPTY_BORDER);
-		// newContentPane.setOpaque(true); // content panes must be opaque
 		frame.setContentPane(content);
 		frame.setDropTarget(new DropTarget() {
 
