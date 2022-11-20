@@ -74,7 +74,7 @@ public class LibraryManager {
 					check(libDir, rstaJarDep, statusBar);
 					FileUtils.addJarToClasspath(new File(libDir, rstaJarDep.fileName));
 
-					Dependency decompilerDep = getDefaultDecompilerDepdendency(statusBar);
+					Dependency decompilerDep = getDefaultDecompilerDependency(statusBar);
 					check(libDir, decompilerDep, statusBar);
 					FileUtils.addJarToClasspath(new File(libDir, decompilerDep.fileName));
 
@@ -87,7 +87,7 @@ public class LibraryManager {
 				}
 			}
 
-			private Dependency getDefaultDecompilerDepdendency(StatusBar statusBar) {
+			private Dependency getDefaultDecompilerDependency(StatusBar statusBar) {
 				int ver = Version.JAVA_MAJOR_VER;
 				Dependency res;
 				if (ver == 6) {
@@ -164,7 +164,7 @@ public class LibraryManager {
 			if (!jar.exists() || isNotUptodated(jar, type)) {
 				FileUtils.download(LIBRARIES_STORE_URL + fileName, jar);
 			}
-			if (Decompiler.isNotLoaded(type)) {				
+			if (Decompiler.isNotLoaded(type)) {
 				FileUtils.addJarToClasspath(jar);
 			}
 		} catch (Exception e) {
