@@ -187,6 +187,8 @@
 		<delete dir="${jar.dir}/META-INF" />
 		<unjar src="${dependency2}" dest="${jar.dir}" />
 		<delete dir="${jar.dir}/META-INF" />
+		<unjar src="${dependency3}" dest="${jar.dir}" />
+		<delete dir="${jar.dir}/META-INF" />
 		<unjar src="${dependency4}" dest="${jar.dir}" />
 		<delete dir="${jar.dir}/META-INF" />
 		<unjar src="${dependency5}" dest="${jar.dir}" />

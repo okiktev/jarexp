@@ -60,6 +60,7 @@ public class LibraryManager {
 	public static void prepareLibraries(final StatusBar statusBar) {
 		initDefaultDecompiler();
 		if (isDisabled) {
+			statusBar.setDecompiler(Settings.getDecompilerType());
 			return;
 		}
 		executor.execute(new Runnable() {
@@ -87,22 +88,6 @@ public class LibraryManager {
 				}
 			}
 
-			private Dependency getDefaultDecompilerDependency(StatusBar statusBar) {
-				int ver = Version.JAVA_MAJOR_VER;
-				Dependency res;
-				if (ver == 6) {
-					res = getDependency(DependencyType.JD071);
-				} else if (ver == 7) {
-					res = getDependency(DependencyType.PROCYON);
-				} else if (ver >= 8) {
-					res = getDependency(DependencyType.FERNFLOWER);
-				} else {
-					throw new JarexpException("Unable to select decompiler for java with version " + ver);
-				}
-				statusBar.setDecompiler(Settings.getDecompilerType());
-				return res;
-			}
-
 			private void check(File libDir, Dependency jarDep, StatusBar statusBar) {
 				if (isNeedToDownload(jarDep)) {
 					statusBar.enableProgress("Downloading");
@@ -127,6 +112,22 @@ public class LibraryManager {
 				return true;
 			}
 		});
+	}
+
+	private static Dependency getDefaultDecompilerDependency(StatusBar statusBar) {
+		int ver = Version.JAVA_MAJOR_VER;
+		Dependency res;
+		if (ver == 6) {
+			res = getDependency(DependencyType.JD071);
+		} else if (ver == 7) {
+			res = getDependency(DependencyType.PROCYON);
+		} else if (ver >= 8) {
+			res = getDependency(DependencyType.FERNFLOWER);
+		} else {
+			throw new JarexpException("Unable to select decompiler for java with version " + ver);
+		}
+		statusBar.setDecompiler(Settings.getDecompilerType());
+		return res;
 	}
 
 	private static void initDefaultDecompiler() {
