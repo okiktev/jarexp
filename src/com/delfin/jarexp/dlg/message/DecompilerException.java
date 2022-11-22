@@ -6,6 +6,8 @@ import static java.awt.GridBagConstraints.NONE;
 import static java.awt.GridBagConstraints.SOUTHEAST;
 import static java.awt.GridBagConstraints.WEST;
 
+import static com.delfin.jarexp.settings.Version.JAVA_MAJOR_VER;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -54,7 +56,7 @@ class DecompilerException extends Exception {
 		Msg.centerDlg(this, width, height);
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		
+
 		Insets zeroInsets = new Insets(0, 0, 0, 0);
 
 		JTextArea area = new JTextArea(toString(e));
@@ -71,6 +73,12 @@ class DecompilerException extends Exception {
 		final JIconRadioButton rbJdCore = new JIconRadioButton(res.getJdCoreIcon(),"JD-Core", group);
 		final JIconRadioButton rbProcyon = new JIconRadioButton(res.getProcyonIcon(),"Procyon", group);
 		final JIconRadioButton rbFernflower = new JIconRadioButton(res.getFernflowerIcon(),"Fernflower", group);
+
+		if (JAVA_MAJOR_VER < 8) {
+			rbFernflower.setActive(false);
+			rbFernflower.setEnabled(false);
+		}
+		
 		switch (Settings.getDecompilerType()) {
 		case PROCYON:
 			rbProcyon.setEnabled(false);
@@ -93,14 +101,16 @@ class DecompilerException extends Exception {
 		buttonPanel.add(viewButton);
 
 		JLabel lbErrorMsg = new JLabel("<html>" + errMsg + "</html>");
-		JLabel lbOptional = new JLabel("Also you can try one of the other decompilers:");
+		JLabel lbOptional = new JLabel(JAVA_MAJOR_VER >= 7 
+				? "Also you can try one of the other decompilers:"
+				: "You can use higher Java version to be able to select another decompiler.");
 
 		setLayout(new GridBagLayout());
 
 		add(getIconLabel(), new GridBagConstraints(0, 0, 1, 1, 0.01, 0, WEST, NONE, zeroInsets, 0, 0));
 		add(lbErrorMsg, 	new GridBagConstraints(1, 0, 1, 1, 1, 0, WEST, HORIZONTAL, zeroInsets, 0, 0));
 
-		add(lbOptional, 	new GridBagConstraints(0, 1, 2, 1, 0, 0, WEST, HORIZONTAL, new Insets(-10, 100, 0, 0), 0, 0));
+		add(lbOptional, 	new GridBagConstraints(0, 1, 2, 1, 0, 0, WEST, HORIZONTAL, new Insets(-10, JAVA_MAJOR_VER < 7 ? 50 : 100, 0, 0), 0, 0));
 
 		add(rbJdCore,       new GridBagConstraints(0, 2, 2, 1, 0, 0, WEST, NONE, new Insets(0, 100, 0, 0), 0, 0));
 
@@ -113,6 +123,12 @@ class DecompilerException extends Exception {
 		add(buttonPanel,    new GridBagConstraints(0, 6, 2, 1, 0, 0.01, SOUTHEAST, NONE, zeroInsets, 0, 0));
 
 		pane.setVisible(false);
+		
+		if (JAVA_MAJOR_VER < 7) {
+			remove(rbJdCore);
+			remove(rbProcyon);
+			remove(rbFernflower);
+		}
 
 		okButton.addActionListener(new ActionListener() {
 			@Override
@@ -164,6 +180,7 @@ class DecompilerException extends Exception {
 		private JLabel image;
 		private JLabel text;
 		private boolean isEnabled = true;
+		private boolean isActive = true;
 
 		public JIconRadioButton(Icon icon, String text, ButtonGroup group) {
 		    add(radio);
@@ -192,16 +209,23 @@ class DecompilerException extends Exception {
 		    group.add(radio);
 		}
 
-		public boolean isSelected() {
-			return radio.isSelected();
+		void setActive(boolean isActive) {
+			this.isActive = isActive;
 		}
 
-		public void setSelected(boolean b) {
-			radio.setSelected(true);
+		boolean isSelected() {
+			return isActive ? radio.isSelected() : false;
+		}
+
+		void setSelected(boolean isSelected) {
+			radio.setSelected(isActive ? isSelected : false);
 		}
 
 		@Override
 		public void setEnabled(boolean isEnabled) {
+			if (!isActive) {
+				isEnabled = false;
+			}
 			this.isEnabled = isEnabled;
 			if (!isEnabled) {
 				radio.setSelected(false);
