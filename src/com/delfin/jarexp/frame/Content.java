@@ -241,22 +241,24 @@ public class Content extends JPanel {
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
-				final boolean[] isDeleted = { false };
+				final File tmpDir = Settings.getJarexpTmpDir();
 				new Executor() {
 					@Override
 					protected void perform() {
 						statusBar.enableProgress("Exiting...");
-						FileUtils.delete(Settings.getJarexpTmpDir());
-						isDeleted[0] = true;
+						FileUtils.delete(tmpDir);
 					}
-
 					@Override
 					protected void doFinally() {
 						statusBar.disableProgress();
 					}
 				}.execute();
-				while (!isDeleted[0]) {
+				long s = System.currentTimeMillis();
+				while (tmpDir.exists() && System.currentTimeMillis() - s < 30000) {
 					Utils.sleep(100);
+				}
+				if (tmpDir.exists()) {
+					log.severe("Couldn't delete folder " + tmpDir.getAbsolutePath() + " during 30 sec.");
 				}
 			}
 		});
