@@ -94,7 +94,21 @@ public class Analyzer {
 					}
 				}
 				if (!(fs == ';' || fs == '{' || fs == 't')) {
-					continue;
+					if (fs != 'd') {
+						continue;
+					}
+					String def = "";
+					for (int i = 0; i < tail.length(); ++i) {
+						char ch = tail.charAt(i);
+						if (ch == ' ') {
+							break;
+						} else {
+							def += ch;
+						}
+					}
+					if (!"default".equals(def)) {						
+						continue;
+					}
 				}
 			}
 

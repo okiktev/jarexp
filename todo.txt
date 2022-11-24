@@ -169,9 +169,8 @@ bug procyon with java19 ... done ...............................................
 imp updated fernflower ... done ...................................................................22Nov2022
 bug able to select other decompiler for java6 when decompiling error ... done .....................23Nov2022
 bug sometimes temp folders are not being deleted ... done .........................................24Nov2022
+bug default methods are not visible in jar tree ... done ..........................................24Nov2022
 
-
-bug default methods are not visible in jar tree
 
 imp decompile all classes
 imp cmd open class in jar

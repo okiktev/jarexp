@@ -262,5 +262,42 @@ public class AnalyzerInterfaceTest {
 		
 	}
 
+	@Test
+	public void testDefaultMethods() {
+		String code = "public @interface DynamicParameter\r\n" + 
+				"{\r\n" + 
+				"  String[] names() default {};\r\n" + 
+				"  \r\n" + 
+				"  boolean required() default false;\r\n" + 
+				"  \r\n" + 
+				"  String description() default \"\";\r\n" + 
+				"  \r\n" + 
+				"  String descriptionKey() default \"\";\r\n" + 
+				"  \r\n" + 
+				"  boolean hidden() default false;\r\n" + 
+				"  \r\n" + 
+				"  Class<? extends IParameterValidator>[] validateWith() default {NoValidator.class};\r\n" + 
+				"  \r\n" + 
+				"  String assignment() default \"=\";\r\n" + 
+				"  \r\n" + 
+				"  Class<? extends IValueValidator>[] validateValueWith() default {NoValueValidator.class};\r\n" + 
+				"  \r\n" + 
+				"  int order() default -1;\r\n" + 
+				"}";
+		List<IJavaItem> res = Analyzer.analyze(code);
+		assertEquals(1, res.size());
+		List<IJavaItem> methods = res.get(0).getChildren();
+		assertEquals("names() : String[]", methods.get(0).getName());
+		assertEquals("required() : boolean", methods.get(1).getName());
+		assertEquals("description() : String", methods.get(2).getName());
+		assertEquals("descriptionKey() : String", methods.get(3).getName());
+		assertEquals("hidden() : boolean", methods.get(4).getName());
+		assertEquals("validateWith() : Class<? extends IParameterValidator>[]", methods.get(5).getName());
+		assertEquals("assignment() : String", methods.get(6).getName());
+		assertEquals("validateValueWith() : Class<? extends IValueValidator>[]", methods.get(7).getName());
+		assertEquals("order() : int", methods.get(8).getName());
+		
+	}
+
 }
 
