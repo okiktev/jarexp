@@ -405,12 +405,17 @@ public abstract class SearchDlg extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				switch (cbDecompiler.getSelectedIndex()) {
 				case 0:
-					decompiler = Decompiler.get(DecompilerType.JDCORE); 
+					try {
+						LibraryManager.prepareBinariesFor(DecompilerType.JDCORE);
+						decompiler = Decompiler.get(DecompilerType.JDCORE);
+					} catch (Exception ex) {
+						Msg.showException("Unable to toggle decompiler", ex);
+					}
 				break;
 				case 1:
 					try {
 						LibraryManager.prepareBinariesFor(DecompilerType.PROCYON);
-						decompiler = Decompiler.get(DecompilerType.PROCYON); 
+						decompiler = Decompiler.get(DecompilerType.PROCYON);
 					} catch (Exception ex) {
 						Msg.showException("Unable to toggle decompiler", ex);
 					}
@@ -418,7 +423,7 @@ public abstract class SearchDlg extends JFrame {
 				case 2:
 					try {
 						LibraryManager.prepareBinariesFor(DecompilerType.FERNFLOWER);
-						decompiler = Decompiler.get(DecompilerType.FERNFLOWER); 
+						decompiler = Decompiler.get(DecompilerType.FERNFLOWER);
 					} catch (Exception ex) {
 						Msg.showException("Unable to toggle decompiler", ex);
 					}
