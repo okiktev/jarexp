@@ -302,9 +302,7 @@ class JarTree extends JTree {
 
 	boolean isNotDraw;
 
-	JarTree(TreeExpansionListener treeExpansionListener, StatusBar statusBar, JFrame frame) {
-		addTreeExpansionListener(treeExpansionListener);
-
+	JarTree(StatusBar statusBar, JFrame frame) {
 		this.statusBar = statusBar;
 		this.frame = frame;
 

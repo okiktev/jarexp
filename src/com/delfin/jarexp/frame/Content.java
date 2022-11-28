@@ -497,7 +497,8 @@ public class Content extends JPanel {
 			protected void perform() {
 				statusBar.enableProgress("Loading...");
 
-				jarTree = new JarTree(treeExpansionListener, statusBar, frame);
+				jarTree = new JarTree(statusBar, frame);
+				jarTree.addTreeExpansionListener(treeExpansionListener);
 				jarTree.addTreeSelectionListener(jarTreeSelectionListener = new JarTreeSelectionListener(jarTree, statusBar, frame));
 				jarTree.addTreeWillExpandListener(new JarTreeWillExpandListener(jarTreeSelectionListener, jarTree));
 				jarTree.load(f);

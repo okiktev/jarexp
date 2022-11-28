@@ -172,6 +172,9 @@ bug sometimes temp folders are not being deleted ... done ......................
 bug default methods are not visible in jar tree ... done ..........................................24Nov2022
 
 
+bug some issue with adding file to jar (another jar) by d&d
+bug icon has been created right in folder where jar located
+
 imp decompile all classes
 imp cmd open class in jar
 imp command console

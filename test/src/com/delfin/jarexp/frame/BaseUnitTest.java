@@ -166,7 +166,7 @@ public abstract class BaseUnitTest {
 	}
 
 	private List<JarNode> loadBefore() throws IOException {
-		jarTree = new JarTree(null, null, null);
+		jarTree = new JarTree(null, null);
 		initListener();
 		// copy file into temp
 		test = File.createTempFile("test", "tmp.ear", tmp);
