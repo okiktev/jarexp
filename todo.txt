@@ -173,11 +173,10 @@ bug default methods are not visible in jar tree ... done .......................
 bug icon has been created right in folder where jar located ... done ..............................28Nov2022
 
 
-bug some issue with adding file to jar (another jar) by d&d
-
 imp decompile all classes
 imp cmd open class in jar
 imp command console
+imp digest protect for jarexp
 
 imp byte code decompiling
 imp maven tool
