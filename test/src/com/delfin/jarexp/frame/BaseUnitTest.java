@@ -192,7 +192,7 @@ public abstract class BaseUnitTest {
 	}
 
 	protected List<JarNode> loadAfter() throws IOException {
-		JarTree jarTree = new JarTree(null, null, null);
+		JarTree jarTree = new JarTree(null, null);
 		jarTree.load(test);
 		jarTree.update(jarTree.getRoot());
 		return getContent(jarTree);
