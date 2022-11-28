@@ -265,15 +265,16 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 								}
 							}
 						} else if (lowPath.endsWith(".ico")) {
-							file = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), file);
 							try {
+								File tmp = File.createTempFile("jarexp", "ico", Settings.getJarexpTmpDir());
+								tmp = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), tmp);
 								JPanel pnl = new JPanel();
-								for (BufferedImage icon : Ico.read(file)) {
+								for (BufferedImage icon : Ico.read(tmp)) {
 									pnl.add(new ImgPanel(icon));
 								}
 								contentView.addContent(new JScrollPane(pnl), node, statusBar);
 							} catch (IOException e) {
-								throw new JarexpException("Couldn't read file " + file + " as ico", e);
+								throw new JarexpException("Unable to render ico " + node.getFullPath(), e);
 							}
 						} else {
 							if (!file.isDirectory()) {
