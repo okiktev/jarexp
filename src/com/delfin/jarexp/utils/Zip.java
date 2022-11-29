@@ -467,4 +467,27 @@ public class Zip {
 	public static void reset() {
 		unpacked.clear();
 	}
+	
+	public static void stream(File archive, String path, StreamProcessor processor) {
+		ZipFile zip = null;
+		try {
+			zip = new ZipFile(archive);
+			ZipEntry entry = zip.getEntry(path);
+			processor.process(zip.getInputStream(entry));
+		} catch (IOException e) {
+			throw new JarexpException("Couldn't open stream to '" + path + "' from " + archive, e);
+		} finally {
+			if (zip != null) {
+				try {
+					zip.close();
+				} catch (IOException e) {
+					log.log(Level.WARNING, "Couldn't close zip file " + archive, e);
+				}
+			}
+		}
+	}
+
+	public interface StreamProcessor {
+		void process(InputStream stream) throws IOException;
+	}
 }

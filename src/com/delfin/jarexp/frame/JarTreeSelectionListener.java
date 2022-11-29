@@ -20,8 +20,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -29,7 +27,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -60,7 +57,6 @@ import com.delfin.jarexp.analyzer.IJavaItem.Position;
 import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.IDecompiler;
 import com.delfin.jarexp.decompiler.IDecompiler.Result;
-import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.Content.PreLoadAction;
 import com.delfin.jarexp.frame.ContentPanel.TabComponent;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
@@ -69,6 +65,9 @@ import com.delfin.jarexp.icon.Ico;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.TableHeaderCustomizer;
 import com.delfin.jarexp.utils.Zip;
+import com.delfin.jarexp.utils.Zip.StreamProcessor;
+
+import static javax.swing.JOptionPane.*;
 
 
 class JarTreeSelectionListener implements TreeSelectionListener {
@@ -240,42 +239,28 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 								log.log(Level.SEVERE, "Unable to grab class structure information for " + node.name, e);
 							}
 						} else if (isImgFile(lowPath)) {
-							ZipFile zip = null;
-							try {
-								zip = new ZipFile(node.getTempArchive());
-								ZipEntry entry = zip.getEntry(node.path);
-								InputStream stream = zip.getInputStream(entry);
-								Image image = ImageIO.read(stream);
-								if (image == null) {
-									JOptionPane.showConfirmDialog(frame, "Could not read image " + node.path, "Error",
-											JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-									return;
-								}
-
-								contentView.addContent(new JScrollPane(new ImgPanel(image)), node, statusBar);
-							} catch (IOException e) {
-								throw new JarexpException("Couldn't read file " + file + " as image", e);
-							} finally {
-								if (zip != null) {
-									try {
-										zip.close();
-									} catch (IOException e) {
-										log.log(Level.WARNING, "Couldn't close zip file " + file, e);
+							Zip.stream(node.getTempArchive(), node.path, new StreamProcessor() {
+								@Override
+								public void process(InputStream stream) throws IOException {
+									Image image = ImageIO.read(stream);
+									if (image == null) {
+										showConfirmDialog(frame, "Could not read image " + node.path, "Error", DEFAULT_OPTION, ERROR_MESSAGE);
+									} else {
+										contentView.addContent(new JScrollPane(new ImgPanel(image)), node, statusBar);
 									}
 								}
-							}
+							});
 						} else if (lowPath.endsWith(".ico")) {
-							try {
-								File tmp = File.createTempFile("jarexp", "ico", Settings.getJarexpTmpDir());
-								tmp = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), tmp);
-								JPanel pnl = new JPanel();
-								for (BufferedImage icon : Ico.read(tmp)) {
-									pnl.add(new ImgPanel(icon));
+							Zip.stream(node.getTempArchive(), node.path, new StreamProcessor() {
+								@Override
+								public void process(InputStream stream) throws IOException {
+									JPanel pnl = new JPanel();
+									for (BufferedImage icon : Ico.read(stream)) {
+										pnl.add(new ImgPanel(icon));
+									}
+									contentView.addContent(new JScrollPane(pnl), node, statusBar);
 								}
-								contentView.addContent(new JScrollPane(pnl), node, statusBar);
-							} catch (IOException e) {
-								throw new JarexpException("Unable to render ico " + node.getFullPath(), e);
-							}
+							});
 						} else {
 							if (!file.isDirectory()) {
 								statusBar.enableProgress("Reading...");

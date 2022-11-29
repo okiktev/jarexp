@@ -65,7 +65,7 @@ public class Ico {
 		}
 	}
 
-	private static List<BufferedImage> read(InputStream is) throws IOException {
+	public static List<BufferedImage> read(InputStream is) throws IOException {
 		return readExt(is);
 	}
 
