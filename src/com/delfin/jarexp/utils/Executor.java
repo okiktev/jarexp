@@ -1,4 +1,4 @@
-package com.delfin.jarexp.frame;
+package com.delfin.jarexp.utils;
 
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -11,13 +11,13 @@ import javax.swing.SwingWorker;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.exception.JarexpException;
 
-abstract class Executor {
+public abstract class Executor {
 
 	private static final Logger log = Logger.getLogger(Executor.class.getCanonicalName());
 
 	private SwingWorker<Void, Void> worker;
 
-	Executor() {
+	public Executor() {
 		worker = new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
@@ -60,7 +60,7 @@ abstract class Executor {
 		throw new JarexpException(msg, e);
 	}
 
-	void execute() {
+	public void execute() {
 		worker.execute();
 	}
 
