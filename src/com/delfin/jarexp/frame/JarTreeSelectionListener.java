@@ -196,7 +196,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 								table.setDefaultRenderer(Object.class, FOLDER_TABLE_CELL_RENDERER);
 								table.setDefaultRenderer(Number.class, FOLDER_TABLE_CELL_RENDERER);
 								table.addMouseListener(new FolderTableMouseAdapter(table, node));
-								
+
 								JComponent tablePane = new JScrollPane(table);
 								tablePane.setBorder(Settings.EMPTY_BORDER);
 
