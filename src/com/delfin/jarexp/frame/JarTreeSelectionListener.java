@@ -1,6 +1,5 @@
 package com.delfin.jarexp.frame;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Event;
 import java.awt.Image;
@@ -23,7 +22,6 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -35,12 +33,10 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -64,6 +60,7 @@ import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.icon.Ico;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.Executor;
+import com.delfin.jarexp.utils.FolderTableCellRenderer;
 import com.delfin.jarexp.utils.TableHeaderCustomizer;
 import com.delfin.jarexp.utils.Zip;
 import com.delfin.jarexp.utils.Zip.StreamProcessor;
@@ -478,35 +475,6 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 				popupMenu.show(table, e.getX(), e.getY());
 			}
-		}
-	}
-
-	private static class FolderTableCellRenderer extends DefaultTableCellRenderer {
-
-		private static final long serialVersionUID = -3854438137640730745L;
-
-		private static final Color HIGHLIGHTED = new Color(242, 241, 227);
-		private static final Border BORDER = BorderFactory.createLineBorder(Color.BLACK);
-
-		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-
-			Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-			if (isSelected) {
-				if (hasFocus) {
-					FolderTableCellRenderer renderer = (FolderTableCellRenderer) component;
-					renderer.setBorder(BORDER);
-					return renderer;
-				}
-				return component;
-			}
-			if (row % 2 == 1) {
-				component.setBackground(HIGHLIGHTED);
-			} else {
-				component.setBackground(Color.WHITE);
-			}
-			return component;
 		}
 	}
 
