@@ -44,7 +44,6 @@ import javax.swing.tree.TreePath;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import com.delfin.jarexp.analyzer.Analyzer;
@@ -61,6 +60,7 @@ import com.delfin.jarexp.icon.Ico;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.Executor;
 import com.delfin.jarexp.utils.FolderTableCellRenderer;
+import com.delfin.jarexp.utils.RstaUtils;
 import com.delfin.jarexp.utils.TableHeaderCustomizer;
 import com.delfin.jarexp.utils.Zip;
 import com.delfin.jarexp.utils.Zip.StreamProcessor;
@@ -87,16 +87,6 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 	}
 
 	private static final Logger log = Logger.getLogger(JarTreeDropTargetListener.class.getCanonicalName());
-
-	private static Theme theme;
-	static {
-		try {
-			theme = Theme.load(JarTreeSelectionListener.class
-					.getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/eclipse.xml"));
-		} catch (IOException e) {
-			log.log(Level.SEVERE, "Unable to apply eclipse theme", e);
-		}
-	}
 
 	private static final FolderTableCellRenderer FOLDER_TABLE_CELL_RENDERER = new FolderTableCellRenderer();
 
@@ -224,7 +214,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							textArea.setBorder(Settings.EMPTY_BORDER);
 							textArea.setCodeFoldingEnabled(true);
 							textArea.setEditable(false);
-							applyTheme(textArea);
+							RstaUtils.applyTheme(textArea);
 
 							RTextScrollPane textScrollPane = new RTextScrollPane(textArea);
 							textScrollPane.setBorder(Settings.EMPTY_BORDER);
@@ -263,12 +253,12 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							if (!file.isDirectory()) {
 								statusBar.enableProgress("Reading...");
 								RSyntaxTextArea textArea = new RSyntaxTextArea(Zip.unzip(node.getTempArchive(), node.path));
-								textArea.setSyntaxEditingStyle(getSyntax(lowPath));
+								textArea.setSyntaxEditingStyle(RstaUtils.getSyntax(lowPath));
 								textArea.setBorder(Settings.EMPTY_BORDER);
 								textArea.setCodeFoldingEnabled(true);
 								textArea.setEditable(true);
 								textArea.getDocument().addDocumentListener(new TextAreaDocumentListener(contentView));
-								applyTheme(textArea);
+								RstaUtils.applyTheme(textArea);
 								textArea.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK),
 										new AbstractAction() {
 											private static final long serialVersionUID = -3016470783134782605L;
@@ -319,44 +309,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				statusBar.disableProgress();
 			}
 
-			private String getSyntax(String lowPath) {
-				String syntax = SyntaxConstants.SYNTAX_STYLE_NONE;
-				if (lowPath.endsWith(".html") || lowPath.endsWith(".htm")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_HTML;
-				} else if (lowPath.endsWith(".xml") || lowPath.endsWith(".tld")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_XML;
-				} else if (lowPath.endsWith(".properties")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE;
-				} else if (lowPath.endsWith(".dtd")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_DTD;
-				} else if (lowPath.endsWith(".css")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_CSS;
-				} else if (lowPath.endsWith(".jsp")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_JSP;
-				} else if (lowPath.endsWith(".js")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT;
-				} else if (lowPath.endsWith(".bat") || lowPath.endsWith(".cmd")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH;
-				} else if (lowPath.endsWith(".sh")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL;
-				} else if (lowPath.endsWith(".java")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_JAVA;
-				} else if (lowPath.endsWith(".groovy")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_GROOVY;
-				} else if (lowPath.endsWith(".json")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_JSON_WITH_COMMENTS;
-				} else if (lowPath.endsWith(".yaml")) {
-					syntax = SyntaxConstants.SYNTAX_STYLE_YAML;
-				}
-				return syntax;
-			}
 		}.execute();
-	}
-
-	private static void applyTheme(RSyntaxTextArea textArea) {
-		if (theme != null) {
-			theme.apply(textArea);
-		}
 	}
 
 	private static boolean isImgFile(String fileName) {
