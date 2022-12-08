@@ -65,6 +65,7 @@ public class ActionHistory {
 
 	private static final Map<Key, Collection<Object>> HISTORY = new HashMap<Key, Collection<Object>>();
 
+	@SuppressWarnings("unchecked")
 	private static CommaSeparatedParcer<String> searchParcer = new CommaSeparatedParcer<String>(getList(Key.SEARCH)) {
 		@Override
 		String doConvert(String token) {
@@ -168,6 +169,7 @@ public class ActionHistory {
 		return (String) value.iterator().next();
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void addToHistory(Object value, Key key) {
 		Collection<Object> collection = getList(key);
 		for (Iterator<Object> it = collection.iterator();it.hasNext();) {
@@ -185,6 +187,7 @@ public class ActionHistory {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	private static Collection getList(Key key) {
 		Collection<Object> res = HISTORY.get(key);
 		if (res == null) {
@@ -200,6 +203,7 @@ public class ActionHistory {
 		return res;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static <T> List<T> getParameterizedAndRevertedList(Key key) {
 		Collection<Object> collection = getList(key);
 		int size = collection.size();
