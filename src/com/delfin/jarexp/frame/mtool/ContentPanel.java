@@ -4,7 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.JViewport;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -87,6 +89,18 @@ class ContentPanel extends JPanel {
 			return new TabComponent();
 		}
 		return tabbedPane.getSelectedTabComponent(tabbedPane.getToolTipTextAt(indx));
+	}
+
+	static abstract class PanelContainer {
+		PanelContainer(JFrame frame) {
+			for (Component comp : ((MtoolPanel) frame.getContentPane()).getComponents()) {
+				if (comp instanceof JSplitPane) {
+					receive((ContentPanel)((JSplitPane) comp).getRightComponent());
+					break;
+				}
+			}
+		}
+		protected abstract void receive(ContentPanel contentPanel);
 	}
 
 	class TabComponent {

@@ -48,15 +48,7 @@ class RepoTree extends JTree {
 
 	private DefaultTreeModel model;
 
-	//private boolean isDragging;
-
-	//private boolean isPacking;
-
-	//private boolean isSingleFileLoaded;
-
 	StatusBar statusBar;
-
-	//boolean isNotDraw;
 
 	RepoTree(StatusBar statusBar) {
 
@@ -151,35 +143,6 @@ class RepoTree extends JTree {
 	void update(TreeNode node) {
 		model.reload(node);
 	}
-
-//	RepoNode getRoot() {
-//		return root;
-//	}
-
-//	RepoNode getNodeByLocation(Point point) {
-//		TreePath path = getPathForLocation(point.x, point.y);
-//		Object comp = path.getLastPathComponent();
-//		if (comp instanceof RepoNode) {
-//			return path == null ? null : (RepoNode) path.getLastPathComponent();
-//		}
-//		return null;
-//	}
-
-//	boolean isDragging() {
-//		return isDragging;
-//	}
-//
-//	void setDragging(boolean isDragging) {
-//		this.isDragging = isDragging;
-//	}
-//
-//	void setPacking(boolean isPacking) {
-//		this.isPacking = isPacking;
-//	}
-//
-//	boolean isPacking() {
-//		return isPacking;
-//	}
 
 	void remove(RepoNode node) {
 		model.removeNodeFromParent(node);

@@ -1,4 +1,4 @@
-package com.delfin.jarexp.frame;
+package com.delfin.jarexp.utils;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -8,19 +8,19 @@ import javax.swing.JPanel;
 
 import com.delfin.jarexp.settings.Settings;
 
-class ImgPanel extends JPanel {
+public class ImgPanel extends JPanel {
 
 	private static final long serialVersionUID = -6388812194245596215L;
 
 	private Image image;
 
-	ImgPanel(Image image) {
+	public ImgPanel(Image image) {
 		setImage(image);
 		setPreferredSize(new Dimension(image.getWidth(null), image.getHeight(null)));
 		setBorder(Settings.EMPTY_BORDER);
 	}
 
-	void setImage(Image image) {
+	public void setImage(Image image) {
 		this.image = image;
 	}
 

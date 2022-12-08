@@ -177,8 +177,7 @@ public class Zip {
 		// BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
 		StringBuilder out = new StringBuilder();
 		byte[] bytesIn = new byte[4096];
-		int read = 0;
-		while ((read = zipIn.read(bytesIn)) != -1) {
+		while (zipIn.read(bytesIn) != -1) {
 			out.append(new String(bytesIn));
 			// bos.write(bytesIn, 0, read);
 		}

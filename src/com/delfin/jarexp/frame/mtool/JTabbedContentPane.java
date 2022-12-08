@@ -109,32 +109,15 @@ class JTabbedContentPane extends JTabbedPane {
 						if (suppressTreeRendering) {
 							suppressTreeRendering = false;
 						} else {
-							// JarTreeClickSelection.setNodes(null);
-//							repoTree.isNotDraw = true;
-//							repoTree.clearSelection();
-//							repoTree.isNotDraw = true;
-							TreePath treePath;
-//							if (selectedTabComponent.node.selectedChild != null) {
-//								treePath = new TreePath(selectedTabComponent.node.selectedChild.getPath());
-//							} else {
-								treePath = new TreePath(selectedTabComponent.node.getPath());
-//							}
+							TreePath treePath = new TreePath(selectedTabComponent.node.getPath());
 							repoTree.setSelectionPath(treePath);
 							if (suppressTreeCenterAlign) {
 								suppressTreeCenterAlign = false;
-							} else {								
-								//FilterPanel.doCenterAlign(jarTree, jarTree.getPathBounds(treePath));
 							}
 						}
 						repoTree.statusBar.empty();
 						repoTree.statusBar.setChildren(selectedTabComponent.filesCount);
-//						repoTree.statusBar.setCompiledVersion(selectedTabComponent.compiledVersion);
 						repoTree.statusBar.setPath(selectedTabComponent.fullPath);
-//						if (selectedTabComponent.name.toLowerCase().endsWith(".class")) {
-//							repoTree.statusBar.setDecompiler(selectedTabComponent.decompilerType);
-//						} else {
-//							repoTree.statusBar.setDecompiler(Settings.getDecompilerType());
-//						}
 						setSelectedIndex(indx);
 					}
 				}
@@ -247,18 +230,6 @@ class JTabbedContentPane extends JTabbedPane {
 			}
 		}
 	}
-
-//	void addFilterToSelectedTab(FilterPanel filter) {
-//		int indx = getSelectedIndex();
-//		TabComponent tab = getSelectedTabComponent(getToolTipTextAt(indx));
-//		if (tab.isFiltered || tab.isDirectory || Zip.isArchive(tab.name, true)) {
-//			return;
-//		}
-//		remove(indx);
-//		insertTab(tab.name, getIconFor(tab), tab.content, filter, tab.fullPath, indx);
-//		setSelectedIndex(indx);
-//		tab.isFiltered = true;
-//	}
 
 	void removeFilterFromSelectedTab() {
 		int indx = getSelectedIndex();

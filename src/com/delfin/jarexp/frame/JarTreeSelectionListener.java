@@ -59,7 +59,9 @@ import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.icon.Ico;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.Executor;
+import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.FolderTableCellRenderer;
+import com.delfin.jarexp.utils.ImgPanel;
 import com.delfin.jarexp.utils.RstaUtils;
 import com.delfin.jarexp.utils.TableHeaderCustomizer;
 import com.delfin.jarexp.utils.Zip;
@@ -225,7 +227,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							} catch (Exception e) {
 								log.log(Level.SEVERE, "Unable to grab class structure information for " + node.name, e);
 							}
-						} else if (isImgFile(lowPath)) {
+						} else if (FileUtils.isImgFile(lowPath)) {
 							Zip.stream(node.getTempArchive(), node.path, new StreamProcessor() {
 								@Override
 								public void process(InputStream stream) throws IOException {
@@ -309,11 +311,6 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 			}
 
 		}.execute();
-	}
-
-	private static boolean isImgFile(String fileName) {
-		return fileName.endsWith(".png") || fileName.endsWith(".gif") || fileName.endsWith(".jpg")
-				|| fileName.endsWith(".jpeg") || fileName.endsWith(".bmp");
 	}
 
 	private class TextAreaDocumentListener implements DocumentListener {

@@ -68,7 +68,6 @@ public class MtoolDlg extends JFrame {
 					}
 					RepoNode root = content.repoTree.addRepository(f);
 					content.repoTree.update(root);
-					MtoolDlg.this.revalidate();
 				}
 			}
 		}, null, null, null, null, null, null, null, null));

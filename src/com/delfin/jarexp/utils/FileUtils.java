@@ -87,11 +87,37 @@ public class FileUtils {
 
 	}
 
+	public interface ReadProcessor {
+		void process(InputStream stream) throws IOException;
+	}
+
 	private static final Logger log = Logger.getLogger(FileUtils.class.getCanonicalName());
 
 	private static final String EOL = Settings.EOL;
 
 	private static final int BUFFER_SIZE = 1024;
+
+	public static void read(File src, ReadProcessor readProcessor) {
+		FileInputStream stream = null;
+		try {
+			readProcessor.process(stream = new FileInputStream(src));
+		} catch (Exception e) {
+			throw new JarexpException("An error occurred while processing file " + src, e);
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					log.log(Level.WARNING, "Unable to close stream to file " + src, e);
+				}
+			}
+		}
+	}
+
+	public static boolean isImgFile(String fileName) {
+		return fileName.endsWith(".png") || fileName.endsWith(".gif") || fileName.endsWith(".jpg")
+				|| fileName.endsWith(".jpeg") || fileName.endsWith(".bmp");
+	}
 
 	public static String toString(File file) {
 		try {

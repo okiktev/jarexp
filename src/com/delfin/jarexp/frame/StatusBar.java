@@ -27,6 +27,7 @@ import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.utils.ImgPanel;
 
 class StatusBar extends JStatusBar {
 
