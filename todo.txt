@@ -173,6 +173,8 @@ bug default methods are not visible in jar tree ... done .......................
 bug icon has been created right in folder where jar located ... done ..............................28Nov2022
 
 
+bug class method is not marked if switching from other file
+
 imp decompile all classes
 imp cmd open class in jar
 imp command console
