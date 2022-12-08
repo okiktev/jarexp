@@ -152,7 +152,6 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							TabComponent tabComponent = contentPanel.getSelectedTabComponent();
 							if (!fullPath.equals(tabComponent.node.getFullPath())) {
 								contentPanel.setSelected(fullPath);
-								break;
 							}
 						}
 						JTextArea area = contentPanel.getSelectedComponent();
