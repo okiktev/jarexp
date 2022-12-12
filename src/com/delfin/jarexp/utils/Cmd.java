@@ -162,12 +162,8 @@ public class Cmd {
 		InputStream out = null;
 		InputStream err = null;
 		try {
-//			ConsoleReader stdout = new OutputReader();
-//			ConsoleReader stderr = new ErrorReader();
-
 			stdout.start(out = process.getInputStream());
 			stderr.start(err = process.getErrorStream());
-
 			return new Result(process.waitFor(), stdout, stderr);
 		} finally {
 			if (out != null) {
