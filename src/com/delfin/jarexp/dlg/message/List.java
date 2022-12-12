@@ -43,7 +43,7 @@ class List extends JDialog {
 
 		setTitle(title);
 		setSize(width, height + stHeight);
-		Msg.centerDlg(this, width, height + stHeight);
+		Msg.centerDlg(this, new Dimension(width, height + stHeight));
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 

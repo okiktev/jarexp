@@ -399,6 +399,37 @@ public class Zip {
 		}
 	}
 
+	public static void unzip(InputStream stream, File dst) {
+		if (!dst.exists()) {
+			dst.mkdirs();
+		}
+		ZipInputStream is = null;
+		try {
+			is = new ZipInputStream(stream);
+			ZipEntry entry = is.getNextEntry();
+			while (entry != null) {
+				File file = new File(dst, entry.getName());
+				if (!entry.isDirectory()) {
+					extractFile(is, file);
+				} else {
+					file.mkdir();
+				}
+				is.closeEntry();
+				entry = is.getNextEntry();
+			}
+		} catch (Exception e) {
+			throw new JarexpException("An error occurred while unpacking stream to " + dst, e);
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					log.log(Level.WARNING, "An error occurred while closing stream to " + dst, e);
+				}
+			}
+		}
+	}
+
 	public static void unzip(File archive, File dir) {
 		if (!dir.exists()) {
 			dir.mkdirs();
@@ -489,4 +520,5 @@ public class Zip {
 	public interface StreamProcessor {
 		void process(InputStream stream) throws IOException;
 	}
+
 }

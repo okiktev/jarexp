@@ -6,7 +6,10 @@ import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 
+import java.awt.Color;
 import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -19,6 +22,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.Executors;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -29,21 +36,29 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableModel;
+import javax.swing.text.DefaultCaret;
 import javax.swing.tree.TreePath;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import com.delfin.jarexp.dlg.message.Msg;
+import com.delfin.jarexp.frame.LibraryManager;
 import com.delfin.jarexp.frame.mtool.ContentPanel.PanelContainer;
 import com.delfin.jarexp.frame.mtool.ContentPanel.TabComponent;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.icon.Ico;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.settings.Version;
+import com.delfin.jarexp.utils.Cmd;
+import com.delfin.jarexp.utils.Cmd.EnvironmentVariable;
+import com.delfin.jarexp.utils.Cmd.ErrorReader;
+import com.delfin.jarexp.utils.Cmd.OutputReader;
 import com.delfin.jarexp.utils.Executor;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.FileUtils.ReadProcessor;
@@ -65,6 +80,32 @@ class RepoTreeSelectionListener implements TreeSelectionListener {
 	private final JFrame frame;
 
 	TreePath collapsed;
+
+	private static class ConsoleDlg extends JFrame {
+		private static final long serialVersionUID = -2568920673863824935L;
+		private static final Font FONT = new Font("Consolas", Font.PLAIN, 12);
+		private static final Dimension DIM = new Dimension(550, 300);
+		JTextArea area = new JTextArea();
+		ConsoleDlg() {
+			setIconImage(Resources.getMtoolConsoleImage());
+			setPreferredSize(DIM);
+			area.setFont(FONT);
+			area.setBackground(Color.BLACK);
+			((DefaultCaret)area.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+			add(new JScrollPane(area));
+			Msg.centerDlg(this, DIM, MtoolDlg.MTOOL_TITLE);
+			setVisible(true);
+			pack();
+		}
+		void out(String line) {
+			area.setForeground(Color.GREEN);
+			area.append(line + '\n');
+		}
+		void error(String line) {
+			area.setForeground(Color.RED);
+			area.append(line + '\n');
+		}
+	}
 
 	RepoTreeSelectionListener(RepoTree repoTree, StatusBar statusBar, JFrame frame) {
 		this.repoTree = repoTree;
@@ -257,11 +298,88 @@ class RepoTreeSelectionListener implements TreeSelectionListener {
 						clipboard.setContents(new StringSelection(out.toString()), null);
 					}
 				});
+
+				final File selFile = getSelectedFileByName((String) table.getModel().getValueAt(row, 1));
+				JMenuItem tree = new JMenuItem("Tree");
+				tree.setIcon(resources.getTreeIcon());
+				tree.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						LibraryManager.prepareMaven();						
+						final String[] command = compile(selFile);
+						final ConsoleDlg consoleDlg = new ConsoleDlg();
+						Executors.newSingleThreadExecutor().execute(new Runnable() {
+							@Override
+							public void run() {
+								Cmd.run(command, null, getEnvironmentVariables()
+										, new OutputReader() {
+											@Override
+											protected void processLine(String line) {
+												consoleDlg.out(line);
+											};
+										}
+										, new ErrorReader() {
+											@Override
+											protected void processLine(String line) {
+												consoleDlg.error(line);
+											};
+										});
+							}
+							
+						});
+					}
+
+					private String[] compile(File selFile) {
+						File mvnDir = new File(Settings.getAppDir(), "maven");
+						if (Version.IS_WINDOWS) {
+							File mvn = new File(mvnDir, "/bin/mvn.cmd");
+							return new String[] { "cmd.exe", "/c", mvn.getAbsolutePath()
+									, "-f", selFile.getAbsolutePath()
+									, "org.apache.maven.plugins:maven-dependency-plugin:3.4.0:tree" };
+						} else {
+							File mvn = new File(mvnDir, "/bin/mvn");
+							return new String[] { "sh", mvn.getAbsolutePath()
+									, "-f", selFile.getAbsolutePath()
+									, "org.apache.maven.plugins:maven-dependency-plugin:3.4.0:tree" };
+
+						}
+					}
+
+					private EnvironmentVariable[] getEnvironmentVariables() {
+						List<EnvironmentVariable> list = new ArrayList<EnvironmentVariable>();
+						boolean isJavaHomeAdded = false;
+						for (Entry<String, String> e : System.getenv().entrySet()) {
+							if ("JAVA_HOME".equals(e.getKey())) {
+								list.add(new EnvironmentVariable("JAVA_HOME", System.getProperty("java.home")));
+								isJavaHomeAdded = true;
+							} else {
+								list.add(new EnvironmentVariable(e.getKey(), e.getValue()));
+							}
+						}
+						if (!isJavaHomeAdded) {
+							list.add(new EnvironmentVariable("JAVA_HOME", System.getProperty("java.home")));
+						}
+						return list.toArray(new EnvironmentVariable[list.size()]);
+					}
+				});
+
 				popupMenu.add(copyCell);
 				popupMenu.add(copyRow);
+				if (selFile.getName().toLowerCase().endsWith(".pom")) {
+					popupMenu.add(tree);
+				}
 
 				popupMenu.show(table, e.getX(), e.getY());
 			}
+		}
+
+		private File getSelectedFileByName(String name) {
+			for(File f : node.files) {
+				if (f.getName().equals(name)) {
+					return f;
+				}
+			}
+			return null;
 		}
 
 		private void previewContent(final ContentPanel contentPanel, final File f) {

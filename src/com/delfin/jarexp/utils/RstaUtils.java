@@ -37,6 +37,8 @@ public class RstaUtils {
 			syntax = SyntaxConstants.SYNTAX_STYLE_DTD;
 		} else if (lowPath.endsWith(".css")) {
 			syntax = SyntaxConstants.SYNTAX_STYLE_CSS;
+		} else if (lowPath.endsWith(".ts")) {
+			syntax = SyntaxConstants.SYNTAX_STYLE_TYPESCRIPT;
 		} else if (lowPath.endsWith(".jsp")) {
 			syntax = SyntaxConstants.SYNTAX_STYLE_JSP;
 		} else if (lowPath.endsWith(".js")) {

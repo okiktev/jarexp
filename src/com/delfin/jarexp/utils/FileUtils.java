@@ -356,13 +356,7 @@ public class FileUtils {
 			outVbs.append("UAC.ShellExecute \"" + bat.getAbsolutePath() + "\", \"\", \"\", \"runas\", 0").append(EOL);
 			toFile(vbs, outVbs.toString());
 
-			String[] command = { "cscript", vbs.getAbsolutePath(), "//B" };
-			Result code;
-			if (Version.JAVA_MAJOR_VER == 6) {
-				code = Cmd.runWithJava6(null, command);
-			} else {
-				code = Cmd.run(command, null);
-			}
+			Result code = Cmd.run(new String[] { "cscript", vbs.getAbsolutePath(), "//B" }, null);
 			if (!code.out.isEmpty() || !code.err.isEmpty()) {
 				throw new JarexpException("Unable to run file " + bat
 						+ " with admin privileges. See the logs for details. Result code:\n" + code);

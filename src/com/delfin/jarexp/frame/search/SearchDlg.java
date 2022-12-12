@@ -185,7 +185,7 @@ public abstract class SearchDlg extends JFrame {
 		setPreferredSize(DLG_DIM);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		Msg.centerDlg(this, DLG_DIM.width, DLG_DIM.height);
+		Msg.centerDlg(this, DLG_DIM);
 
 		setVisible(true);
 		pack();

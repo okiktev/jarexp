@@ -22,6 +22,7 @@ import com.delfin.jarexp.settings.Settings;
 public class MtoolDlg extends JFrame {
 
 	private static final long serialVersionUID = -7465733990511794369L;
+	static final String MTOOL_TITLE = "Maven Tool";
 
 	static List<File> repositories = new ArrayList<File>();
 	static {
@@ -37,12 +38,12 @@ public class MtoolDlg extends JFrame {
 		final MtoolPanel content = new MtoolPanel(this);
 		setContentPane(content);
 
-		setTitle("Maven Tool");
+		setTitle(MTOOL_TITLE);
 		setIconImage(Resources.getInstance().getMtoolLogoImage());
 		setPreferredSize(new Dimension(1000, 700));
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		Msg.centerDlg(this, DLG_DIM.width, DLG_DIM.height);
+		Msg.centerDlg(this, DLG_DIM);
 
 		setJMenuBar(new Menu(new ActionListener() {
 			@Override

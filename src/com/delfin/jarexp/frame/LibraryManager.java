@@ -19,13 +19,14 @@ import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Md5Checksum;
+import com.delfin.jarexp.utils.Zip;
 
 public class LibraryManager {
 	
 	private static final Logger log = Logger.getLogger(LibraryManager.class.getCanonicalName());
 
 	public enum DependencyType {
-		RSTA, FERNFLOWER, JD071, JD113, PROCYON
+		RSTA, FERNFLOWER, JD071, JD113, PROCYON, MAVEN
 	}
 
 	private static final String LIBRARIES_STORE_URL = 
@@ -183,6 +184,16 @@ public class LibraryManager {
 		return true;
 	}
 
+	private static boolean isNotUptodated(File zip, DependencyType type) {
+		Dependency dep = getDependency(type);
+		if (dep.md5.equals(Md5Checksum.get(zip))) {
+			return false;
+		}
+		log.info("Removing previous version of lib " + dep.fileName);
+		zip.delete();
+		return true;
+	}
+
 	private static Dependency getDependency(DecompilerType type) {
 		switch (type) {
 		case PROCYON:
@@ -211,6 +222,8 @@ public class LibraryManager {
 			return dependencies.get("java.decompiler.113");
 		case PROCYON:
 			return dependencies.get("procyon");
+		case MAVEN:
+			return dependencies.get("maven");
 		default:
 			throw new JarexpException("Unknown dependency type " + type);
 		}
@@ -243,6 +256,41 @@ public class LibraryManager {
 			res.put((String)e.getKey(), new Dependency((String) e.getValue()));
 		}
 		dependencies = res;
+	}
+
+	public static void prepareMaven() {
+		File mvnDir = new File(Settings.getAppDir(), "maven");
+		if (isDisabled) {
+			if (!mvnDir.exists()) {
+				mvnDir.mkdirs();
+				InputStream is = LibraryManager.class.getClassLoader()
+						.getResourceAsStream("apache-maven.zip");
+				try {
+					Zip.unzip(is, mvnDir);
+				} finally {
+					try {
+						is.close();
+					} catch (IOException e) {
+						log.log(Level.WARNING, "Unable to close stream to maven archive.", e);
+					}
+				}
+			}
+			return;
+		}
+		File lib = getLibDir();
+		if (!lib.exists()) {
+			lib.mkdirs();
+		}
+		if (!mvnDir.exists()) {
+			mvnDir.mkdirs();
+		}
+		String fileName = getDependency(DependencyType.MAVEN).fileName;
+		File zip = new File(lib, fileName);
+		if (!zip.exists() || isNotUptodated(zip, DependencyType.MAVEN)) {
+			FileUtils.download(LIBRARIES_STORE_URL + fileName, zip);
+			FileUtils.delete(mvnDir);
+			Zip.unzip(zip, mvnDir);
+		}
 	}
 
 	public static class Dependency {

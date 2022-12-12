@@ -1,5 +1,6 @@
 package com.delfin.jarexp.dlg.message;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Window;
@@ -15,15 +16,19 @@ public class Msg {
 
 	static Font defaultFont = UIManager.getDefaults().getFont("Label.font");
 
-	public static void centerDlg(Window win, int width, int height) {
+	public static void centerDlg(Window win, Dimension dim) {
+		centerDlg(win, dim, "Jar Explorer");
+	}
+
+	public static void centerDlg(Window win, Dimension dim, String windowTitle) {
 		for (Window window : JDialog.getWindows()) {
 			if (window instanceof JFrame) {
 				JFrame frame = (JFrame) window;
-				if (frame.isActive() && frame.getTitle().startsWith("Jar Explorer")) {
+				if (frame.isActive() && frame.getTitle().startsWith(windowTitle)) {
 					Rectangle rec = frame.getBounds();
-					int x = (frame.getWidth() - width) / 2;
-					int y = (frame.getHeight() - height) / 2;
-					win.setBounds(rec.x + x, rec.y + y, width, height);
+					int x = (frame.getWidth() - dim.width) / 2;
+					int y = (frame.getHeight() - dim.height) / 2;
+					win.setBounds(rec.x + x, rec.y + y, dim.width, dim.height);
 					break;
 				}
 			}

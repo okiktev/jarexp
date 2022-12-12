@@ -83,7 +83,7 @@ public class ProcessesDlg extends JFrame {
 		initComponents();
 		alignComponents();
 
-		Msg.centerDlg(this, DLG_DIM.width, DLG_DIM.height);
+		Msg.centerDlg(this, DLG_DIM);
 
 		setVisible(true);
 		pack();
@@ -171,13 +171,7 @@ public class ProcessesDlg extends JFrame {
 			File vbs = File.createTempFile("jarexp-", ".vbs");
 			vbs.deleteOnExit();
 			FileUtils.toFile(vbs, scriptContent.toString());
-			String[] command = { "cscript", vbs.getAbsolutePath() };
-			Result res;
-			if (Version.JAVA_MAJOR_VER == 6) {
-				res = Cmd.runWithJava6(null, command);
-			} else {
-				res = Cmd.run(command, null);
-			}
+			Result res = Cmd.run(new String[] { "cscript", vbs.getAbsolutePath() }, null);
 			FileUtils.delete(vbs);
 			Collection<Process> processes = new ArrayList<Process>();
 			Scanner scanner = new Scanner(res.out);

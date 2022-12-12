@@ -53,7 +53,7 @@ class DecompilerException extends Exception {
 
 		setTitle("Error");
 		setSize(width, height);
-		Msg.centerDlg(this, width, height);
+		Msg.centerDlg(this, new Dimension(width, height));
 
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 

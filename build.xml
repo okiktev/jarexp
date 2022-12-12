@@ -40,6 +40,7 @@
 		<checksum file="${basedir}/lib/${dependency3jarName}" property="MD5.lib.jdecompiler113"/>
 		<checksum file="${basedir}/lib/${dependency4jarName}" property="MD5.lib.procyon"/>
 		<checksum file="${basedir}/lib/${dependency5jarName}" property="MD5.lib.fernflower"/>
+		<checksum file="${basedir}/lib/${dependency6jarName}" property="MD5.zip.maven"/>
 		<copy todir="${build.dir}/src">
 			<fileset dir="${src.dir}" >
 				<exclude name="**/FieldHelper.java"/>
@@ -102,6 +103,8 @@
 				<filter token="PROCYON_FILE_MD5" value="${MD5.lib.procyon}" />
 				<filter token="FERNFLOWER_FILE_NAME" value="${dependency5jarName}" />
 				<filter token="FERNFLOWER_FILE_MD5" value="${MD5.lib.fernflower}" />
+				<filter token="MAVEN_ARCHIVE_FILE_NAME" value="${dependency6jarName}" />
+				<filter token="MAVEN_ARCHIVE_FILE_MD5" value="${MD5.zip.maven}" />
 			</filterset>
 		</copy>
 		<zip destfile="${jar.dir}/licenses.zip">
@@ -193,6 +196,7 @@
 		<delete dir="${jar.dir}/META-INF" />
 		<unjar src="${dependency5}" dest="${jar.dir}" />
 		<delete dir="${jar.dir}/META-INF" />
+		<copy file="${dependency6}" todir="${jar.dir}" />
 
 		<delete file="${jar.dir}/dependencies" />
 

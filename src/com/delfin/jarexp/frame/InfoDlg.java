@@ -80,7 +80,7 @@ public class InfoDlg extends JDialog {
 		setPreferredSize(DLG_DIM);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		Msg.centerDlg(this, DLG_DIM.width, DLG_DIM.height);
+		Msg.centerDlg(this, DLG_DIM);
 
 		setVisible(true);
 		pack();

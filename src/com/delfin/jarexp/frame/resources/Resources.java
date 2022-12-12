@@ -312,8 +312,16 @@ public class Resources {
 		return getIcon("mtrp.png", "Unable to load maven repo icon from class path");
 	}
 
+	public Icon getTreeIcon() {
+		return getIcon("mttr.png", "Unable to load maven tree icon from class path");
+	}
+
 	public Image getMtoolLogoImage() {
 		return getImage("mtmvn.png", "Unable to load maven logo image from class path");
+	}
+
+	public static Image getMtoolConsoleImage() {
+		return getImage("mtcn.png", "Unable to load maven console image from class path");
 	}
 
 	public Image getSumsImage() {

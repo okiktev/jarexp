@@ -71,7 +71,7 @@ public class EnvironmentDlg extends JDialog {
 		initComponents();
 		alignComponents();
 
-		Msg.centerDlg(this, DLG_DIM.width, DLG_DIM.height);
+		Msg.centerDlg(this, DLG_DIM);
 
 		setVisible(true);
 		pack();
