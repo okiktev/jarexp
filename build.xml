@@ -75,7 +75,7 @@
 			<fileset dir="${classes.dir}" />
 			<fileset dir="${build.res.dir}" />
 		</copy>
-		
+
 		<copy todir="${jar.dir}">
 			<fileset dir="${resources.dir}" >
 				<exclude name="**/LICENSE" />
@@ -126,7 +126,7 @@
 			<arg value="/c" />
 			<arg value="gen_build_num.bat" />
 		</exec>
-		
+
 		<exec executable="sh" dir="${build.num.dir}" failonerror="true" osfamily="unix">
 			<arg value="gen_build_num.sh" />
 		</exec>
@@ -247,7 +247,6 @@
 			<arg value="${artifacts.dir}/${win.archive.name}" />
 			<arg value="${artifacts.dir}/Jar Explorer.exe" />
 		</exec>
-
 		<tar destfile="${artifacts.dir}/JarExplorer.${full.version}.tar" >
 			<fileset dir="${artifacts.dir}" >
 				<include name="Jar Explorer.sh" />
@@ -256,7 +255,7 @@
 		</tar>
 		<gzip destfile="${artifacts.dir}/${lin.archive.name}" src="${artifacts.dir}/JarExplorer.${full.version}.tar" />
 		<delete file="${artifacts.dir}/JarExplorer.${full.version}.tar" />
-		
+
 		<!--<exec executable="${7zip.exe.name}" failonerror="true" >
 			<arg value="a" />
 			<arg value="-tzip" />
@@ -304,7 +303,6 @@
 			<arg value="${full.pack.dir}/${win.full.archive.name}" />
 			<arg value="${full.pack.dir}/Jar Explorer.exe" />
 		</exec>
-
 		<tar destfile="${full.pack.dir}/JarExplorer.${full.version}.tar" >
 			<fileset dir="${full.pack.dir}" >
 				<include name="Jar Explorer.sh" />

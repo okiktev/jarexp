@@ -352,12 +352,14 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			final int row = table.rowAtPoint(e.getPoint());
-			final int col = table.columnAtPoint(e.getPoint());
-			if (row < 0 || col < 0) {
+			final int r = table.rowAtPoint(e.getPoint());
+			final int c = table.columnAtPoint(e.getPoint());
+			if (r < 0 || c < 0) {
 				table.clearSelection();
 				return;
 			}
+			final int row = table.convertRowIndexToModel(table.rowAtPoint(e.getPoint()));
+			final int col = table.convertColumnIndexToModel(table.columnAtPoint(e.getPoint()));
 			if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
 				String name = (String) table.getModel().getValueAt(row, 0);
 				JarTreeClickSelection.setNodes(null);
@@ -381,8 +383,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				}
 				jarTree.setSelectionPath(new TreePath(nodes));
 			} else if (SwingUtilities.isRightMouseButton(e)) {
-				if (!table.isRowSelected(row)) {
-					table.setRowSelectionInterval(row, row);
+				if (!table.isRowSelected(r)) {
+					table.setRowSelectionInterval(r, r);
 				}
 				boolean multiplySelection = table.getSelectedRowCount() > 1;
 				Resources resources = Resources.getInstance();
@@ -405,7 +407,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					public void actionPerformed(ActionEvent e) {
 						StringBuilder out = new StringBuilder();
 						TableModel model = table.getModel();
-						for (int row : table.getSelectedRows()) {
+						for (int row : getSelectedRows(table)) {
 							for (int i = 0; i < model.getColumnCount(); ++i) {
 								out.append(model.getValueAt(row, i));
 								if (i < model.getColumnCount() - 1) {
@@ -418,6 +420,15 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 						clipboard.setContents(new StringSelection(out.toString()), null);
 					}
+
+					private int[] getSelectedRows(JTable table) {
+						int[] rows = table.getSelectedRows();
+						int[] res = new int[rows.length];
+						for (int i = 0; i < rows.length; ++i) {
+							res[i] = table.convertRowIndexToModel(rows[i]);
+						}
+						return res;
+					}
 				});
 				popupMenu.add(copyCell);
 				popupMenu.add(copyRow);
@@ -425,6 +436,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 				popupMenu.show(table, e.getX(), e.getY());
 			}
 		}
+		
+		
 	}
 
 	static class ClassItemNode extends DefaultMutableTreeNode {
