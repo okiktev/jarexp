@@ -86,7 +86,8 @@ class RepoTreeSelectionListener implements TreeSelectionListener {
 		private static final Font FONT = new Font("Consolas", Font.PLAIN, 12);
 		private static final Dimension DIM = new Dimension(550, 300);
 		JTextArea area = new JTextArea();
-		ConsoleDlg() {
+		ConsoleDlg(String fileName) {
+			setTitle("Console | " + fileName);
 			setIconImage(Resources.getMtoolConsoleImage());
 			setPreferredSize(DIM);
 			area.setFont(FONT);
@@ -307,7 +308,7 @@ class RepoTreeSelectionListener implements TreeSelectionListener {
 					public void actionPerformed(ActionEvent e) {
 						LibraryManager.prepareMaven();						
 						final String[] command = compile(selFile);
-						final ConsoleDlg consoleDlg = new ConsoleDlg();
+						final ConsoleDlg consoleDlg = new ConsoleDlg(selFile.getName());
 						Executors.newSingleThreadExecutor().execute(new Runnable() {
 							@Override
 							public void run() {

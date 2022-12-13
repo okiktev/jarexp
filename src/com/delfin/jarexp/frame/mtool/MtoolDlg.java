@@ -1,6 +1,5 @@
 package com.delfin.jarexp.frame.mtool;
 
-import static com.delfin.jarexp.settings.Settings.DLG_DIM;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 
@@ -22,7 +21,9 @@ import com.delfin.jarexp.settings.Settings;
 public class MtoolDlg extends JFrame {
 
 	private static final long serialVersionUID = -7465733990511794369L;
+
 	static final String MTOOL_TITLE = "Maven Tool";
+	private static final Dimension DIM = new Dimension(700, 500);
 
 	static List<File> repositories = new ArrayList<File>();
 	static {
@@ -40,10 +41,10 @@ public class MtoolDlg extends JFrame {
 
 		setTitle(MTOOL_TITLE);
 		setIconImage(Resources.getInstance().getMtoolLogoImage());
-		setPreferredSize(new Dimension(1000, 700));
+		setPreferredSize(DIM);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		Msg.centerDlg(this, DLG_DIM);
+		Msg.centerDlg(this, DIM);
 
 		setJMenuBar(new Menu(new ActionListener() {
 			@Override

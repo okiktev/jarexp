@@ -16,6 +16,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
+import com.delfin.jarexp.frame.mtool.MtoolDlg;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
 import com.delfin.jarexp.settings.Settings;
@@ -75,6 +76,16 @@ class Menu extends JMenuBar {
 			item.setIcon(resources.getProcessesIcon());
 			tools.add(item);
 		}
+		item = new JMenuItem("Maven Tool", KeyEvent.VK_M);
+		item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+		item.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new MtoolDlg();
+			}
+		});
+		item.setIcon(resources.getMtoolLogoIcon());
+		tools.add(item);
 		add(tools);
 
 		JMenu decompilers = new JMenu("Decompilers");

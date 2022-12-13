@@ -174,9 +174,9 @@ bug icon has been created right in folder where jar located ... done ...........
 bug class method is not marked if switching from other file ... done ..............................08Dec2022
 bug error while unpacking downloaded zip ... done .................................................13Dec2022
 bug wrong open dir after reordering folder content in table ... done ..............................13Dec2022
+imp maven tool ... done ...........................................................................13Dec2022
 
 
-imp maven tool
 imp decompile all classes
 imp cmd open class in jar
 imp command console
