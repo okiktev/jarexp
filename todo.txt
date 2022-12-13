@@ -172,9 +172,10 @@ bug sometimes temp folders are not being deleted ... done ......................
 bug default methods are not visible in jar tree ... done ..........................................24Nov2022
 bug icon has been created right in folder where jar located ... done ..............................28Nov2022
 bug class method is not marked if switching from other file ... done ..............................08Dec2022
+bug error while unpacking downloaded zip ... done .................................................13Dec2022
+
 
 bug wrong open dir after reordering folder content in table
-bug error while unpacking downloaded zip
 
 imp maven tool
 imp decompile all classes

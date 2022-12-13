@@ -240,11 +240,14 @@
 		<delete file="${artifacts.dir}/jarexp.xml" />
 		<property name="win.archive.name" value="JarExplorer.${full.version}.zip"/>
 		<property name="lin.archive.name" value="JarExplorer.${full.version}.tar.gz"/>
-		<zip destfile="${artifacts.dir}/${win.archive.name}" >
-			<fileset dir="${artifacts.dir}" >
-				<include name="Jar Explorer.exe" />
-			</fileset>
-		</zip>
+
+		<!-- hack to fix headers error -->
+		<exec executable="${7zip.exe.name}" failonerror="true" >
+			<arg value="a" />
+			<arg value="${artifacts.dir}/${win.archive.name}" />
+			<arg value="${artifacts.dir}/Jar Explorer.exe" />
+		</exec>
+
 		<tar destfile="${artifacts.dir}/JarExplorer.${full.version}.tar" >
 			<fileset dir="${artifacts.dir}" >
 				<include name="Jar Explorer.sh" />
@@ -294,11 +297,14 @@
 		<delete file="${full.pack.dir}/jarexp.xml" />
 		<property name="win.full.archive.name" value="JarExplorer.${full.version}.full.zip"/>
 		<property name="lin.full.archive.name" value="JarExplorer.${full.version}.full.tar.gz"/>
-		<zip destfile="${full.pack.dir}/${win.full.archive.name}" >
-			<fileset dir="${full.pack.dir}" >
-				<include name="Jar Explorer.exe" />
-			</fileset>
-		</zip>
+
+		<!-- hack to fix headers error -->
+		<exec executable="${7zip.exe.name}" failonerror="true" >
+			<arg value="a" />
+			<arg value="${full.pack.dir}/${win.full.archive.name}" />
+			<arg value="${full.pack.dir}/Jar Explorer.exe" />
+		</exec>
+
 		<tar destfile="${full.pack.dir}/JarExplorer.${full.version}.tar" >
 			<fileset dir="${full.pack.dir}" >
 				<include name="Jar Explorer.sh" />
