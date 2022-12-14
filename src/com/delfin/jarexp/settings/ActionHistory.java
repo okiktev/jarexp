@@ -197,13 +197,9 @@ public class ActionHistory {
 		} else {
 			return (T) convertToList(String.class, value);
 		}
-		
 	}
 
 	static void loadMavenRepositories(String mavenRepos) {
-		if (mavenRepos == null || mavenRepos.isEmpty()) {
-			return;
-		}
 		mavenRepositoriesParcer.parse(mavenRepos);
 	}
 
