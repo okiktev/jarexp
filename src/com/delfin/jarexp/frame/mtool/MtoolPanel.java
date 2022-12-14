@@ -39,7 +39,7 @@ class MtoolPanel extends JPanel {
 		if (!MtoolDlg.repositories.isEmpty()) {
 			repoTree = new RepoTree(statusBar);
 			repoTree.addTreeSelectionListener(new RepoTreeSelectionListener(repoTree, statusBar, frame));
-			repoTree.load(MtoolDlg.repositories.get(0));
+			repoTree.load(MtoolDlg.repositories);
 
 			JComponent treeView = (JComponent) splitPane.getLeftComponent();
 			treeView = new JScrollPane(repoTree);
@@ -49,8 +49,7 @@ class MtoolPanel extends JPanel {
 			JScrollPane contentView = new JScrollPane();
 			contentView.setBorder(Settings.EMPTY_BORDER);
 
-			ContentPanel contentPanel = new ContentPanel(contentView, repoTree);
-			splitPane.setRightComponent(contentPanel);
+			splitPane.setRightComponent(new ContentPanel(contentView, repoTree));
 		}
 	}
 

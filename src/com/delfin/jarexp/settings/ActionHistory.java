@@ -58,8 +58,8 @@ public class ActionHistory {
 	}
 
 	private static enum Key {
-		LAST_DIRS_SEL, SEARCH, LAST_UPDATE_CHECK, NEW_VERSION, DONATE_URL
-	};
+		LAST_DIRS_SEL, SEARCH, LAST_UPDATE_CHECK, NEW_VERSION, DONATE_URL, MAVEN_REPOS
+	}
 
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd-MMMM-yyyy");
 
@@ -72,6 +72,19 @@ public class ActionHistory {
 			return token;
 		}
 
+		@Override
+		String doParse(String token) {
+			return token;
+		}
+	};
+
+	@SuppressWarnings("unchecked")
+	private static CommaSeparatedParcer<String> mavenRepositoriesParcer = new CommaSeparatedParcer<String>(getList(Key.MAVEN_REPOS)) {
+		@Override
+		String doConvert(String token) {
+			return token;
+		}
+		
 		@Override
 		String doParse(String token) {
 			return token;
@@ -169,6 +182,40 @@ public class ActionHistory {
 		return (String) value.iterator().next();
 	}
 
+	public static void addMavenRepository(String repo) {
+		addToHistory(repo, Key.MAVEN_REPOS);
+	}
+
+	@SuppressWarnings({ "unchecked" })
+	public static <T> T getMavenRepositories(Class<T> resType) {
+		Collection<Object> value = getList(Key.MAVEN_REPOS);
+		if (value == null || value.isEmpty()) {
+			return null;
+		}
+		if (resType == String.class) {
+			return (T) mavenRepositoriesParcer.convert();
+		} else {
+			return (T) convertToList(String.class, value);
+		}
+		
+	}
+
+	static void loadMavenRepositories(String mavenRepos) {
+		if (mavenRepos == null || mavenRepos.isEmpty()) {
+			return;
+		}
+		mavenRepositoriesParcer.parse(mavenRepos);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> List<T> convertToList(Class<T> paramType, Collection<Object> value) {
+		List<T> res = new ArrayList<T>(value.size());
+		for (Object obj : value) {
+			res.add((T)obj);
+		}
+		return res;
+	}
+
 	@SuppressWarnings("unchecked")
 	private static void addToHistory(Object value, Key key) {
 		Collection<Object> collection = getList(key);
@@ -192,6 +239,7 @@ public class ActionHistory {
 		Collection<Object> res = HISTORY.get(key);
 		if (res == null) {
 			switch (key) {
+			case MAVEN_REPOS:
 			case LAST_DIRS_SEL:
 			case SEARCH:
 				res = new LinkedHashSet<Object>();

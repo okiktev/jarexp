@@ -2,6 +2,7 @@ package com.delfin.jarexp.frame.mtool;
 
 import java.awt.Component;
 import java.io.File;
+import java.util.List;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -63,7 +64,17 @@ class RepoTree extends JTree {
 		CropIconsBugResolver.getInstance().adaptTree(repoTreeCellRenderer, this);
 	}
 
-	void load(File repoDir) {
+	void load(List<File> repositories) {
+		for (int i = 0; i < repositories.size(); ++i) {
+			if (i == 0) {
+				load(repositories.get(i));
+			} else {
+				addRepository(repositories.get(i));
+			}
+		}
+	}
+
+	private void load(File repoDir) {
 		if (repoDir == null) {
 			return;
 		}

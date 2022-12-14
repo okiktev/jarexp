@@ -16,6 +16,7 @@ import javax.swing.WindowConstants;
 
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.settings.ActionHistory;
 import com.delfin.jarexp.settings.Settings;
 
 public class MtoolDlg extends JFrame {
@@ -28,8 +29,29 @@ public class MtoolDlg extends JFrame {
 	static List<File> repositories = new ArrayList<File>();
 	static {
 		File f = new File(Settings.getUserHome(), ".m2/repository");
-		if (f.exists()) {			
-			repositories.add(f);
+		@SuppressWarnings("unchecked")
+		List<String> repos = ActionHistory.getMavenRepositories(List.class);
+		if (repos != null && !repos.isEmpty()) {
+			boolean isDefaultRepoAdded = false;
+			for(String repo : repos) {
+				if (repo.equals(f.getAbsolutePath())) {
+					isDefaultRepoAdded = true;
+				}
+				File file = new File(repo);
+				if (file.exists()) {
+					ActionHistory.addMavenRepository(file.getAbsolutePath());
+					repositories.add(file);
+				}
+			}
+			if (!isDefaultRepoAdded && f.exists()) {
+				ActionHistory.addMavenRepository(f.getAbsolutePath());
+				repositories.add(f);
+			}
+		} else {
+			if (f.exists()) {
+				ActionHistory.addMavenRepository(f.getAbsolutePath());
+				repositories.add(f);
+			}
 		}
 	}
 
@@ -68,8 +90,9 @@ public class MtoolDlg extends JFrame {
 						showMessageDialog(MtoolDlg.this, "Specified location is not directory.", "Wrong input", ERROR_MESSAGE);
 						return;
 					}
-					RepoNode root = content.repoTree.addRepository(f);
-					content.repoTree.update(root);
+					ActionHistory.addMavenRepository(f.getAbsolutePath());
+					repositories.add(f);
+					content.repoTree.update(content.repoTree.addRepository(f));
 				}
 			}
 		}, null, null, null, null, null, null, null, null));

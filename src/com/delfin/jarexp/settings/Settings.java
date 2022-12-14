@@ -44,6 +44,7 @@ public class Settings {
 					}
 					settings.put("donate.url", ActionHistory.getDonateUrl());
 					settings.put("last.update.check", ActionHistory.getLastUpdateCheck());
+					settings.put("maven.repositories", ActionHistory.getMavenRepositories(String.class));
 					try {
 						OutputStream output = new FileOutputStream(settingsFile);
 						settings.store(output, null);
@@ -66,6 +67,7 @@ public class Settings {
 			ActionHistory.loadNewVersion((String)settings.get("new.version"));
 			ActionHistory.loadDonateUrl((String)settings.get("donate.url"));
 			ActionHistory.loadLastUpdateCheck((String)settings.get("last.update.check"));
+			ActionHistory.loadMavenRepositories((String)settings.get("maven.repositories"));
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "Unable to init settings dumper from " + settingsFile, e);
 		}
