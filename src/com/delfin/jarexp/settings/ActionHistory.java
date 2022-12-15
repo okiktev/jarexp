@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -187,16 +188,14 @@ public class ActionHistory {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public static <T> T getMavenRepositories(Class<T> resType) {
+	public static <T> T getMavenRepositories(Class<T> type) {
 		Collection<Object> value = getList(Key.MAVEN_REPOS);
 		if (value == null || value.isEmpty()) {
-			return null;
+			return (T) (type == String.class ? "" : Collections.emptyList());
 		}
-		if (resType == String.class) {
-			return (T) mavenRepositoriesParcer.convert();
-		} else {
-			return (T) convertToList(String.class, value);
-		}
+		return (T) (type == String.class
+				? mavenRepositoriesParcer.convert()
+				: convertToList(String.class, value));
 	}
 
 	static void loadMavenRepositories(String mavenRepos) {

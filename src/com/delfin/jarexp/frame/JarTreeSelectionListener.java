@@ -148,7 +148,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						while (parent instanceof ClassItemNode) {
 							parent = parent.getParent();
 						}
-						ContentPanel contentPanel = (ContentPanel)((JSplitPane) comp).getRightComponent();
+						JSplitPane split = (JSplitPane) comp;
+						ContentPanel contentPanel = (ContentPanel)split.getRightComponent();
 						if (parent != null) {
 							String fullPath = ((JarNode) parent).getFullPath();
 							TabComponent tabComponent = contentPanel.getSelectedTabComponent();
@@ -160,6 +161,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						Position position = itemNode.getPosition();
 						((JarNode)parent).selectedChild = itemNode; 
 						FilterPanel.highlight(area, position.position, position.length);
+						split.repaint();
 						break;
 					}
 					return;
@@ -278,7 +280,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						}
 					}
 				} finally {
-					pane.validate();
+					pane.repaint();
 					if (pane.getDividerLocation() != dividerLocation) {
 						log.warning("Divider location was changed. Compensating...");
 						pane.setDividerLocation(dividerLocation);

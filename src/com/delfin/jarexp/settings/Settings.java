@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
@@ -111,9 +112,10 @@ public class Settings {
 
 	}
 
-	private static File getSettingsFile() {
+	private static File getSettingsFile() throws IOException {
 		if (settingsFile == null) {
 			settingsFile = new File(getAppDir(), "settings.properties");
+			settingsFile.createNewFile();
 		}
 		return settingsFile;
 	}

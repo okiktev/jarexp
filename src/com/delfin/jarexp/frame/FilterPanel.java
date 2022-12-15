@@ -207,11 +207,7 @@ class FilterPanel extends JPanel {
 			}
 			Highlighter hilit = new RSyntaxTextAreaHighlighter();
 			area.setHighlighter(hilit);
-			while(area.getHighlighter() != hilit) {
-				Utils.sleep(50);
-			}
 			hilit.addHighlight(position, position + length, FilterPanel.DEFAULT_HIGHLIGHT_PAINTER);
-			area.getParent().getParent().repaint();
 		} catch (BadLocationException e) {
 			throw new JarexpException("Could not scroll to found index. position=" + position + "; length=" + length, e);
 		}
