@@ -147,7 +147,6 @@ public class Content extends JPanel {
 								JTextArea area = contentPanel.getSelectedComponent();
 								int position = searchResult.position;
 								FilterPanel.highlight(area, position, ((String) cbFind.getSelectedItem()).length());
-
 							}
 						}.execute();
 					}

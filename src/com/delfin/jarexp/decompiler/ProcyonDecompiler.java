@@ -35,10 +35,20 @@ public class ProcyonDecompiler implements IDecompiler {
 	@Override
 	public Result decompile(File archive, String path) {
 		String internalName = path.substring(0, path.lastIndexOf('.'));
+		JarFile jarFile = null;
 		try {
-			return decompile(internalName, new JarTypeLoader(new JarFile(archive)));
+			jarFile = new JarFile(archive);
+			return decompile(internalName, new JarTypeLoader(jarFile));
 		} catch (Exception e) {
 			throw new JarexpDecompilerException("An error occurred while decompiling " + path + " from " + archive, e);
+		} finally {
+			if (jarFile != null) {
+				try {
+					jarFile.close();
+				} catch (IOException e) {
+					log.log(Level.WARNING, "Unable to close jar file " + archive, e);
+				}
+			}
 		}
 	}
 
