@@ -1,5 +1,6 @@
 imp tree dependency ... done ...................................................................12Dec2022
 
+bug make all items with no borders
 bug status bar doesn't work properly
 imp removing repo
 imp validate package
