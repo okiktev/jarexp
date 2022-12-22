@@ -24,7 +24,7 @@ public class Analyzer {
 	}
 
 	private static final Pattern class_interface_Ptrn = Pattern.compile(
-			"(public|private)*[^A-Za-z](class|interface|enum)\\s+([A-Za-z0-9$]+?[ ]?)([\\s]|$|<)+(.*)", Pattern.MULTILINE);
+			"(public|private)*[^A-Za-z](class|interface|enum)\\s+([A-Za-z0-9$_]+?[ ]?)([\\s]|$|<)+(.*)", Pattern.MULTILINE);
 
 	private static final Pattern method_Ptrn = Pattern.compile(
 			"((public|final|protected|abstract|private|static|synchronized|\\s|=|})*)(\\s<([A-Za-z\\s])*>\\s)*([A-Za-z0-9\\.]*(<[\\s\\.,A-Za-z0-9<>\\?\\[\\]]*>)*[\\.\\?\\[\\]]*)\\s+(([$A-Za-z0-9]*)\\s*\\(([A-Za-z$_0-9,\\.<>\\[\\]\\?\\s]*)\\))(.*)", Pattern.MULTILINE);
