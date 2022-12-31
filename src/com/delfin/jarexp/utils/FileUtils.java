@@ -152,6 +152,29 @@ public class FileUtils {
 		}
 	}
 
+	public static void toFile(File file, InputStream stream) throws IOException {
+	    OutputStream out = new FileOutputStream(file);
+	    try {	    	
+	    	byte[] buffer = new byte[8 * 1024];
+	    	int read;
+	    	while ((read = stream.read(buffer)) != -1) {
+	    		out.write(buffer, 0, read);
+	    	}
+	    	out.flush();
+	    } finally {
+	    	try {
+	    		stream.close();
+	    	} catch (IOException e) {
+	    		log.log(Level.WARNING, "Unable to close stream while dumping data to file " + file, e);
+	    	}
+	    	try {
+	    		out.close();
+	    	} catch (IOException e) {
+	    		log.log(Level.WARNING, "Unable to close output stream to file " + file, e);
+	    	}
+	    }
+	}
+
 	public static byte[] toBytes(File file) throws IOException {
 		InputStream ios = null;
 		try {

@@ -133,6 +133,9 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 		if (obj == null) {
 			return;
 		}
+		if (statusBar.isEnabled) {
+			return;
+		}
 
 		new Executor() {
 

@@ -293,6 +293,7 @@
 		<waitfor maxwait="90" maxwaitunit="second">
 		    <available file="${full.pack.dir}/Jar Explorer.exe"/>
 		</waitfor>
+		<sleep milliseconds="10000"/>
 		<delete file="${full.pack.dir}/jarexp.xml" />
 		<property name="win.full.archive.name" value="JarExplorer.${full.version}.full.zip"/>
 		<property name="lin.full.archive.name" value="JarExplorer.${full.version}.full.tar.gz"/>

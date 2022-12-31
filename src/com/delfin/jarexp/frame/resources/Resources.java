@@ -304,6 +304,10 @@ public class Resources {
 		return getIcon("r_enum.png", "Unable to load java item enum icon from class path");
 	}
 
+	public Icon getDecompileAllIcon() {
+		return getIcon("dec.png", "Unable to load decompiler icon from class path");
+	}
+
 	public Icon getMtoolAddRepoIcon() {
 		return getIcon("mtad.png", "Unable to load maven repo add icon from class path");
 	}

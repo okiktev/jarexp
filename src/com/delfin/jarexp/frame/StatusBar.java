@@ -40,6 +40,7 @@ class StatusBar extends JStatusBar {
 	private final JLabel children = new JLabel("");
 	private JPanel decompilerImg;
 	private DecompilerType decompilerType;
+	boolean isEnabled;
 
 	StatusBar(Content content) {
 		super();
@@ -70,11 +71,13 @@ class StatusBar extends JStatusBar {
 		progressBar.setString(msg);
 		progressBar.setIndeterminate(true);
 		progressBar.setVisible(true);
+		isEnabled = true;
 	}
 
 	void disableProgress() {
 		content.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		progressBar.setVisible(false);
+		isEnabled = false;
 	}
 
 	void setCompiledVersion(String ver) {

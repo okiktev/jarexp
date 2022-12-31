@@ -106,7 +106,7 @@ class JarTree extends JTree {
 					protected void initComponents() {
 						super.initComponents();
 						tResult.addMouseListener(new SearchResultMouseAdapter(cbFind, tResult, searchEntries));
-					};
+					}
 				};
 			}
 		};
@@ -158,7 +158,7 @@ class JarTree extends JTree {
 		@Override
 		public void mousePressed(MouseEvent e) {
 			if (SwingUtilities.isRightMouseButton(e)) {
-				TreePath path = getPathForLocation(e.getX(), e.getY());
+				final TreePath path = getPathForLocation(e.getX(), e.getY());
 				if (path == null) {
 					return;
 				}
@@ -180,6 +180,9 @@ class JarTree extends JTree {
 				JarNodeMenuItem unpackNode = new JarNodeMenuItem("Unpack", path);
 				unpackNode.setIcon(resources.getUnpackIcon());
 				unpackNode.addActionListener(unpackActionListener);
+				JarNodeMenuItem decompileAll = new JarNodeMenuItem("Decompile", path);
+				decompileAll.setIcon(resources.getDecompileAllIcon());
+				decompileAll.addActionListener(new JarTreeDecompileAllListener(JarTree.this, statusBar, frame, path));
 
 				JarNodeMenuItem search = new JarNodeMenuItem("Search In", path);
 				search.setIcon(resources.getSearchIcon());
@@ -212,6 +215,7 @@ class JarTree extends JTree {
 				popupMenu.add(addNode);
 				popupMenu.add(deleteNode);
 				popupMenu.add(unpackNode);
+				popupMenu.add(decompileAll);
 				popupMenu.add(search);
 				if (!((JarNode)obj).isNotClass()) {
 					popupMenu.add(searchJavaDoc);
@@ -239,16 +243,19 @@ class JarTree extends JTree {
 				if (paths.length > 1) {
 					addNode.setEnabled(false);
 					unpackNode.setEnabled(false);
+					decompileAll.setEnabled(false);
 				}
 				if (paths.length == 1) {
 					setSelectionPath(path);
 					JarNode node = (JarNode) path.getLastPathComponent();
 					if (node.isDirectory) {
 						unpackNode.setEnabled(false);
+						decompileAll.setEnabled(true);
 					} else {
 						addNode.setEnabled(node.isArchive());
 						unpackNode.setEnabled(node.isArchive());
-						
+						decompileAll.setEnabled(node.isArchive() || node.name.toLowerCase().endsWith(".class"));
+
 						JarNodeMenuItem sums = new JarNodeMenuItem("Hash sums", path);
 						sums.setIcon(resources.getSumsIcon());
 						sums.addActionListener(sumsActionListener);
@@ -281,9 +288,9 @@ class JarTree extends JTree {
 		}
 	}
 
-	static ArchiveLoader archiveLoader = new ArchiveLoader();
-
 	private static final long serialVersionUID = 8627151048727365096L;
+
+	static ArchiveLoader archiveLoader = new ArchiveLoader();
 
 	private JarNode root;
 
