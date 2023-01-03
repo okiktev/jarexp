@@ -177,10 +177,10 @@ bug wrong open dir after reordering folder content in table ... done ...........
 imp maven tool ... done ...........................................................................13Dec2022
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 21_dec_2022
 imp decompile all classes ... done ................................................................31Dec2022
+imp cmd open class in jar ... done ................................................................03Jan2023
 
 
 imp reduce hardcoded stuff like email, links and so on
-imp cmd open class in jar
 imp command console
 imp digest protect for jarexp
 

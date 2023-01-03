@@ -60,6 +60,7 @@ import com.delfin.jarexp.frame.search.SearchDlg;
 import com.delfin.jarexp.frame.search.SearchResult;
 import com.delfin.jarexp.settings.ActionHistory;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.utils.Executor;
 import com.delfin.jarexp.utils.FileUtils;
@@ -157,8 +158,10 @@ public class Content extends JPanel {
 						sr = (SearchResult) tableModel.getValueAt(--row, 0);
 					}
 					String pathToFile = sr.line;
+					String pathInArchive = null;
 					int idx = pathToFile.indexOf('!');
 					if (idx != -1) {
+						pathInArchive = pathToFile.substring(idx + 1, pathToFile.length());
 						pathToFile = pathToFile.substring(0, idx);
 					}
 					File fileToOpen = new File(pathToFile);
@@ -166,8 +169,18 @@ public class Content extends JPanel {
 						fileToOpen = new File(searchEntries.getSearchPath());
 					}
 					try {
-						Desktop.getDesktop().open(fileToOpen);
-					} catch (IOException ex) {
+						if (pathInArchive == null) {
+							Desktop.getDesktop().open(fileToOpen);
+						} else {
+							File exe = Settings.getInstance().getExecutiveJar();
+							if (Version.IS_WINDOWS) {								
+								new ProcessBuilder(exe.getAbsolutePath(), pathToFile, "-o", pathInArchive).start();
+							} else {
+								File run = new File(exe.getParentFile().getParentFile(), "Jar Explorer.sh");
+								new ProcessBuilder("sh", run.getAbsolutePath(), pathToFile, "-o", pathInArchive).start();
+							}
+						}
+					} catch (Exception ex) {
 						Msg.showException("Unable to open file " + fileToOpen, ex);
 					}
 				} else {
@@ -226,7 +239,7 @@ public class Content extends JPanel {
 		}
 	}
 
-	public static void createAndShowGUI(File passedFile) throws ResourcesException {
+	public static void createAndShowGUI(File passedFile, String pathToOpen) throws ResourcesException {
 		// Create and set up the window.
 		frame = new JFrame("Jar Explorer " + Settings.getInstance().getVersion());
 		if (Settings.X != 0 && Settings.Y != 0) {
@@ -287,7 +300,7 @@ public class Content extends JPanel {
 					if (!f.exists()) {
 						showMessageDialog(frame, "Specified file does not exist.", "Wrong input", ERROR_MESSAGE);
 					} else {
-						loadJarFile(file = f);
+						loadJarFile(file = f, null);
 					}
 				}
 			}
@@ -454,7 +467,7 @@ public class Content extends JPanel {
 					List<File> droppedFiles = (List<File>) evt.getTransferable()
 							.getTransferData(DataFlavor.javaFileListFlavor);
 					for (File f : droppedFiles) {
-						loadJarFile(file = f);
+						loadJarFile(file = f, null);
 						break;
 					}
 				} catch (Exception e) {
@@ -467,7 +480,7 @@ public class Content extends JPanel {
 		frame.setVisible(true);
 
 		if (passedFile != null) {
-			loadJarFile(file = passedFile);
+			loadJarFile(file = passedFile, pathToOpen);
 		}
 	}
 
@@ -490,7 +503,7 @@ public class Content extends JPanel {
 		jarTree.setSelectionPath(new TreePath(node.getPath()));
 	}
 
-	protected static void loadJarFile(final File f) {
+	protected static void loadJarFile(final File f, final String pathToOpen) {
 		log.fine("Loading file " + f);
 
 		new Executor() {
@@ -528,6 +541,10 @@ public class Content extends JPanel {
 				if (jarTree.isSingleFileLoaded()) {
 					JarTreeClickSelection.setNodes(null);
 					jarTree.setSelectionPath(new TreePath(jarTree.getRoot()));
+				}
+				if (pathToOpen != null) {
+					statusBar.disableProgress();
+					jarTree.expandTreeLeaf(pathToOpen);
 				}
 			}
 
