@@ -180,9 +180,9 @@ imp decompile all classes ... done .............................................
 imp cmd open class in jar ... done ................................................................03Jan2023
 bug open single class ... done ....................................................................20Jan2023
 bug doesn't recompile after decompiler was changed ... done .......................................20Jan2023
+imp open archive location in system explorer ... done .............................................20Jan2023
 
 
-imp open archive location in system explorer
 imp reduce hardcoded stuff like email, links and so on
 imp command console
 imp digest protect for jarexp

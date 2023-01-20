@@ -166,9 +166,8 @@ class JarTree extends JTree {
 				if (!(obj instanceof JarNode)) {
 					return;
 				}
-				JPopupMenu popupMenu = new JPopupMenu();
-				JarNodeMenuItem deleteNode = new JarNodeMenuItem("Delete", path);
 				Resources resources = Resources.getInstance();
+				JarNodeMenuItem deleteNode = new JarNodeMenuItem("Delete", path);
 				deleteNode.setIcon(resources.getDelIcon());
 				deleteNode.addActionListener(deleteActionListener);
 				JarNodeMenuItem addNode = new JarNodeMenuItem("Add", path);
@@ -203,6 +202,22 @@ class JarTree extends JTree {
 						}
 					}
 				});
+				
+				JarNodeMenuItem openInExplorer = new JarNodeMenuItem("Show In System Explorer", path);
+				openInExplorer.setIcon(resources.getOpenIcon());
+				openInExplorer.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						if (Desktop.isDesktopSupported()) {
+							File dir = ((JarNode)obj).origArch.getParentFile();
+							try {
+								Desktop.getDesktop().open(dir);
+							} catch (Exception ex) {
+								throw new JarexpException("Could not open explorer at " + dir, ex);
+							}
+						}
+					}
+				});
 
 				JarNodeMenuItem copyPath = new JarNodeMenuItem("Copy Path", path);
 				copyPath.setIcon(resources.getCopyIcon());
@@ -211,6 +226,10 @@ class JarTree extends JTree {
 				info.setIcon(resources.getInfoIcon());
 				info.addActionListener(informationActionListener);
 
+				JPopupMenu popupMenu = new JPopupMenu();
+				if (((JarNode)obj).isRoot()) {					
+					popupMenu.add(openInExplorer);
+				}
 				popupMenu.add(extNode);
 				popupMenu.add(addNode);
 				popupMenu.add(deleteNode);

@@ -9,6 +9,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.frame.ContentPanel.TabComponent;
+import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 
 
 class JarTreeWillExpandListener implements TreeWillExpandListener {
@@ -34,6 +35,7 @@ class JarTreeWillExpandListener implements TreeWillExpandListener {
 			TreeNode[] treeNodes = tab.node.selectedChild == null 
 					? tab.node.getPath() 
 					: tab.node.selectedChild.getPath();
+			JarTreeClickSelection.setNodes(null);
 			jarTree.setSelectionPath(new TreePath(treeNodes));
 		}
 	}
