@@ -385,8 +385,8 @@ public class Content extends JPanel {
 						try {
 							statusBar.enableProgress("Downloading...");
 							LibraryManager.prepareBinariesFor(DecompilerType.JDCORE);
-							changeDecompiler(DecompilerType.JDCORE);
 							statusBar.setDecompiler(DecompilerType.JDCORE);
+							changeDecompiler(DecompilerType.JDCORE);
 						} catch (Exception ex) {
 							Msg.showException("Unable to toggle decompiler", ex);
 						} finally {
@@ -405,8 +405,8 @@ public class Content extends JPanel {
 						try {
 							statusBar.enableProgress("Downloading...");
 							LibraryManager.prepareBinariesFor(DecompilerType.PROCYON);
-							changeDecompiler(DecompilerType.PROCYON);
 							statusBar.setDecompiler(DecompilerType.PROCYON);
+							changeDecompiler(DecompilerType.PROCYON);
 						} catch (Exception ex) {
 							Msg.showException("Unable to toggle decompiler", ex);
 						} finally {
@@ -425,8 +425,8 @@ public class Content extends JPanel {
 						try {
 							statusBar.enableProgress("Downloading...");
 							LibraryManager.prepareBinariesFor(DecompilerType.FERNFLOWER);
-							changeDecompiler(DecompilerType.FERNFLOWER);
 							statusBar.setDecompiler(DecompilerType.FERNFLOWER);
+							changeDecompiler(DecompilerType.FERNFLOWER);
 						} catch (Exception ex) {
 							Msg.showException("Unable to toggle decompiler", ex);
 						} finally {
@@ -498,6 +498,7 @@ public class Content extends JPanel {
 		if (node == null) {
 			return;
 		}
+		statusBar.disableProgress();
 		jarTree.isNotDraw = true;
 		jarTree.clearSelection();
 		jarTree.setSelectionPath(new TreePath(node.getPath()));
@@ -538,12 +539,12 @@ public class Content extends JPanel {
 				frame.getRootPane().registerKeyboardAction(jarTreeSelectionListener.new FilterAction(),
 						KeyStroke.getKeyStroke("ctrl F"), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
+				statusBar.disableProgress();
 				if (jarTree.isSingleFileLoaded()) {
 					JarTreeClickSelection.setNodes(null);
 					jarTree.setSelectionPath(new TreePath(jarTree.getRoot()));
 				}
-				if (pathToOpen != null) {
-					statusBar.disableProgress();
+				if (pathToOpen != null ) {
 					jarTree.expandTreeLeaf(pathToOpen);
 				}
 			}
