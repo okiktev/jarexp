@@ -200,6 +200,10 @@ class FilterPanel extends JPanel {
 	static void highlight(JTextArea area, int position, int length) {
 		try {
 			Rectangle r = area.modelToView(position);
+			long s = System.currentTimeMillis();
+			while (r == null && System.currentTimeMillis() - s < 1000) {
+				r = area.modelToView(position);
+			}
 			if (Version.JAVA_MAJOR_VER <= 8 && area instanceof RSyntaxTextArea) {
 				doCenterAlignForJavaLess9((RSyntaxTextArea) area, r);
 			} else {
