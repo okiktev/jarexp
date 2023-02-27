@@ -23,7 +23,7 @@ public class Main {
 			public void run() {
 				try {
 					LogManager.getLogManager().readConfiguration(Main.class.getClassLoader().getResourceAsStream("logging.properties"));
-				} catch (IOException e) {
+				} catch (Exception e) {
 					System.err.println("Could not setup logger configuration.");
 					e.printStackTrace(System.err);
 					throw new RuntimeException("Unable to initiate logger", e);

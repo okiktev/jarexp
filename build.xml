@@ -74,9 +74,6 @@
 		<copy todir="${jar.dir}">
 			<fileset dir="${classes.dir}" />
 			<fileset dir="${build.res.dir}" />
-		</copy>
-
-		<copy todir="${jar.dir}">
 			<fileset dir="${resources.dir}" >
 				<exclude name="**/LICENSE" />
 				<exclude name="**/logging*properties" />
