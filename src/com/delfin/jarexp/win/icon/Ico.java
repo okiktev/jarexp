@@ -1,5 +1,5 @@
 
-package com.delfin.jarexp.icon;
+package com.delfin.jarexp.win.icon;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;

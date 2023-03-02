@@ -56,7 +56,6 @@ import com.delfin.jarexp.frame.Content.PreLoadAction;
 import com.delfin.jarexp.frame.ContentPanel.TabComponent;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 import com.delfin.jarexp.frame.resources.Resources;
-import com.delfin.jarexp.icon.Ico;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.Executor;
 import com.delfin.jarexp.utils.FileUtils;
@@ -66,6 +65,7 @@ import com.delfin.jarexp.utils.RstaUtils;
 import com.delfin.jarexp.utils.TableHeaderCustomizer;
 import com.delfin.jarexp.utils.Zip;
 import com.delfin.jarexp.utils.Zip.StreamProcessor;
+import com.delfin.jarexp.win.icon.Ico;
 
 import static javax.swing.JOptionPane.*;
 

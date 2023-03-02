@@ -183,9 +183,19 @@ bug doesn't recompile after decompiler was changed ... done ....................
 imp open archive location in system explorer ... done .............................................20Jan2023
 
 
+bug open java page separately in the site
+bug check apache-maven.zip is not deployed
+bug check highlight error
+bug move icon thumbnails to the common folder
+
+
 imp reduce hardcoded stuff like email, links and so on
 imp command console
+imp new rsta for new JVMs
+imp refactor DecompilierMenuItems
 imp digest protect for jarexp
+
+imp licenses to server ? (saving 24Kb) 
 
 imp byte code decompiling
 imp kotlin lib support
