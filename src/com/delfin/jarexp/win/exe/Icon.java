@@ -61,7 +61,7 @@ class Icon {
 	}
 
 	void dumpTo(File destDir, File peFile) throws IOException {
-		File outputFile = new File(destDir, peFile.getName() + groupName + System.currentTimeMillis() + ".ico");
+		File outputFile = new File(destDir, peFile.getName() + '_' + groupName + System.currentTimeMillis() + ".ico");
 		FileOutputStream outputStream = new FileOutputStream(outputFile);
 		try {
 			outputStream.write(header);
@@ -72,11 +72,17 @@ class Icon {
 			});
 			int imgOffset = infos.size() * 16 + 6;
 			for (ImageInfo img : infos) {
+				if (img.imgData == null) {
+					continue;
+				}
 				outputStream.write(img.data);
 				outputStream.write(decode(Integer.toHexString(imgOffset)));
 				imgOffset += img.imgData.length;
 			}
 			for (ImageInfo img : infos) {
+				if (img.imgData == null) {
+					continue;
+				}
 				outputStream.write(img.imgData);
 			}
 		} finally {

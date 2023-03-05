@@ -22,6 +22,10 @@ class TImgDataDir extends TByteDef<UInteger> {
         return entry;
     }
 
+    TInt getSize() {
+    	return size;
+    }
+
     @Override
     UInteger get() {
         return virtualAddress.get();

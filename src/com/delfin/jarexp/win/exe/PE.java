@@ -137,6 +137,17 @@ public class PE {
 		throw new IOException("No version found:" + peFile);
 	}
 
+	public static List<String> getIconNames(File peFile) throws IOException {
+		PE pe = new PE(peFile);
+		if (pe.invalidFile) {
+			throw new IOException("Is not a valid PE:" + peFile);
+		}
+
+		List<String> icons = new ArrayList<String>();
+		fillIconsNames(pe, icons);
+		return icons;
+	}
+
 	public static void dumpIconsFrom(File peFile, File destDir) throws FileNotFoundException, IOException {
 		PE pe = new PE(peFile);
 		if (pe.invalidFile) {
@@ -156,6 +167,9 @@ public class PE {
 		for (TImgDataDir mainEntry : pe.optionalHeader.tables) {
 			if (mainEntry.getType() == EDirEntry.RESOURCE) {
 				RDirHeader root = (RDirHeader) mainEntry.data;
+				if (root == null && mainEntry.getSize().get().intValue() == 0) {
+					continue;
+				}
 				for (RDirEntry rootEntry : root.entries) {
 					if ("Icon".equals(rootEntry.name.get())) {
 						for (RDirEntry iconEntry : rootEntry.directory.entries) {
@@ -172,15 +186,22 @@ public class PE {
 		}
 	}
 
-	private static void fillIconsHeaders(PE pe, List<Icon> icons) {
+	private static void fillIconsHeaders(PE pe, List<Icon> icons) throws IOException {
 		for (TImgDataDir mainEntry : pe.optionalHeader.tables) {
 			if (mainEntry.getType() == EDirEntry.RESOURCE) {
 				RDirHeader root = (RDirHeader) mainEntry.data;
+				if (root == null && mainEntry.getSize().get().intValue() == 0) {
+					continue;
+				}
 				for (RDirEntry rootEntry : root.entries) {
 					if ("Group Icon".equals(rootEntry.name.get())) {
 						for (RDirEntry iconGroupEntry : rootEntry.directory.entries) {
 							for (RDirEntry iconEntry : iconGroupEntry.directory.entries) {
 								byte[] bytes = iconEntry.resourceDataEntry.getData(pe.fileBytes);
+								if (bytes.length < 2 || bytes[0] != 0x00 && (
+										bytes[1] != 0x01 || bytes[1] != 0x02)) {
+									throw new IOException("Wrong icon format found.");
+								}
 								icons.add(new Icon(iconGroupEntry.name.get(), bytes));
 							}
 						}
@@ -248,7 +269,6 @@ public class PE {
 					long optionAddress = entry.get().longValue();
 					if (sectionAddress <= optionAddress && sectionAddress + sectionSize > optionAddress) {
 						entry.setSection(section);
-						break;
 					}
 				}
 			}
@@ -265,6 +285,31 @@ public class PE {
 						fileBytes.seek((int) offsetInFile);
 						fileBytes.mark();
 						entry.data = new RDirHeader(fileBytes, section, 0);
+					}
+				}
+			}
+		}
+	}
+
+	private static void fillIconsNames(PE pe, List<String> icons) throws IOException {
+		for (TImgDataDir mainEntry : pe.optionalHeader.tables) {
+			if (mainEntry.getType() == EDirEntry.RESOURCE) {
+				RDirHeader root = (RDirHeader) mainEntry.data;
+				if (root == null && mainEntry.getSize().get().intValue() == 0) {
+					continue;
+				}
+				for (RDirEntry rootEntry : root.entries) {
+					if ("Group Icon".equals(rootEntry.name.get())) {
+						for (RDirEntry iconGroupEntry : rootEntry.directory.entries) {
+							for (RDirEntry iconEntry : iconGroupEntry.directory.entries) {
+								byte[] bytes = iconEntry.resourceDataEntry.getData(pe.fileBytes);
+								if (bytes.length < 2 || bytes[0] != 0x00 
+										&& (bytes[1] != 0x01 || bytes[1] != 0x02)) {
+									throw new IOException("Wrong icon format found.");
+								}
+								icons.add(iconGroupEntry.name.get());
+							}
+						}
 					}
 				}
 			}

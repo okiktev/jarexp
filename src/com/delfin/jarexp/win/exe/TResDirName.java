@@ -29,17 +29,20 @@ class TResDirName extends TByteDef<String> {
                 buff[i] = bytes.readUByte().byteValue();
             }
             bytes.seek(savedPosition);
-            // StandardCharsets.UTF-16LE
             value = new String(buff, Charset.forName("UTF-16LE")).trim();
         } else {
-            switch (level) {
-                case 1: value = EResource.get(intValue).getDetailedInfo();
-                    break;
-                case 2:
-                case 3:
-                default: value = intValue.toHexString();
-                    break;
-            }
+        	if (level == 1 && EResource.get(intValue) == null) {
+        		value = intValue.toHexString();
+        	} else {        		
+        		switch (level) {
+	        		case 1: value = EResource.get(intValue).getDetailedInfo();
+	        			break;
+	        		case 2:
+	        		case 3:
+	        		default: value = intValue.toHexString();
+	        			break;
+        		}
+        	}
         }
     }
 
@@ -52,7 +55,7 @@ class TResDirName extends TByteDef<String> {
     void format(StringBuilder b) {
         b.append(getDescriptive())
         	.append(": ");
-        switch (this.level) {
+        switch (level) {
             case 1: break;
             case 2: b.append("name: "); break;
             case 3: b.append("Language: " ); break;
