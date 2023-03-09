@@ -1,9 +1,9 @@
 package com.delfin.jarexp.frame;
 
-import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -23,6 +23,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
@@ -48,8 +49,9 @@ import javax.swing.tree.TreePath;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.exception.JarexpException;
+import com.delfin.jarexp.frame.JarNode.ClassItemNode;
+import com.delfin.jarexp.frame.JarNode.PeNode;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
-import com.delfin.jarexp.frame.JarTreeSelectionListener.ClassItemNode;
 import com.delfin.jarexp.frame.about.AboutDlg;
 import com.delfin.jarexp.frame.about.EnvironmentDlg;
 import com.delfin.jarexp.frame.about.ProcessesDlg;
@@ -57,16 +59,18 @@ import com.delfin.jarexp.frame.duplicates.DuplicatesDlg;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.resources.Resources.ResourcesException;
 import com.delfin.jarexp.frame.search.SearchDlg;
+import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.frame.search.SearchResult;
 import com.delfin.jarexp.settings.ActionHistory;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.settings.Version;
-import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.utils.Executor;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.ImgPanel;
 import com.delfin.jarexp.utils.Utils;
 import com.delfin.jarexp.utils.Zip;
+import com.delfin.jarexp.utils.Zip.StreamProcessor;
+import com.delfin.jarexp.win.exe.PE;
 
 public class Content extends JPanel {
 
@@ -117,8 +121,10 @@ public class Content extends JPanel {
 			final SearchResult searchResult = (SearchResult) tableModel.getValueAt(row, 0);
 			if (jarTree != null && searchEntries.getSearchPath().equals(jarTree.getRoot().name)) {
 				switch (searchResult.position) {
-				case -1: jarTree.expandTreeLeaf(searchResult.line); break;
-				case -2: showMessageDialog(frame, searchResult.line, "Information", INFORMATION_MESSAGE); break;
+				case -1: jarTree.expandTreeLeaf(searchResult.line);
+					break;
+				case -2: showMessageDialog(frame, searchResult.line, "Information", INFORMATION_MESSAGE);
+					break;
 				default:
 					if (searchResult.position < -1) {
 						showMessageDialog(frame, "Unknown result code: " + searchResult.line, "Error", ERROR_MESSAGE);
@@ -153,40 +159,58 @@ public class Content extends JPanel {
 					}
 				}
 			} else if (Desktop.isDesktopSupported()) {
-					SearchResult sr = searchResult;
-					while (sr.position != -1) {
-						sr = (SearchResult) tableModel.getValueAt(--row, 0);
-					}
-					String pathToFile = sr.line;
-					String pathInArchive = null;
-					int idx = pathToFile.indexOf('!');
-					if (idx != -1) {
-						pathInArchive = pathToFile.substring(idx + 1, pathToFile.length());
-						pathToFile = pathToFile.substring(0, idx);
-					}
-					File fileToOpen = new File(pathToFile);
-					if (!fileToOpen.exists()) {
-						fileToOpen = new File(searchEntries.getSearchPath());
-					}
-					try {
-						if (pathInArchive == null) {
-							Desktop.getDesktop().open(fileToOpen);
+				SearchResult sr = searchResult;
+				while (sr.position != -1) {
+					sr = (SearchResult) tableModel.getValueAt(--row, 0);
+				}
+				String pathToFile = sr.line;
+				String pathInArchive = null;
+				int idx = pathToFile.indexOf('!');
+				if (idx != -1) {
+					pathInArchive = pathToFile.substring(idx + 1, pathToFile.length());
+					pathToFile = pathToFile.substring(0, idx);
+				}
+				File fileToOpen = new File(pathToFile);
+				if (!fileToOpen.exists()) {
+					fileToOpen = new File(searchEntries.getSearchPath());
+				}
+				try {
+					if (pathInArchive == null) {
+						String ext = fileToOpen.getName().toLowerCase();
+						if (ext.endsWith(".exe") || ext.endsWith(".dll")) {
+							runJarExplorer(fileToOpen.getAbsolutePath(), null);
 						} else {
-							File exe = Settings.getInstance().getExecutiveJar();
-							if (Version.IS_WINDOWS) {								
-								new ProcessBuilder(exe.getAbsolutePath(), pathToFile, "-o", pathInArchive).start();
-							} else {
-								File run = new File(exe.getParentFile().getParentFile(), "Jar Explorer.sh");
-								new ProcessBuilder("sh", run.getAbsolutePath(), pathToFile, "-o", pathInArchive).start();
-							}
+							Desktop.getDesktop().open(fileToOpen);
 						}
-					} catch (Exception ex) {
-						Msg.showException("Unable to open file " + fileToOpen, ex);
+					} else {
+						runJarExplorer(pathToFile, pathInArchive);
 					}
+				} catch (Exception ex) {
+					Msg.showException("Unable to open file " + fileToOpen, ex);
+				}
+			} else {
+				showMessageDialog(frame, "Unable to open path to " + searchResult.line, "Information", WARNING_MESSAGE);
+			}
+		}
+
+		private static void runJarExplorer(String pathToFile, String pathInArchive) throws IOException {
+			File exe = Settings.getInstance().getExecutiveJar();
+			if (Version.IS_WINDOWS) {
+				if (pathInArchive == null) {
+					new ProcessBuilder(exe.getAbsolutePath(), pathToFile).start();
 				} else {
-					showMessageDialog(frame, "Unable to open path to " + searchResult.line, "Information", WARNING_MESSAGE);
+					new ProcessBuilder(exe.getAbsolutePath(), pathToFile, "-o", pathInArchive).start();
+				}
+			} else {
+				File run = new File(exe.getParentFile().getParentFile(), "Jar Explorer.sh");
+				if (pathInArchive == null) {
+					new ProcessBuilder("sh", run.getAbsolutePath(), pathToFile).start();
+				} else {
+					new ProcessBuilder("sh", run.getAbsolutePath(), pathToFile, "-o", pathInArchive).start();
 				}
 			}
+		}
+
 	}
 
 	static interface PreLoadAction {
@@ -214,20 +238,34 @@ public class Content extends JPanel {
 			return;
 		}
 		try {
-			JarNode node = (JarNode) object;
+			final JarNode node = (JarNode) object;
 			for (Enumeration<?> childred = node.children(); childred.hasMoreElements();) {
 				Object obj = childred.nextElement();
 				if (obj instanceof ClassItemNode) {
 					continue;
 				}
-				if (!Settings.NAME_PLACEHOLDER.equals(((JarNode) obj).path)) {
+				final JarNode child = ((JarNode) obj);
+				if (!Settings.NAME_PLACEHOLDER.equals(child.path)) {
 					continue;
 				}
-				node.removeAllChildren();
 				statusBar.enableProgress("Loading...");
-				File dst = new File(Resources.createTmpDir(), node.name);
-				dst = Zip.unzip(node.getFullPath(), node.path, node.getTempArchive(), dst);
-				jarTree.addArchive(dst, node);
+				String path = node.path;
+				node.removeAllChildren();
+				if (path.toLowerCase().endsWith(".exe") || path.toLowerCase().endsWith(".dll")) {
+					Zip.stream(node.getTempArchive(), path, new StreamProcessor() {
+						@Override
+						public void process(InputStream stream) throws IOException {
+							for (String iconName : PE.getIconNames(stream)) {
+								node.add(new PeNode(node, iconName + ".ico"));
+							}
+						}
+					});
+				} else {					
+					File dst = new File(Resources.createTmpDir(), node.name);
+					// TODO check to avoid unzipping here.
+					dst = Zip.unzip(node.getFullPath(), path, node.getTempArchive(), dst);
+					jarTree.addArchive(dst, node);
+				}
 				jarTree.update(node);
 				break;
 			}

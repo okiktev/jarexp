@@ -7,7 +7,7 @@ import javax.swing.Icon;
 
 import com.delfin.jarexp.frame.resources.Resources;
 
-public class JavaInterface implements IJavaItem {
+class JavaInterface implements IJavaItem {
 
 	private final String name;
 	private final Position position; 

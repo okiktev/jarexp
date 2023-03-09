@@ -7,9 +7,9 @@ import javax.swing.Icon;
 
 import com.delfin.jarexp.frame.resources.Resources;
 
-public class JavaMethod implements IJavaItem {
+class JavaMethod implements IJavaItem {
 
-	public enum ACCESS {DEF, PUBLIC, PRIVATE, PROTECTED}
+	enum ACCESS {DEF, PUBLIC, PRIVATE, PROTECTED}
 
 	final String name;
 

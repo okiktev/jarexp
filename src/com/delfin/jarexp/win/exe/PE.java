@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -35,42 +36,40 @@ public class PE {
 	}
 
 	public static String getInfo(File peFile) throws FileNotFoundException, IOException {
-		PE pe = new PE(peFile);
+		InputStream stream = new FileInputStream(peFile);
+		try {
+			return getInfo(stream);
+		} finally {
+			stream.close();
+		}
+	}
+
+	public static String getInfo(InputStream stream) throws FileNotFoundException, IOException {
+		PE pe = new PE(stream);
 		if (pe.isPE()) {
 			StringBuilder b = new StringBuilder();
 			b.append("PE signature offset: ")
 				.append(pe.getPEOffset())
 				.append(PE.EOL)
-				.append("PE signature correct: yes")
 				.append(PE.EOL)
-				.append(PE.EOL)
-				.append("================")
-				.append(PE.EOL)
-				.append("COFF header info")
-				.append(PE.EOL)
-				.append("================")
-				.append(PE.EOL);
+				.append("================================").append(PE.EOL)
+				.append("COFF header").append(PE.EOL)
+				.append("================================").append(PE.EOL);
 			for (TByteDef<?> bd : pe.coffHeader.headers) {
 				bd.format(b);
 			}
 			b.append(PE.EOL)
-				.append("================")
-				.append(PE.EOL)
-				.append("Optional header info")
-				.append(PE.EOL)
-				.append("================")
-				.append(PE.EOL);
+				.append("================================").append(PE.EOL)
+				.append("Optional header").append(PE.EOL)
+				.append("================================").append(PE.EOL);
 			for (TByteDef<?> bd : pe.optionalHeader.headers) {
 				bd.format(b);
 			}
 			b.append(PE.EOL)
 				.append(PE.EOL)
-				.append("================")
-				.append(PE.EOL)
-				.append("Section Table")
-				.append(PE.EOL)
-				.append("================")
-				.append(PE.EOL)
+				.append("================================").append(PE.EOL)
+				.append("Sections Table").append(PE.EOL)
+				.append("================================").append(PE.EOL)
 				.append(PE.EOL);
 			for (HSectionTableEntry section : pe.sectionTable.sections) {
 				for (TByteDef<?> bd : section.headers) {
@@ -80,7 +79,7 @@ public class PE {
 			b.append(PE.EOL);
 			return b.toString();
 		} else {
-			return "PE signature not found. The given file is not a PE file." + PE.EOL;
+			return "PE signature was not found. The given file is not a PE file." + PE.EOL;
 		}
 	}
 
@@ -116,10 +115,10 @@ public class PE {
 		}
 	}
 
-	public static String getVersion(File peFile) throws FileNotFoundException, IOException {
-		PE pe = new PE(peFile);
+	public static String getVersion(InputStream stream) throws FileNotFoundException, IOException {
+		PE pe = new PE(stream);
 		if (pe.invalidFile) {
-			throw new IOException("No version found:" + peFile);
+			throw new IOException("No version found.");
 		}
 		for (TImgDataDir mainEntry : pe.optionalHeader.tables) {
 			if (mainEntry.getType() == EDirEntry.RESOURCE) {
@@ -134,7 +133,7 @@ public class PE {
 				}
 			}
 		}
-		throw new IOException("No version found:" + peFile);
+		throw new IOException("No version found.");
 	}
 
 	public static List<String> getIconNames(File peFile) throws IOException {
@@ -146,6 +145,50 @@ public class PE {
 		List<String> icons = new ArrayList<String>();
 		fillIconsNames(pe, icons);
 		return icons;
+	}
+
+	public static List<String> getIconNames(InputStream stream) throws IOException {
+		PE pe = new PE(stream);
+		if (pe.invalidFile) {
+			throw new IOException("Is not a valid PE.");
+		}
+
+		List<String> icons = new ArrayList<String>();
+		fillIconsNames(pe, icons);
+		return icons;
+	}
+
+	public static byte[] getIcon(File peFile, String iconName) throws IOException {
+		InputStream stream = new FileInputStream(peFile);
+		try {
+			return getIcon(stream, iconName);
+		} finally {
+			stream.close();
+		}
+	}
+
+	public static byte[] getIcon(InputStream stream, String iconName) throws IOException {
+		PE pe = new PE(stream);
+		if (pe.invalidFile) {
+			throw new IOException("Is not a valid PE.");
+		}
+		List<Icon> icons = new ArrayList<Icon>();
+		fillIconsHeaders(pe, icons);
+		Iterator<Icon> it = icons.iterator();
+		while (it.hasNext()) {
+			Icon icon = it.next();
+			if (!iconName.equals(icon.getName())) {
+				it.remove();
+			}
+		}
+		fillIconsImages(pe, icons);
+		if (icons.size() == 0) {
+			throw new FileNotFoundException("Couldn't find an icon " + iconName);
+		}
+		if (icons.size() > 1) {
+			throw new IOException("Found more than one icons with name " + iconName);
+		}
+		return icons.get(0).getBytes();
 	}
 
 	public static void dumpIconsFrom(File peFile, File destDir) throws FileNotFoundException, IOException {
@@ -307,7 +350,13 @@ public class PE {
 										&& (bytes[1] != 0x01 || bytes[1] != 0x02)) {
 									throw new IOException("Wrong icon format found.");
 								}
-								icons.add(iconGroupEntry.name.get());
+								String iconName = iconGroupEntry.name.get();
+								try {
+									iconName = Icon.decodeToDec(iconName);
+								} catch (NumberFormatException e) {
+
+								}
+								icons.add(iconName);
 							}
 						}
 					}
@@ -315,4 +364,5 @@ public class PE {
 			}
 		}
 	}
+
 }

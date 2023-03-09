@@ -19,7 +19,9 @@ class OnFindBtnClickListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		dlg.tResult.setModel(EMPTY_TABLE_DATA);
 
-		if (dlg.isFindClass) {
+		if (dlg.isFindClass == null) {
+			new IconSearcher().search(dlg);
+		} else if (dlg.isFindClass) {
 			new FileSearcher().search(dlg);
 		} else {
 			new FileContentSearcher().search(dlg);

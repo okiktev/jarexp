@@ -1,19 +1,19 @@
 package com.delfin.jarexp.frame.search;
 
-import static com.delfin.jarexp.settings.Settings.DLG_DIM;
 import static com.delfin.jarexp.settings.Settings.DLG_TEXT_FONT;
 import static java.awt.GridBagConstraints.BOTH;
 import static java.awt.GridBagConstraints.EAST;
 import static java.awt.GridBagConstraints.NONE;
 import static java.awt.GridBagConstraints.NORTH;
 import static java.awt.GridBagConstraints.WEST;
-
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -39,10 +39,12 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -67,11 +69,15 @@ import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 
+
 public abstract class SearchDlg extends JFrame {
 
 	private static final Logger log = Logger.getLogger(SearchDlg.class.getName());
 
 	private static final long serialVersionUID = -2473586208850553553L;
+
+	private static final Insets CHECKBOX_MARGIN = new Insets(-1, 0, -3 ,0);
+	private static final Insets ZERO_PADDING = new Insets(0, 0, 0, 0);
 
 	public static class SearchEntries implements Iterable<SearchEntries> {
 
@@ -130,33 +136,47 @@ public abstract class SearchDlg extends JFrame {
 
 	}
 
+	private static final Dimension DLG_DIM = new Dimension(Settings.DLG_DIM.width + 100, Settings.DLG_DIM.height);
+
 	public SearchEntries searchEntries;
 
 	private JLabel lbSearchIn = new JLabel("Search In:");
 	protected JTextField tfSearchIn = new JTextField();
 	private JButton btnChangePlace = new JButton("Browse");
-	protected JCheckBox cbMatchCase = new JCheckBox("Match case");
-	protected JCheckBox cbInAllSubArchives = new JCheckBox("In all sub-archives");
+	protected JCheckBox cbMatchCase = new CheckBox("Match case");
+	protected JCheckBox cbInAllSubArchives = new CheckBox("In all sub-archives");
 	protected JLabel lbResult = new JLabel("Result");
 	private JLabel lbFind = new JLabel("Find what:");
+	private JLabel lbIconsFind = new JLabel("Find in:");
 	@SuppressWarnings("rawtypes")
 	protected JComboBox cbFind = new JComboBox();
-	
+	JCheckBox cbIconsInExe = new CheckBox(".EXE");
+	JCheckBox cbIconsInDll = new CheckBox(".DLL");
 	private JButton btnFind = new JButton("Find");
-	private JRadioButton rbClass = new JRadioButton("Find File");
-	private JRadioButton rbInFiles = new JRadioButton("Find in Files");
+	private JRadioButton rbClass = new RadioButton("Find File");
+	private JRadioButton rbInFiles = new RadioButton("Find in Files");
+	private JRadioButton rbIcons = new RadioButton("Find icons");
 	protected JTable tResult = new JTable();
-	protected ImgBtn btnResultToFile = new ImgBtn("Save search result to file", Resources.getInstance().getFloppyIcon());
-	protected ImgBtn btnResultToClipboard = new ImgBtn("Copy search result to clipboard", Resources.getInstance().getCopyIcon());
+	protected ImgBtn btnResultToFile = new ImgButton("Save search result to file", Resources.getInstance().getFloppyIcon());
+	protected ImgBtn btnResultToClipboard = new ImgButton("Copy search result to clipboard", Resources.getInstance().getCopyIcon());
 	protected JScrollPane spResult = new JScrollPane(tResult);
 	private JLabel lbFileFilter = new JLabel("File Filter:");
 	protected JTextField tfFileFilter = new JTextField("!.png,!.jpeg,!.jpg,!.bmp,!.gif,!.ico,!.exe");
 
 	@SuppressWarnings("rawtypes")
-	JComboBox cbDecompiler = new JComboBox();
+	JComboBox cbDecompiler = new ComboBox();
 	IDecompiler decompiler;
 
-	protected boolean isFindClass = true;
+	protected Boolean isFindClass = true;
+
+	private JPanel pIconsIn = group(cbIconsInExe, cbIconsInDll);
+	{
+		cbIconsInExe.setMargin(CHECKBOX_MARGIN);
+		cbIconsInDll.setMargin(CHECKBOX_MARGIN);
+		lbIconsFind.setVisible(false);
+		cbIconsInExe.setSelected(true);
+		pIconsIn.setVisible(false);
+	}
 
 	private ChangeListener setFocusOnInput = new ChangeListener() {
 		@Override
@@ -199,25 +219,28 @@ public abstract class SearchDlg extends JFrame {
 		add(tfSearchIn, 	new GridBagConstraints(1, 0, 1, 1, 1, 0, NORTH, BOTH, new Insets(5, 5, 0, 0), 0, 0));
 		add(btnChangePlace, new GridBagConstraints(2, 0, 1, 1, 0, 0, WEST, NONE, new Insets(5, 5, 0, 5), 0, 0));
 
-		add(rbClass,      new GridBagConstraints(0, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
-		add(rbInFiles, 	  new GridBagConstraints(1, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
-		if (Version.JAVA_MAJOR_VER >= 7) {			
-			add(cbDecompiler, new GridBagConstraints(2, 1, 1, 1, 0, 0, WEST, NONE, new Insets(5, 5, 5, 5), 0, 0));
-		}
+		add(group(rbClass),      new GridBagConstraints(0, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
 
-		add(cbMatchCase,        new GridBagConstraints(0, 2, 1, 1, 0, 0, NORTH, NONE, insets, 0, 0));
-		add(cbInAllSubArchives, new GridBagConstraints(1, 2, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
+		add(group(Version.JAVA_MAJOR_VER >= 7 
+				? new JComponent[] {rbInFiles, cbDecompiler, rbIcons} 
+				: new JComponent[] {rbInFiles, rbIcons} )
+			, new GridBagConstraints(1, 1, 2, 1, 0, 0, WEST, NONE, insets, 0, 0));
 
-		add(lbFileFilter,       new GridBagConstraints(0, 3, 1, 1, 0, 0, EAST, NONE, insets, 0, 0));
+
+		add(group(cbMatchCase, cbInAllSubArchives),      new GridBagConstraints(0, 2, 3, 1, 0, 0, WEST, NONE, insets, 0, 0));
+
+		add(lbFileFilter,       new GridBagConstraints(0, 3, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 0, 0), 0, 0));
 		add(tfFileFilter,       new GridBagConstraints(1, 3, 2, 1, 0, 0, NORTH, BOTH, new Insets(0, 5, 5, 5), 0, 0));
 
-		add(lbFind, new GridBagConstraints(0, 4, 1, 1, 0, 0, EAST, NONE, insets, 0, 0));
+		add(lbFind, new GridBagConstraints(0, 4, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 0, 0), 0, 0));		
+		add(lbIconsFind, new GridBagConstraints(0, 4, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 0, 0), 0, 0));		
 		add(cbFind, new GridBagConstraints(1, 4, 1, 1, 1, 0, NORTH, BOTH, new Insets(0, 5, 0, 0), 0, 0));
+		add(pIconsIn, new GridBagConstraints(1, 4, 1, 1, 1, 0, WEST, NONE, insets, 0, 0));
 		add(btnFind, new GridBagConstraints(2, 4, 1, 1, 0, 0, WEST, NONE, new Insets(0, 5, 0, 5), 0, 0));
 
 		add(lbResult,             new GridBagConstraints(0, 5, 2, 1, 1, 0, WEST, NONE, new Insets(5, 5, 5, 0), 0, 0));
-		add(btnResultToFile,      new GridBagConstraints(2, 5, 1, 0, 0, 0, NORTH, NONE, new Insets(5, 5, 5, 0), 0, 0));
-		add(btnResultToClipboard, new GridBagConstraints(2, 5, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 5, 5), 0, 0));
+		add(group(btnResultToFile, btnResultToClipboard),
+				new GridBagConstraints(2, 5, 1, 0, 0, 0, NORTH, NONE, ZERO_PADDING, 0, 0));
 
 		add(spResult, new GridBagConstraints(0, 6, 3, 1, 1, 1, NORTH, BOTH, insets, 0, 0));
 	}
@@ -238,6 +261,7 @@ public abstract class SearchDlg extends JFrame {
 	protected void initComponents() {
 		rbClass.setFont(DLG_TEXT_FONT);
 		rbInFiles.setFont(DLG_TEXT_FONT);
+		rbIcons.setFont(DLG_TEXT_FONT);
 		cbDecompiler.setFont(DLG_TEXT_FONT);
 		cbMatchCase.setFont(DLG_TEXT_FONT);
 		cbInAllSubArchives.setFont(DLG_TEXT_FONT);
@@ -252,6 +276,9 @@ public abstract class SearchDlg extends JFrame {
 		lbSearchIn.setFont(DLG_TEXT_FONT);
 		tfSearchIn.setFont(DLG_TEXT_FONT);
 		btnChangePlace.setFont(DLG_TEXT_FONT);
+		cbIconsInDll.setFont(DLG_TEXT_FONT);
+		cbIconsInExe.setFont(DLG_TEXT_FONT);
+		lbIconsFind.setFont(DLG_TEXT_FONT);
 
 		tfSearchIn.setEditable(false);
 		tfSearchIn.setToolTipText(tfSearchIn.getText());
@@ -260,6 +287,9 @@ public abstract class SearchDlg extends JFrame {
 		}
 		cbFind.setEditable(true);
 		cbFind.setSelectedIndex(-1);
+
+		btnResultToFile.setContentAreaFilled(false);
+		btnResultToClipboard.setContentAreaFilled(false);
 
 		btnChangePlace.addActionListener(new ActionListener() {
 			@Override
@@ -326,11 +356,23 @@ public abstract class SearchDlg extends JFrame {
 			}
 		});
 
+		rbIcons.setMnemonic(KeyEvent.VK_I);
+		rbIcons.addChangeListener(setFocusOnInput);
+		rbIcons.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				isFindClass = null;
+				makeVisibleHide();
+				repaint();
+			}
+		});
+
 		initDecompilerComboBox();
 
 		ButtonGroup group = new ButtonGroup();
 		group.add(rbClass);
 		group.add(rbInFiles);
+		group.add(rbIcons);
 
 		tResult.setTableHeader(null);
 		tResult.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
@@ -471,9 +513,23 @@ public abstract class SearchDlg extends JFrame {
 				isFindClass = false;
 			}
 		}
-		lbFileFilter.setVisible(!isFindClass);
-		tfFileFilter.setVisible(!isFindClass);
-		cbDecompiler.setVisible(!isFindClass);
+		lbFileFilter.setVisible(isFindClass != null && !isFindClass);
+		tfFileFilter.setVisible(isFindClass != null && !isFindClass);
+		cbDecompiler.setVisible(isFindClass != null && !isFindClass);
+		cbMatchCase.setVisible(isFindClass != null);
+		cbFind.setVisible(isFindClass != null);
+		pIconsIn.setVisible(isFindClass == null);
+		lbIconsFind.setVisible(isFindClass == null);
+		lbFind.setVisible(isFindClass != null);
+	}
+
+	private static JPanel group(JComponent...comps) {
+		JPanel panel = new JPanel(new FlowLayout(0, 10, 0));
+		for (JComponent c : comps) {
+			c.getInsets().set(0, 0, 0, 0);
+			panel.add(c);
+		}
+		return panel;
 	}
 
 	private static class IconListRenderer extends DefaultListCellRenderer {
@@ -493,6 +549,47 @@ public abstract class SearchDlg extends JFrame {
 			JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			label.setIcon(ICONS.get(value));
 			return label;
+		}
+	}
+	
+	private static class CheckBox extends JCheckBox {
+		private static final long serialVersionUID = -167729086880469021L;
+		CheckBox(String text) {
+			super(text);
+		}
+		@Override
+		public Insets getInsets() {
+			return ZERO_PADDING;
+		}
+	}
+
+	private static class RadioButton extends JRadioButton {
+		private static final long serialVersionUID = 5356552474097721574L;
+		RadioButton(String text) {
+			super(text);
+		}
+		@Override
+		public Insets getInsets() {
+			return ZERO_PADDING;
+		}
+	}
+
+	private static class ComboBox extends JComboBox<Object> {
+		private static final long serialVersionUID = 6230485454343520493L;
+		@Override
+		public Insets getInsets() {
+			return ZERO_PADDING;
+		}
+	}
+	
+	private static class ImgButton extends ImgBtn {
+		private static final long serialVersionUID = 6049029429225279535L;
+		ImgButton(String text, Icon icon) {
+			super(text, icon);
+		}
+		@Override
+		public Insets getInsets() {
+			return ZERO_PADDING;
 		}
 	}
 

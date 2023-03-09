@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +39,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableModel;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -52,8 +52,11 @@ import com.delfin.jarexp.analyzer.IJavaItem.Position;
 import com.delfin.jarexp.decompiler.Decompiler;
 import com.delfin.jarexp.decompiler.IDecompiler;
 import com.delfin.jarexp.decompiler.IDecompiler.Result;
+import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.Content.PreLoadAction;
 import com.delfin.jarexp.frame.ContentPanel.TabComponent;
+import com.delfin.jarexp.frame.JarNode.ClassItemNode;
+import com.delfin.jarexp.frame.JarNode.PeNode;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.settings.Settings;
@@ -65,6 +68,7 @@ import com.delfin.jarexp.utils.RstaUtils;
 import com.delfin.jarexp.utils.TableHeaderCustomizer;
 import com.delfin.jarexp.utils.Zip;
 import com.delfin.jarexp.utils.Zip.StreamProcessor;
+import com.delfin.jarexp.win.exe.PE;
 import com.delfin.jarexp.win.icon.Ico;
 
 import static javax.swing.JOptionPane.*;
@@ -141,7 +145,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 			@Override
 			protected void perform() {
-				if (obj instanceof ClassItemNode) {
+				if (obj instanceof ClassItemNode && !(obj instanceof PeNode)) {
 					ClassItemNode itemNode = (ClassItemNode) obj;
 					for (Component comp : ((Content) frame.getContentPane()).getComponents()) {
 						if (!(comp instanceof JSplitPane)) {
@@ -170,30 +174,59 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					return;
 				}
 
-				final JarNode node = (JarNode) obj;
+				final JarNode node = obj instanceof PeNode 
+						? new JarNode(((PeNode)obj).name, ((PeNode)obj).parent.path 
+								, ((PeNode)obj).parent.getTempArchive(), ((PeNode)obj).parent.origArch, false)
+						: (JarNode) obj;
 				final JSplitPane pane = Content.getSplitPane();
 				final ContentPanel contentView = (ContentPanel) pane.getRightComponent();
 				final int dividerLocation = pane.getDividerLocation();
 
 				try {
+					final String lowpath = node.path.toLowerCase();
 					if (node.isNotClass() && (!node.isLeaf() || node.isDirectory)) {
 						statusBar.setPath(node.getFullPath());
 						statusBar.setCompiledVersion("");
 						Content.preLoadArchive(node, new PreLoadAction() {
 							@Override
 							public void perform() {
-								JTable table = new JTable(new JarNodeTableModel(node, statusBar));
-								table.setFillsViewportHeight(true);
-								table.setAutoCreateRowSorter(true);
-								TableHeaderCustomizer.customize(table);
-								table.setDefaultRenderer(Object.class, FOLDER_TABLE_CELL_RENDERER);
-								table.setDefaultRenderer(Number.class, FOLDER_TABLE_CELL_RENDERER);
-								table.addMouseListener(new FolderTableMouseAdapter(table, node));
+								if (lowpath.endsWith(".exe") || lowpath.endsWith(".dll")) {
+									final RSyntaxTextArea textArea = new RSyntaxTextArea();
+									if (jarTree.isSingleFileLoaded()) {
+										try {
+											textArea.setText(PE.getInfo(node.getTempArchive()));
+										} catch (IOException e) {
+											throw new JarexpException("Unable to get info of " + node.getTempArchive(), e);
+										}
+									} else {										
+										Zip.stream(node.getTempArchive(), node.path, new StreamProcessor() {
+											@Override
+											public void process(InputStream stream) throws IOException {
+												textArea.setText(PE.getInfo(stream));
+											}
+										});
+									}
+									textArea.setBorder(Settings.EMPTY_BORDER);
+									textArea.setEditable(false);
 
-								JComponent tablePane = new JScrollPane(table);
-								tablePane.setBorder(Settings.EMPTY_BORDER);
+									RTextScrollPane textScrollPane = new RTextScrollPane(textArea);
+									textScrollPane.setBorder(Settings.EMPTY_BORDER);
 
-								contentView.addContent(tablePane, node, statusBar, true);
+									contentView.addContent(textScrollPane, node, statusBar);
+								} else {
+									JTable table = new JTable(new JarNodeTableModel(node, statusBar));
+									table.setFillsViewportHeight(true);
+									table.setAutoCreateRowSorter(true);
+									TableHeaderCustomizer.customize(table);
+									table.setDefaultRenderer(Object.class, FOLDER_TABLE_CELL_RENDERER);
+									table.setDefaultRenderer(Number.class, FOLDER_TABLE_CELL_RENDERER);
+									table.addMouseListener(new FolderTableMouseAdapter(table, node));
+									
+									JComponent tablePane = new JScrollPane(table);
+									tablePane.setBorder(Settings.EMPTY_BORDER);
+									
+									contentView.addContent(tablePane, node, statusBar, true);
+								}
 							}
 						});
 					} else {
@@ -203,8 +236,9 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						statusBar.setChildren("");
 
 						File file;
-						String lowPath;
-						if (node.getParent() == null && (lowPath = node.origArch.getName().toLowerCase()).endsWith(".class")) {
+						String lowPath = node.origArch == null ? null : node.origArch.getName().toLowerCase();
+						if (node.getParent() == null && (lowPath.endsWith(".class") 
+								|| lowPath.endsWith(".exe") || lowPath.endsWith(".dll") || lowPath.endsWith(".ico"))) {
 							file = node.origArch;
 						} else {
 							file = new File(node.origArch.getParent(), node.path);
@@ -244,17 +278,54 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 									}
 								}
 							});
-						} else if (lowPath.endsWith(".ico")) {
-							Zip.stream(node.getTempArchive(), node.path, new StreamProcessor() {
-								@Override
-								public void process(InputStream stream) throws IOException {
-									JPanel pnl = new JPanel();
-									for (BufferedImage icon : Ico.read(stream)) {
+						} else if (lowPath.endsWith(".ico") || node.name.toLowerCase().endsWith(".ico")) {
+							final JPanel pnl = new JPanel();
+							try {
+								if (obj instanceof PeNode) {
+									if (jarTree.isSingleFileLoaded()) {
+										InputStream is = new ByteArrayInputStream(PE.getIcon(file, node.name.replace(".ico", "")));
+										try {
+											for (BufferedImage icon : Ico.read(is)) {
+												pnl.add(new ImgPanel(icon));
+											}
+										} finally {
+											is.close();
+										}
+									} else {
+										Zip.stream(node.getTempArchive(), node.path, new StreamProcessor() {
+											@Override
+											public void process(InputStream stream) throws IOException {
+												InputStream is = new ByteArrayInputStream(PE.getIcon(stream, node.name.replace(".ico", "")));
+												try {
+													for (BufferedImage icon : Ico.read(is)) {
+														pnl.add(new ImgPanel(icon));
+													}
+												} finally {
+													is.close();
+												}
+											}
+										});
+									}
+									statusBar.setPath(((PeNode)obj).getFullPath());
+									node.selectedChild = (ClassItemNode) obj;
+								} else if (jarTree.isSingleFileLoaded()) {
+									for (BufferedImage icon : Ico.read(file)) {
 										pnl.add(new ImgPanel(icon));
 									}
-									contentView.addContent(new JScrollPane(pnl), node, statusBar);
+								} else {								
+									Zip.stream(node.getTempArchive(), node.path, new StreamProcessor() {
+										@Override
+										public void process(InputStream stream) throws IOException {
+											for (BufferedImage icon : Ico.read(stream)) {
+												pnl.add(new ImgPanel(icon));
+											}
+										}
+									});
 								}
-							});
+							} catch (IOException e) {
+								throw new JarexpException("Unable to read ico " + file, e);
+							}
+							contentView.addContent(new JScrollPane(pnl), node, statusBar);
 						} else {
 							if (!file.isDirectory()) {
 								statusBar.enableProgress("Reading...");
@@ -444,29 +515,5 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 		
 		
 	}
-
-	static class ClassItemNode extends DefaultMutableTreeNode {
-
-		private static final long serialVersionUID = 7470246996120563613L;
-
-		IJavaItem javaItem;
-
-		private final String name;
-
-		ClassItemNode(IJavaItem javaItem) {
-			this.javaItem = javaItem;
-			this.name = javaItem.getName();
-		}
-
-		Position getPosition() {
-			return javaItem.getPosition();
-		}
-
-		@Override
-		public String toString() {
-			return name;
-		}
-
-	} 
 
 }

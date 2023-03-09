@@ -7,14 +7,14 @@ import javax.swing.Icon;
 
 import com.delfin.jarexp.frame.resources.Resources;
 
-public class JavaEnum implements IJavaItem {
+class JavaEnum implements IJavaItem {
 
 	private final String name;
 	private final Position position; 
 
 	private List<IJavaItem> children = new ArrayList<IJavaItem>(5);
 
-	public JavaEnum(String name, Position position) {
+	JavaEnum(String name, Position position) {
 		this.name = name;
 		this.position = position;
 	}

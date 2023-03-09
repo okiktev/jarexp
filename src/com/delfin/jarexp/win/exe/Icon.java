@@ -23,7 +23,7 @@ class Icon {
 
 	Icon(String groupName, byte[] groupInfoData) {
 		header = Arrays.copyOfRange(groupInfoData, 0, 6);
-		this.groupName = decodeToDec(groupName);
+		this.groupName = groupName;
 		int left = 6;
 		int right = 20;
 		while (right <= groupInfoData.length) {
@@ -31,6 +31,10 @@ class Icon {
 			left = right;
 			right = left + 14;
 		}
+	}
+
+	String getName() {
+		return groupName;
 	}
 
 	boolean isContainsImage(String name) {
@@ -60,31 +64,58 @@ class Icon {
 
 	}
 
+	static String decodeToDec(String hex) {
+		return Integer.toString(Integer.parseInt(hex, 16));
+	}
+
+	byte[] getBytes() throws IOException {
+		final List<Byte> res = new ArrayList<Byte>();
+		new IconAssembler() {
+			@Override
+			protected void processHeader(byte[] header) throws IOException {
+				add(res, header);
+			}
+			@Override
+			protected void processImageHeader(byte[] header, byte[] offset) throws IOException {
+				add(res, header);
+				add(res, offset);
+			}
+			@Override
+			protected void processImageData(byte[] data) throws IOException {
+				add(res, data);
+			}
+			private void add(List<Byte> toList, byte[] bytes) {
+				for (byte b : bytes) {
+					toList.add(b);
+				}
+			}
+		}.assemble();
+		byte[] bytes = new byte[res.size()];
+		for (int i = 0; i < res.size(); ++i) {
+			bytes[i] = res.get(i);
+		}
+		return bytes;
+	}
+
 	void dumpTo(File destDir, File peFile) throws IOException {
 		File outputFile = new File(destDir, peFile.getName() + '_' + groupName + System.currentTimeMillis() + ".ico");
-		FileOutputStream outputStream = new FileOutputStream(outputFile);
+		final FileOutputStream outputStream = new FileOutputStream(outputFile);
 		try {
-			outputStream.write(header);
-			Collections.sort(infos, new Comparator<ImageInfo>() {
-				public int compare(ImageInfo o1, ImageInfo o2) {
-					return Integer.valueOf(o1.name).compareTo(Integer.valueOf(o2.name));
+			new IconAssembler() {
+				@Override
+				protected void processHeader(byte[] header) throws IOException {
+					outputStream.write(header);
 				}
-			});
-			int imgOffset = infos.size() * 16 + 6;
-			for (ImageInfo img : infos) {
-				if (img.imgData == null) {
-					continue;
+				@Override
+				protected void processImageHeader(byte[] header, byte[] offset) throws IOException {
+					outputStream.write(header);
+					outputStream.write(offset);
 				}
-				outputStream.write(img.data);
-				outputStream.write(decode(Integer.toHexString(imgOffset)));
-				imgOffset += img.imgData.length;
-			}
-			for (ImageInfo img : infos) {
-				if (img.imgData == null) {
-					continue;
+				@Override
+				protected void processImageData(byte[] data) throws IOException {
+					outputStream.write(data);
 				}
-				outputStream.write(img.imgData);
-			}
+			}.assemble();
 		} finally {
 			outputStream.close();
 		}
@@ -115,8 +146,37 @@ class Icon {
 		return out;
 	}
 
-	private static String decodeToDec(String hex) {
-		return Integer.toString(Integer.parseInt(hex, 16));
+	private abstract class IconAssembler {
+
+		void assemble() throws IOException {
+			processHeader(header);
+			Collections.sort(infos, new Comparator<ImageInfo>() {
+				public int compare(ImageInfo o1, ImageInfo o2) {
+					return Integer.valueOf(o1.name).compareTo(Integer.valueOf(o2.name));
+				}
+			});
+			int imgOffset = infos.size() * 16 + 6;
+			for (ImageInfo img : infos) {
+				if (img.imgData == null) {
+					continue;
+				}
+				processImageHeader(img.data, decode(Integer.toHexString(imgOffset)));
+				imgOffset += img.imgData.length;
+			}
+			for (ImageInfo img : infos) {
+				if (img.imgData == null) {
+					continue;
+				}
+				processImageData(img.imgData);
+			}
+		}
+
+		protected abstract void processHeader(byte[] header) throws IOException;
+
+		protected abstract void processImageHeader(byte[] header, byte[] offset) throws IOException;
+
+		protected abstract void processImageData(byte[] data) throws IOException;
+
 	}
 
 }

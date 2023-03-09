@@ -72,6 +72,9 @@ abstract class AbstractSearcher implements Searcher {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void manageSearchHistory() {
+		if (searchDlg.isFindClass == null) {
+			return;
+		}
 		JComboBox cb = searchDlg.cbFind;
 		ActionHistory.addSearch((String) cb.getSelectedItem());
 		cb.removeAllItems();

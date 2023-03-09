@@ -13,12 +13,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
@@ -34,16 +38,20 @@ import javax.swing.tree.TreeSelectionModel;
 
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.Content.SearchResultMouseAdapter;
+import com.delfin.jarexp.frame.JarNode.ClassItemNode;
+import com.delfin.jarexp.frame.JarNode.PeNode;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
-import com.delfin.jarexp.frame.JarTreeSelectionListener.ClassItemNode;
 import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.search.SearchDlg;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.Utils;
+import com.delfin.jarexp.win.exe.PE;
 
 class JarTree extends JTree {
+
+	private static final Logger log = Logger.getLogger(JarTree.class.getCanonicalName());
 
     private class JarTreeCellRenderer extends DefaultTreeCellRenderer {
 
@@ -62,7 +70,7 @@ class JarTree extends JTree {
                 setIcon(node.isDirectory ? Resources.getIconForDir() : Resources.getIconFor(node.name));
             }
             if (value instanceof ClassItemNode) {
-            	setIcon(((ClassItemNode) value).javaItem.getIcon());
+            	// setIcon(((ClassItemNode) value).javaItem.getIcon());
             }
             return this;
         }
@@ -358,15 +366,36 @@ class JarTree extends JTree {
 		final File tmpArch = new File(Resources.createTmpDir(), fileName);
 		root = new JarNode(origArch.getAbsolutePath(), "", tmpArch, origArch, false);
 
-		if (!fileName.toLowerCase().endsWith(".class")) {
-	        new Jar(origArch) {
-	            @Override
-	            protected void process(JarEntry entry) throws IOException {
-	            	addIntoNode(entry, root, tmpArch, origArch);
-	            }
-	        }.bypass();
+		String fname = fileName.toLowerCase();
+		if (fname.endsWith(".class") || fname.endsWith(".exe") || fname.endsWith(".dll") || fname.endsWith(".ico")) {
+			isSingleFileLoaded = true;
+			if (fname.endsWith(".exe") || fname.endsWith(".dll")) {
+				InputStream stream = null;
+				try {
+					stream = new FileInputStream(origArch);
+					for (String iname : PE.getIconNames(stream)) {
+						root.add(new PeNode(root, iname + ".ico"));
+					}
+					root.path = fname;
+				} catch (Exception e) {
+					throw new JarexpException("An error occurred while parsing ico file " + origArch, e);
+				} finally {
+					if (stream != null) {
+						try {
+							stream.close();
+						} catch (IOException e) {
+							log.log(Level.WARNING, "Couldn't close stream to " + origArch, e);
+						}
+					}
+				}
+			}
 		} else {
-		    isSingleFileLoaded = true;
+			new Jar(origArch) {
+				@Override
+				protected void process(JarEntry entry) throws IOException {
+					addIntoNode(entry, root, tmpArch, origArch);
+				}
+			}.bypass();
 		}
 		setModel(model = new DefaultTreeModel(root, false));
 	}
@@ -385,11 +414,11 @@ class JarTree extends JTree {
 
 	JarNode getNodeByLocation(Point point) {
 		TreePath path = getPathForLocation(point.x, point.y);
-		Object comp = path.getLastPathComponent();
-		if (comp instanceof JarNode) {
-			return path == null ? null : (JarNode) path.getLastPathComponent();
+		if (path == null) {
+			return null;
 		}
-		return null;
+		Object comp = path.getLastPathComponent();
+		return comp instanceof JarNode ? (JarNode) path.getLastPathComponent() : null;
 	}
 
 	static void put(JarNode node, List<File> files) {
@@ -405,6 +434,10 @@ class JarTree extends JTree {
 			if (child.isArchive()) {
 				archiveLoader.load(child);
 			}
+			String lowpath = path.toLowerCase();
+			if (lowpath.endsWith(".exe") || lowpath.endsWith(".dll")) {
+				child.add(new JarNode("", Settings.NAME_PLACEHOLDER, null, null, false));
+			}
 			if (!isExist(node, f)) {
 				node.add(child);
 			}
@@ -414,11 +447,11 @@ class JarTree extends JTree {
 		}
 	}
 
-	void addArchive(final File jar, final JarNode node) {
-		new Jar(jar) {
+	void addArchive(final File archive, final JarNode node) {
+		new Jar(archive) {
 			@Override
 			protected void process(JarEntry entry) throws IOException {
-				addIntoNode(entry, node, jar, node.origArch);
+				addIntoNode(entry, node, archive, node.origArch);
 			}
 		}.bypass();
 	}
@@ -518,6 +551,10 @@ class JarTree extends JTree {
 			child.grab(entry);
 			if (child.isArchive()) {
 				archiveLoader.load(child);
+			}
+			String lowpath = path.toLowerCase();
+			if (lowpath.endsWith(".exe") || lowpath.endsWith(".dll")) {
+				child.add(new JarNode("", Settings.NAME_PLACEHOLDER, null, null, false));
 			}
 			node.add(child);
 		}

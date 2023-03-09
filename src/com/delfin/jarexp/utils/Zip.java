@@ -505,7 +505,7 @@ public class Zip {
 			ZipEntry entry = zip.getEntry(path);
 			processor.process(zip.getInputStream(entry));
 		} catch (IOException e) {
-			throw new JarexpException("Couldn't open stream to '" + path + "' from " + archive, e);
+			throw new JarexpException("Error while streaming by '" + path + "' from " + archive, e);
 		} finally {
 			if (zip != null) {
 				try {

@@ -187,6 +187,7 @@ bug open java page separately in the site
 bug check apache-maven.zip is not deployed
 bug check highlight error
 bug move icon thumbnails to the common folder
+bug check the licenses rendering
 
 
 imp reduce hardcoded stuff like email, links and so on

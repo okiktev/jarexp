@@ -15,8 +15,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import com.delfin.jarexp.analyzer.IJavaItem;
+import com.delfin.jarexp.analyzer.IJavaItem.Position;
 import com.delfin.jarexp.exception.JarexpException;
-import com.delfin.jarexp.frame.JarTreeSelectionListener.ClassItemNode;
 import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.Enumerator;
 import com.delfin.jarexp.utils.FileUtils;
@@ -215,6 +216,58 @@ class JarNode extends DefaultMutableTreeNode {
 			lastAccessTime = entry.getLastAccessTime();
 			lastModTime = entry.getLastModifiedTime();
 		}
+	}
+
+	static class ClassItemNode extends DefaultMutableTreeNode {
+
+		private static final long serialVersionUID = 7470246996120563613L;
+
+		IJavaItem javaItem;
+
+		private final String name;
+
+		private ClassItemNode() {
+			name = null;
+		}
+
+		ClassItemNode(IJavaItem javaItem) {
+			this.javaItem = javaItem;
+			this.name = javaItem.getName();
+		}
+
+		Position getPosition() {
+			return javaItem.getPosition();
+		}
+
+		@Override
+		public String toString() {
+			return name;
+		}
+
+	}
+
+	static class PeNode extends ClassItemNode {
+
+		private static final long serialVersionUID = 3944805067597550882L;
+
+		JarNode parent;
+
+		String name;
+
+		PeNode(JarNode parent, String name) {
+			this.parent = parent;
+			this.name = name;
+		}
+
+		String getFullPath() {
+			return parent.getFullPath() + '/' + name;
+		}
+
+		@Override
+		public String toString() {
+			return name;
+		}
+
 	}
 
 }
