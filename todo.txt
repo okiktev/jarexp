@@ -188,6 +188,8 @@ bug check apache-maven.zip is not deployed
 bug check highlight error
 bug move icon thumbnails to the common folder
 bug check the licenses rendering
+bug open previous root after reloading archive
+imp image sizes on the icons view
 
 
 imp reduce hardcoded stuff like email, links and so on

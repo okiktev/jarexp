@@ -158,6 +158,40 @@ public class PE {
 		return icons;
 	}
 
+	public static byte[] getFirstIcon(File peFile) throws IOException {
+		PE pe = new PE(peFile);
+		if (pe.invalidFile) {
+			throw new IOException("Is not a valid PE:" + peFile);
+		}
+		InputStream stream = new FileInputStream(peFile);
+		try {
+			return getFirstIcon(stream);
+		} finally {
+			stream.close();
+		}
+	}
+
+	public static byte[] getFirstIcon(InputStream stream) throws IOException {
+		PE pe = new PE(stream);
+		if (pe.invalidFile) {
+			throw new IOException("Is not a valid PE.");
+		}
+		List<Icon> icons = new ArrayList<Icon>();
+		fillIconsHeaders(pe, icons);
+		Iterator<Icon> it = icons.iterator();
+		boolean isKept = true;
+		while (it.hasNext()) {
+			it.next();
+			if (isKept) {
+				isKept = false;
+			} else {
+				it.remove();
+			}
+		}
+		fillIconsImages(pe, icons);
+		return icons.get(0).getBytes();
+	}
+
 	public static byte[] getIcon(File peFile, String iconName) throws IOException {
 		InputStream stream = new FileInputStream(peFile);
 		try {
@@ -177,7 +211,13 @@ public class PE {
 		Iterator<Icon> it = icons.iterator();
 		while (it.hasNext()) {
 			Icon icon = it.next();
-			if (!iconName.equals(icon.getName())) {
+			String icnName = icon.getName();
+			try {
+				Integer.parseInt(iconName);
+				icnName = Icon.decodeToDec(icon.getName());
+			} catch (NumberFormatException e) {
+			}
+			if (!iconName.equals(icnName)) {
 				it.remove();
 			}
 		}

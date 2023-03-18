@@ -2,6 +2,7 @@ package com.delfin.jarexp.frame;
 
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -46,6 +47,7 @@ import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.search.SearchDlg;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.utils.StringUtils;
 import com.delfin.jarexp.utils.Utils;
 import com.delfin.jarexp.win.exe.PE;
 
@@ -65,12 +67,29 @@ class JarTree extends JTree {
             if (value instanceof JarNode) {
                 JarNode node = (JarNode) value;
                 if (!leaf && !node.isArchive() && node.isNotClass()) {
-                    return this;
+                	if (StringUtils.endsWith(node.name, ".exe") || StringUtils.endsWith(node.name, ".dll")) {
+                		setIcon(node.getIcon(JarTree.this.isSingleFileLoaded()));
+                	} else {                		
+                		return this;
+                	}
                 }
-                setIcon(node.isDirectory ? Resources.getIconForDir() : Resources.getIconFor(node.name));
-            }
-            if (value instanceof ClassItemNode) {
-            	// setIcon(((ClassItemNode) value).javaItem.getIcon());
+                // draw exe icon
+                setIcon(node.getIcon(JarTree.this.isSingleFileLoaded()));
+
+            	Dimension d = getPreferredSize();
+            	d.width = 150;
+            	setPreferredSize(d);
+
+            } else if (value instanceof PeNode) {
+            	setIcon(((PeNode) value).getIcon(JarTree.this.isSingleFileLoaded()));
+            	
+            	
+            	Dimension d = getPreferredSize();
+            	d.width = 250;
+            	setPreferredSize(d);
+
+            } else if (value instanceof ClassItemNode) {
+            	setIcon(((ClassItemNode) value).javaItem.getIcon());
             }
             return this;
         }

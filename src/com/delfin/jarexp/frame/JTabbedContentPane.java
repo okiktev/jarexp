@@ -32,7 +32,6 @@ import javax.swing.tree.TreePath;
 
 import com.delfin.jarexp.frame.ContentPanel.TabComponent;
 import com.delfin.jarexp.frame.JarTree.JarTreeClickSelection;
-import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.Zip;
 
@@ -53,8 +52,11 @@ class JTabbedContentPane extends JTabbedPane {
 
 	private boolean suppressTreeCenterAlign;
 
+	private final JarTree jarTree;
+
 	JTabbedContentPane(final JarTree jarTree, final ContentPanel contentPanel) {
 		super();
+		this.jarTree = jarTree;
 		this.closeTabListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -275,9 +277,8 @@ class JTabbedContentPane extends JTabbedPane {
 		tab.isFiltered = false;
 	}
 
-	private static Icon getIconFor(TabComponent component) {
-		return component.isDirectory && !Zip.isArchive(component.name, true) ? Resources.getIconForDir()
-				: Resources.getIconFor(component.name);
+	private Icon getIconFor(TabComponent component) {
+		return component.node.getIcon(component.fullPath, jarTree.isSingleFileLoaded());
 	}
 
 	private void checkAndAddToTabs(TabComponent content) {

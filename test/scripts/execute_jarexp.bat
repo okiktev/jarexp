@@ -1,4 +1,4 @@
-@echo off
+rem @echo off
 
 set CUR_DIR=%CD%
 

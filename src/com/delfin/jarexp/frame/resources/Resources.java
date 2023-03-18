@@ -46,6 +46,7 @@ public class Resources {
 	private static Map<String, Icon> defaultIcons = new HashMap<String, Icon>();
 
 	private static Map<String, Icon> icons = new HashMap<String, Icon>();
+	private static Map<String, Icon> peIcons = new HashMap<String, Icon>();
 
 	private static Map<String, Image> images = new HashMap<String, Image>();
 
@@ -350,6 +351,18 @@ public class Resources {
 
 	public Image getProcyonImage() {
 		return getImage("proc.png", "Unable to load procyon image from class path");
+	}
+
+	public Icon getPeIcon(String fullPath) {
+		return peIcons.get(fullPath);
+	}
+
+	public boolean isPeIconChecked(String fullPath) {
+		return peIcons.keySet().contains(fullPath);
+	}
+
+	public Icon storePeIcon(String fullPath, Icon icon) {
+		return peIcons.put(fullPath, icon);
 	}
 
 	private static Image getImage(String fileName, String errorMsg) {

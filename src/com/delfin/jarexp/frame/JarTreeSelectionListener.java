@@ -112,17 +112,20 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 	@Override
 	public void valueChanged(TreeSelectionEvent event) {
+		System.out.println("$$$$$$$$$$+++ " + jarTree.getSelectionPaths() );
 		if (jarTree.isNotDraw) {
 			jarTree.isNotDraw = false;
 			return;
 		}
 		if (collapsed != null && collapsed.equals(event.getPath())) {
+			System.out.println("$$$ clearing selection ");
 			jarTree.clearSelection();
 			collapsed = null;
 			return;
 		}
 		TreePath[] path = JarTreeClickSelection.getNodes();
 		if (path != null) {
+			System.out.println("$$$ set selection path ");
 			jarTree.setSelectionPaths(path);
 		}
 		path = jarTree.getSelectionPaths();
@@ -138,6 +141,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 			return;
 		}
 		if (statusBar.isEnabled) {
+			System.out.println("$$$ isEnabled");
 			return;
 		}
 
@@ -145,6 +149,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 			@Override
 			protected void perform() {
+				System.out.println("$$$ " + obj.getClass());
+				
 				if (obj instanceof ClassItemNode && !(obj instanceof PeNode)) {
 					ClassItemNode itemNode = (ClassItemNode) obj;
 					for (Component comp : ((Content) frame.getContentPane()).getComponents()) {
