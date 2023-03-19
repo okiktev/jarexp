@@ -68,11 +68,11 @@ class JTabbedContentPane extends JTabbedPane {
 						if (tab.isEdited) {
 							tab.saveChanges();
 						}
-						if (tab.node.name.toLowerCase().endsWith(".class")) {
+						if (tab.node.getName().toLowerCase().endsWith(".class")) {
 							tab.node.removeAllChildren();
 							jarTree.update(tab.node);
 						}
-						tab.node.selectedChild = null;
+						tab.node.setSelectedChild(null);
 						it.remove();
 						break;
 					}
@@ -119,8 +119,8 @@ class JTabbedContentPane extends JTabbedPane {
 							jarTree.clearSelection();
 							jarTree.isNotDraw = true;
 							TreePath treePath;
-							if (selectedTabComponent.node.selectedChild != null) {
-								treePath = new TreePath(selectedTabComponent.node.selectedChild.getPath());
+							if (selectedTabComponent.node.getSelectedChild() != null) {
+								treePath = new TreePath(selectedTabComponent.node.getSelectedChild().getPath());
 							} else {
 								treePath = new TreePath(selectedTabComponent.node.getPath());
 							}

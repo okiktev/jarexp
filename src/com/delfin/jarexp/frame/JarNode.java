@@ -35,9 +35,22 @@ import com.delfin.jarexp.utils.Zip.StreamProcessor;
 import com.delfin.jarexp.win.exe.PE;
 import com.delfin.jarexp.win.icon.Ico;
 
-class JarNode extends DefaultMutableTreeNode {
 
-	private static final long serialVersionUID = -2854697452587898049L;
+abstract class  Node extends DefaultMutableTreeNode {
+
+	private static final long serialVersionUID = -8073373592062367648L;
+
+	abstract String getName();
+	abstract String getFullPath();
+	abstract Icon getIcon(String fullPath, boolean singleFileLoaded);
+	abstract Node getSelectedChild();
+	abstract void setSelectedChild(Node node);
+
+}
+
+class JarNode extends Node {
+
+	private static final long serialVersionUID = 7129831719595479526L;
 
 	static class JarNodeMenuItem extends JMenuItem {
 
@@ -66,7 +79,7 @@ class JarNode extends DefaultMutableTreeNode {
 
 	private Boolean isClass;
 
-	ClassItemNode selectedChild;
+	private Node selectedChild;
 
 	JarNode(String name, String path, File tempArch, File origArch, boolean isDirectory) {
 		this.name = name;
@@ -119,6 +132,7 @@ class JarNode extends DefaultMutableTreeNode {
 		return path;
 	}
 
+	@Override
 	String getFullPath() {
 		if (getParent() == null) {
 			return name;
@@ -229,10 +243,26 @@ class JarNode extends DefaultMutableTreeNode {
 		}
 	}
 
+	@Override
+	String getName() {
+		return name;
+	}
+
+	@Override
+	Node getSelectedChild() {
+		return selectedChild;
+	}
+
+	@Override
+	void setSelectedChild(Node node) {
+		selectedChild = node;
+	}
+
 	Icon getIcon(boolean isSingleFileLoaded) {
 		return getIcon(null, isSingleFileLoaded);
 	}
 
+	@Override
 	Icon getIcon(final String fullPath, boolean isSingleFileLoaded) {
 		if (isDirectory) {
 			Resources.getIconForDir(); 
@@ -314,33 +344,27 @@ class JarNode extends DefaultMutableTreeNode {
 	private static Icon getFromStore(String fullPath, ResourceLoader resourceLoader) throws IOException {
 		Resources resources = Resources.getInstance();
 		Icon icon = resources.getPeIcon(fullPath);
-//		System.out.println("$$ getting from store " + fullPath + "; " 
-//				+ resources.isPeIconChecked(fullPath) + "; " + icon);
 		if (icon != null) {
-			//System.out.println("From cache " + fullPath);
 			return icon;
 		} else if (resources.isPeIconChecked(fullPath)) {
-			//System.out.println("NULL " + fullPath);
 			return null;
 		}
 		List<BufferedImage> icons = resourceLoader.load();
 		if (icons == null || icons.size() == 0) {
-			//System.out.println("storing NULL " + fullPath);
 			resources.storePeIcon(fullPath, null);
 		}
-		//System.out.println("storing obj " + fullPath);
 		return resources.storePeIcon(fullPath, adaptSize(icons));
 	}
 
-	static class ClassItemNode extends DefaultMutableTreeNode {
+	static class ClassItemNode extends Node {
 
 		private static final long serialVersionUID = 7470246996120563613L;
 
-		IJavaItem javaItem;
+		private IJavaItem javaItem;
 
-		private final String name;
+		protected String name;
 
-		private ClassItemNode() {
+		ClassItemNode() {
 			name = null;
 		}
 
@@ -354,8 +378,32 @@ class JarNode extends DefaultMutableTreeNode {
 		}
 
 		@Override
+		String getFullPath() {
+			return "";
+		}
+
+		@Override
 		public String toString() {
+			return getName();
+		}
+
+		@Override
+		String getName() {
 			return name;
+		}
+
+		@Override
+		Icon getIcon(String fullPath, boolean singleFileLoaded) {
+			return javaItem.getIcon();
+		}
+
+		@Override
+		Node getSelectedChild() {
+			return null;
+		}
+
+		@Override
+		void setSelectedChild(Node node) {
 		}
 
 	}
@@ -368,15 +416,13 @@ class JarNode extends DefaultMutableTreeNode {
 
 		JarNode parent;
 
-		String name;
-
 		PeNode(JarNode parent, String name) {
 			this.parent = parent;
 			this.name = name;
-			//System.out.println("$$ penode " + parent.getFullPath());
 			fullPath = parent.getFullPath() + "!/" + name;
 		}
 
+		@Override
 		String getFullPath() {
 			return fullPath;
 		}
@@ -386,7 +432,8 @@ class JarNode extends DefaultMutableTreeNode {
 			return name;
 		}
 
-		Icon getIcon(boolean isSingleFileLoaded) {
+		@Override
+		Icon getIcon(String fullPath, boolean isSingleFileLoaded) {
 			try {
 				return getFromStore(getFullPath(), new ResourceLoader(isSingleFileLoaded) {
 					@Override
@@ -419,6 +466,7 @@ class JarNode extends DefaultMutableTreeNode {
 				throw new JarexpException("An error occurred while reading icon from " + parent.getTempArchive(), e);
 			}
 		}
+
 	}
 
 	private abstract static class ResourceLoader {

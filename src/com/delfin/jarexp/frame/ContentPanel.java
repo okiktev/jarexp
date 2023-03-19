@@ -14,6 +14,7 @@ import java.util.jar.Manifest;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -22,6 +23,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import com.delfin.jarexp.decompiler.Decompiler.DecompilerType;
 import com.delfin.jarexp.dlg.message.Msg;
 import com.delfin.jarexp.exception.JarexpException;
+import com.delfin.jarexp.frame.JarNode.PeNode;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.utils.FileUtils;
 
@@ -50,6 +52,10 @@ class ContentPanel extends JPanel {
 	}
 
 	void addContent(JComponent content, JarNode node, StatusBar statusBar) {
+		addContent(new TabComponent(content, node, statusBar, false));
+	}
+
+	void addContent(JScrollPane content, PeNode node, StatusBar statusBar) {
 		addContent(new TabComponent(content, node, statusBar, false));
 	}
 
@@ -121,7 +127,7 @@ class ContentPanel extends JPanel {
 		DecompilerType decompilerType;
 
 		boolean isEdited;
-		JarNode node;
+		Node node;
 		Component content;
 		boolean isFiltered;
 
@@ -129,13 +135,13 @@ class ContentPanel extends JPanel {
 			
 		}
 
-		private TabComponent(Component content, JarNode node, StatusBar statusBar, boolean isDirectory) {
+		private TabComponent(Component content, Node node, StatusBar statusBar, boolean isDirectory) {
 			this.content = content;
 			this.fullPath = statusBar.getPath();
 			this.filesCount = statusBar.getChildren();
 			this.compiledVersion = statusBar.getCompiledVersion();
 			this.decompilerType = Settings.getDecompilerType();
-			this.name = node.name;
+			this.name = node.getName();
 			this.node = node;
 			this.isDirectory = isDirectory;
 		}
@@ -146,6 +152,7 @@ class ContentPanel extends JPanel {
 			}
 			try {
 				jarTree.statusBar.enableProgress("Saving...");
+				JarNode node = (JarNode) this.node;
 				int reply = JOptionPane.showConfirmDialog(jarTree.frame,
 						"File " + node.path + " was changed. Do you want to keep changes?",
 						"Change confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);

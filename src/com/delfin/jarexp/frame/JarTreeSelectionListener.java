@@ -112,20 +112,17 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 	@Override
 	public void valueChanged(TreeSelectionEvent event) {
-		System.out.println("$$$$$$$$$$+++ " + jarTree.getSelectionPaths() );
 		if (jarTree.isNotDraw) {
 			jarTree.isNotDraw = false;
 			return;
 		}
 		if (collapsed != null && collapsed.equals(event.getPath())) {
-			System.out.println("$$$ clearing selection ");
 			jarTree.clearSelection();
 			collapsed = null;
 			return;
 		}
 		TreePath[] path = JarTreeClickSelection.getNodes();
 		if (path != null) {
-			System.out.println("$$$ set selection path ");
 			jarTree.setSelectionPaths(path);
 		}
 		path = jarTree.getSelectionPaths();
@@ -141,7 +138,6 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 			return;
 		}
 		if (statusBar.isEnabled) {
-			System.out.println("$$$ isEnabled");
 			return;
 		}
 
@@ -149,8 +145,6 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 			@Override
 			protected void perform() {
-				System.out.println("$$$ " + obj.getClass());
-				
 				if (obj instanceof ClassItemNode && !(obj instanceof PeNode)) {
 					ClassItemNode itemNode = (ClassItemNode) obj;
 					for (Component comp : ((Content) frame.getContentPane()).getComponents()) {
@@ -172,7 +166,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						}
 						JTextArea area = contentPanel.getSelectedComponent();
 						Position position = itemNode.getPosition();
-						((JarNode)parent).selectedChild = itemNode; 
+						((JarNode)parent).setSelectedChild(itemNode);
 						FilterPanel.highlight(area, position.position, position.length);
 						split.repaint();
 						break;
@@ -180,15 +174,48 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 					return;
 				}
 
-				final JarNode node = obj instanceof PeNode 
-						? new JarNode(((PeNode)obj).name, ((PeNode)obj).parent.path 
-								, ((PeNode)obj).parent.getTempArchive(), ((PeNode)obj).parent.origArch, false)
-						: (JarNode) obj;
 				final JSplitPane pane = Content.getSplitPane();
 				final ContentPanel contentView = (ContentPanel) pane.getRightComponent();
 				final int dividerLocation = pane.getDividerLocation();
 
 				try {
+					if (obj instanceof PeNode) {
+						final PeNode node = (PeNode) obj;
+						final JPanel pnl = new JPanel();
+						if (jarTree.isSingleFileLoaded()) {
+							try {
+								InputStream is = new ByteArrayInputStream(PE.getIcon(node.parent.origArch, node.name.replace(".ico", "")));
+								try {
+									for (BufferedImage icon : Ico.read(is)) {
+										pnl.add(new ImgPanel(icon));
+									}
+								} finally {
+									is.close();
+								}
+							} catch (IOException e) {
+								throw new JarexpException("Unable to read ico " + node.getFullPath(), e);
+							}
+						} else {
+							Zip.stream(node.parent.getTempArchive(), node.parent.path, new StreamProcessor() {
+								@Override
+								public void process(InputStream stream) throws IOException {
+									InputStream is = new ByteArrayInputStream(PE.getIcon(stream, node.name.replace(".ico", "")));
+									try {
+										for (BufferedImage icon : Ico.read(is)) {
+											pnl.add(new ImgPanel(icon));
+										}
+									} finally {
+										is.close();
+									}
+								}
+							});
+						}
+						statusBar.setPath(((Node)obj).getFullPath());
+						node.parent.setSelectedChild((Node)obj);
+						contentView.addContent(new JScrollPane(pnl), node, statusBar);
+						return;
+					}
+					final JarNode node = (JarNode) obj;
 					final String lowpath = node.path.toLowerCase();
 					if (node.isNotClass() && (!node.isLeaf() || node.isDirectory)) {
 						statusBar.setPath(node.getFullPath());
@@ -214,6 +241,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 									}
 									textArea.setBorder(Settings.EMPTY_BORDER);
 									textArea.setEditable(false);
+									node.setSelectedChild(null);
 
 									RTextScrollPane textScrollPane = new RTextScrollPane(textArea);
 									textScrollPane.setBorder(Settings.EMPTY_BORDER);
@@ -265,6 +293,8 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							RTextScrollPane textScrollPane = new RTextScrollPane(textArea);
 							textScrollPane.setBorder(Settings.EMPTY_BORDER);
 
+							node.setSelectedChild(null);
+
 							contentView.addContent(textScrollPane, node, statusBar);
 
 							try {
@@ -284,37 +314,10 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 									}
 								}
 							});
-						} else if (lowPath.endsWith(".ico") || node.name.toLowerCase().endsWith(".ico")) {
+						} else if (lowPath.endsWith(".ico")) {
 							final JPanel pnl = new JPanel();
 							try {
-								if (obj instanceof PeNode) {
-									if (jarTree.isSingleFileLoaded()) {
-										InputStream is = new ByteArrayInputStream(PE.getIcon(file, node.name.replace(".ico", "")));
-										try {
-											for (BufferedImage icon : Ico.read(is)) {
-												pnl.add(new ImgPanel(icon));
-											}
-										} finally {
-											is.close();
-										}
-									} else {
-										Zip.stream(node.getTempArchive(), node.path, new StreamProcessor() {
-											@Override
-											public void process(InputStream stream) throws IOException {
-												InputStream is = new ByteArrayInputStream(PE.getIcon(stream, node.name.replace(".ico", "")));
-												try {
-													for (BufferedImage icon : Ico.read(is)) {
-														pnl.add(new ImgPanel(icon));
-													}
-												} finally {
-													is.close();
-												}
-											}
-										});
-									}
-									statusBar.setPath(((PeNode)obj).getFullPath());
-									node.selectedChild = (ClassItemNode) obj;
-								} else if (jarTree.isSingleFileLoaded()) {
+								if (jarTree.isSingleFileLoaded()) {
 									for (BufferedImage icon : Ico.read(file)) {
 										pnl.add(new ImgPanel(icon));
 									}
@@ -360,6 +363,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						}
 					}
 				} finally {
+					statusBar.disableProgress();
 					pane.repaint();
 					if (pane.getDividerLocation() != dividerLocation) {
 						log.warning("Divider location was changed. Compensating...");
@@ -370,7 +374,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 			private void fillClassStructure(JarNode node, List<IJavaItem> classStructure) {
 				node.removeAllChildren();
-				node.selectedChild = null;
+				node.setSelectedChild(null);
 				for (IJavaItem item : classStructure) {
 					ClassItemNode child = new ClassItemNode(item);
 					node.add(child);
@@ -378,7 +382,11 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 						child.add(new ClassItemNode(m));
 					}
 				}
+				TreePath[] paths = jarTree.getSelectionPaths();
 				jarTree.update(node);
+				if (paths != null) {
+					jarTree.setSelectionPaths(paths);
+				}
 			}
 
 			private Result decompile(JarNode node) {

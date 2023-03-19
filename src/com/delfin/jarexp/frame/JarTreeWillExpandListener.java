@@ -32,9 +32,9 @@ class JarTreeWillExpandListener implements TreeWillExpandListener {
 		Object[] nodes = event.getPath().getPath();
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) nodes[nodes.length - 1];
 		if (isSelectedTabInNodeExpanded(tab, node)) {
-			TreeNode[] treeNodes = tab.node.selectedChild == null 
+			TreeNode[] treeNodes = tab.node.getSelectedChild() == null 
 					? tab.node.getPath() 
-					: tab.node.selectedChild.getPath();
+					: tab.node.getSelectedChild().getPath();
 			JarTreeClickSelection.setNodes(null);
 			jarTree.setSelectionPath(new TreePath(treeNodes));
 		}

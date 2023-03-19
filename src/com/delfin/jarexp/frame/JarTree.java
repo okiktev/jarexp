@@ -75,21 +75,15 @@ class JarTree extends JTree {
                 }
                 // draw exe icon
                 setIcon(node.getIcon(JarTree.this.isSingleFileLoaded()));
-
-            	Dimension d = getPreferredSize();
-            	d.width = 150;
-            	setPreferredSize(d);
-
             } else if (value instanceof PeNode) {
-            	setIcon(((PeNode) value).getIcon(JarTree.this.isSingleFileLoaded()));
-            	
-            	
+            	setIcon(((PeNode) value).getIcon(null, JarTree.this.isSingleFileLoaded()));
+
             	Dimension d = getPreferredSize();
             	d.width = 250;
             	setPreferredSize(d);
 
             } else if (value instanceof ClassItemNode) {
-            	setIcon(((ClassItemNode) value).javaItem.getIcon());
+            	setIcon(((ClassItemNode) value).getIcon(null, false));
             }
             return this;
         }

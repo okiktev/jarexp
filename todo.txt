@@ -183,6 +183,8 @@ bug doesn't recompile after decompiler was changed ... done ....................
 imp open archive location in system explorer ... done .............................................20Jan2023
 
 
+imp rendering PE files and icons
+bug error when click on search javadoc for single class
 bug open java page separately in the site
 bug check apache-maven.zip is not deployed
 bug check highlight error
@@ -190,6 +192,7 @@ bug move icon thumbnails to the common folder
 bug check the licenses rendering
 bug open previous root after reloading archive
 imp image sizes on the icons view
+imp extract images from icon
 
 
 imp reduce hardcoded stuff like email, links and so on
