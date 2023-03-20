@@ -4,3 +4,4 @@ java.decompiler.113=java-decompiler-1.1.3.jar;b0cf7cac40cbaadf04d5bb974717aeda
 procyon=procyon-decompiler.jar;43654b195a95bef0d9066d612cb05ff6
 fernflower=fernflower.jar;f0de52f4f45f52752d851f0bec7db971
 maven=apache-maven.zip;0be5e9e726d9c5404ef2f85c24c6efd1
+wintools=wintools.jar;cdffe4910b7838828d1451c265a72c8d

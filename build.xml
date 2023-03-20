@@ -41,6 +41,7 @@
 		<checksum file="${basedir}/lib/${dependency4jarName}" property="MD5.lib.procyon"/>
 		<checksum file="${basedir}/lib/${dependency5jarName}" property="MD5.lib.fernflower"/>
 		<checksum file="${basedir}/lib/${dependency6jarName}" property="MD5.zip.maven"/>
+		<checksum file="${basedir}/lib/${dependency7jarName}" property="MD5.lib.wintools"/>
 		<copy todir="${build.dir}/src">
 			<fileset dir="${src.dir}" >
 				<exclude name="**/FieldHelper.java"/>
@@ -67,12 +68,27 @@
 		</javac>
 	</target>
 
-	<target name="assembly" depends="compile">
+	<target name="wintoolJar" depends="compile">
+		<jar destfile="${artifacts.dir}/wintools.jar">
+			<manifest>
+				<attribute name="Built-By" value="delfin" />
+				<attribute name="Application-Version" value="${full.version}" />
+			</manifest>
+
+			<fileset dir="${classes.dir}" >
+				<include name="com/delfin/jarexp/win/**" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="assembly" depends="wintoolJar">
 		<echo message="Assembling files into ${jar.dir}" />
 
 		<mkdir dir="${jar.dir}" />
 		<copy todir="${jar.dir}">
-			<fileset dir="${classes.dir}" />
+			<fileset dir="${classes.dir}" >
+				<exclude name="com/delfin/jarexp/win/**" />
+			</fileset>
 			<fileset dir="${build.res.dir}" />
 			<fileset dir="${resources.dir}" >
 				<exclude name="**/LICENSE" />
@@ -102,6 +118,8 @@
 				<filter token="FERNFLOWER_FILE_MD5" value="${MD5.lib.fernflower}" />
 				<filter token="MAVEN_ARCHIVE_FILE_NAME" value="${dependency6jarName}" />
 				<filter token="MAVEN_ARCHIVE_FILE_MD5" value="${MD5.zip.maven}" />
+				<filter token="WINTOOLS_FILE_NAME" value="${dependency7jarName}" />
+				<filter token="WINTOOLS_FILE_MD5" value="${MD5.lib.wintools}" />
 			</filterset>
 		</copy>
 		<zip destfile="${jar.dir}/licenses.zip">
@@ -194,6 +212,8 @@
 		<unjar src="${dependency5}" dest="${jar.dir}" />
 		<delete dir="${jar.dir}/META-INF" />
 		<copy file="${dependency6}" todir="${jar.dir}" />
+		<delete dir="${jar.dir}/META-INF" />
+		<copy file="${dependency7}" todir="${jar.dir}" />
 
 		<delete file="${jar.dir}/dependencies" />
 
