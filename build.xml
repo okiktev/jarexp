@@ -69,7 +69,7 @@
 	</target>
 
 	<target name="wintoolJar" depends="compile">
-		<jar destfile="${artifacts.dir}/wintools.jar">
+		<jar destfile="${artifacts.dir}/${dependency7jarName}">
 			<manifest>
 				<attribute name="Built-By" value="delfin" />
 				<attribute name="Application-Version" value="${full.version}" />

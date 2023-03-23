@@ -36,7 +36,7 @@ import com.delfin.jarexp.win.exe.PE;
 import com.delfin.jarexp.win.icon.Ico;
 
 
-abstract class  Node extends DefaultMutableTreeNode {
+abstract class Node extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = -8073373592062367648L;
 
@@ -265,7 +265,7 @@ class JarNode extends Node {
 	@Override
 	Icon getIcon(final String fullPath, boolean isSingleFileLoaded) {
 		if (isDirectory) {
-			Resources.getIconForDir(); 
+			return Resources.getIconForDir(); 
 		}
 		try {
 			if (StringUtils.endsWith(name, ".exe")) {
