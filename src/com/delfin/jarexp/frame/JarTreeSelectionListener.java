@@ -335,6 +335,30 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 								throw new JarexpException("Unable to read ico " + file, e);
 							}
 							contentView.addContent(new JScrollPane(pnl), node, statusBar);
+						} if (lowpath.endsWith(".exe") || lowpath.endsWith(".dll")) {
+							final RSyntaxTextArea textArea = new RSyntaxTextArea();
+							if (jarTree.isSingleFileLoaded()) {
+								try {
+									textArea.setText(PE.getInfo(node.getTempArchive()));
+								} catch (IOException e) {
+									throw new JarexpException("Unable to get info of " + node.getTempArchive(), e);
+								}
+							} else {										
+								Zip.stream(node.getTempArchive(), node.path, new StreamProcessor() {
+									@Override
+									public void process(InputStream stream) throws IOException {
+										textArea.setText(PE.getInfo(stream));
+									}
+								});
+							}
+							textArea.setBorder(Settings.EMPTY_BORDER);
+							textArea.setEditable(false);
+							node.setSelectedChild(null);
+
+							RTextScrollPane textScrollPane = new RTextScrollPane(textArea);
+							textScrollPane.setBorder(Settings.EMPTY_BORDER);
+
+							contentView.addContent(textScrollPane, node, statusBar);
 						} else {
 							if (!file.isDirectory()) {
 								statusBar.enableProgress("Reading...");
