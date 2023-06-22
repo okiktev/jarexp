@@ -272,7 +272,11 @@ class JarNode extends Node {
 				return getFromStore(fullPath == null ? getFullPath() : fullPath, new ResourceLoader(isSingleFileLoaded) {
 					@Override
 					void loadSingleFileResources(List<BufferedImage> icons) throws IOException {
-						InputStream is = new ByteArrayInputStream(PE.getFirstIcon(getTempArchive()));
+						byte[] bytes = PE.getFirstIcon(getTempArchive());
+						if (bytes == null) {
+							return;
+						} 
+						InputStream is = new ByteArrayInputStream(bytes);
 						try {
 							icons.addAll(Ico.read(is));
 						} finally {
@@ -284,7 +288,12 @@ class JarNode extends Node {
 						Zip.stream(getTempArchive(), path, new StreamProcessor() {
 							@Override
 							public void process(InputStream stream) throws IOException {
-								InputStream is = new ByteArrayInputStream(PE.getFirstIcon(stream));
+								byte[] bytes = PE.getFirstIcon(stream);
+								if (bytes == null) {
+									stream.close();
+									return;
+								} 
+								InputStream is = new ByteArrayInputStream(bytes);
 								try {
 									icons.addAll(Ico.read(is));
 								} finally {
@@ -350,8 +359,8 @@ class JarNode extends Node {
 			return null;
 		}
 		List<BufferedImage> icons = resourceLoader.load();
-		if (icons == null || icons.size() == 0) {
-			resources.storePeIcon(fullPath, null);
+		if (icons == null || icons.isEmpty()) {
+			return resources.storePeIcon(fullPath, Resources.getIconFor(fullPath));
 		}
 		return resources.storePeIcon(fullPath, adaptSize(icons));
 	}

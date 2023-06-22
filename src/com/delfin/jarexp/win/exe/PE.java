@@ -189,7 +189,7 @@ public class PE {
 			}
 		}
 		fillIconsImages(pe, icons);
-		return icons.get(0).getBytes();
+		return icons.isEmpty() ? null : icons.get(0).getBytes();
 	}
 
 	public static byte[] getIcon(File peFile, String iconName) throws IOException {

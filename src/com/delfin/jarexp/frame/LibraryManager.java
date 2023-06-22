@@ -22,11 +22,11 @@ import com.delfin.jarexp.utils.Md5Checksum;
 import com.delfin.jarexp.utils.Zip;
 
 public class LibraryManager {
-	
+
 	private static final Logger log = Logger.getLogger(LibraryManager.class.getCanonicalName());
 
 	public enum DependencyType {
-		RSTA, FERNFLOWER, JD071, JD113, PROCYON, MAVEN
+		RSTA, FERNFLOWER, JD071, JD113, PROCYON, MAVEN, WINTOOLS
 	}
 
 	private static final String LIBRARIES_STORE_URL = 
@@ -72,13 +72,27 @@ public class LibraryManager {
 					if (!libDir.exists()) {
 						libDir.mkdirs();
 					}
-					Dependency rstaJarDep = getDependency(DependencyType.RSTA);
-					check(libDir, rstaJarDep, statusBar);
-					FileUtils.addJarToClasspath(new File(libDir, rstaJarDep.fileName));
-
-					Dependency decompilerDep = getDefaultDecompilerDependency(statusBar);
-					check(libDir, decompilerDep, statusBar);
-					FileUtils.addJarToClasspath(new File(libDir, decompilerDep.fileName));
+					try {
+						Dependency rstaJarDep = getDependency(DependencyType.RSTA);
+						check(libDir, rstaJarDep, statusBar);
+						FileUtils.addJarToClasspath(new File(libDir, rstaJarDep.fileName));
+					} catch (Exception e) {
+						log.log(Level.SEVERE, "Unable to download " + DependencyType.RSTA, e);
+					}
+					try {
+						Dependency wintoolJarDep = getDependency(DependencyType.WINTOOLS);
+						check(libDir, wintoolJarDep, statusBar);
+						FileUtils.addJarToClasspath(new File(libDir, wintoolJarDep.fileName));
+					} catch (Exception e) {
+						log.log(Level.SEVERE, "Unable to download " + DependencyType.WINTOOLS, e);
+					}
+					try {
+						Dependency decompilerDep = getDefaultDecompilerDependency(statusBar);
+						check(libDir, decompilerDep, statusBar);
+						FileUtils.addJarToClasspath(new File(libDir, decompilerDep.fileName));
+					} catch (Exception e) {
+						log.log(Level.SEVERE, "Unable to download default decompiler.", e);
+					}
 
 					isDone = true;
 				} catch (RuntimeException e) {
@@ -224,6 +238,8 @@ public class LibraryManager {
 			return dependencies.get("procyon");
 		case MAVEN:
 			return dependencies.get("maven");
+		case WINTOOLS:
+			return dependencies.get("wintools");
 		default:
 			throw new JarexpException("Unknown dependency type " + type);
 		}

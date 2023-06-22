@@ -212,8 +212,8 @@
 		<unjar src="${dependency5}" dest="${jar.dir}" />
 		<delete dir="${jar.dir}/META-INF" />
 		<copy file="${dependency6}" todir="${jar.dir}" />
+		<unjar src="${dependency7}" dest="${jar.dir}" />
 		<delete dir="${jar.dir}/META-INF" />
-		<copy file="${dependency7}" todir="${jar.dir}" />
 
 		<delete file="${jar.dir}/dependencies" />
 
@@ -416,6 +416,8 @@
 				<include name="${dependency3jarName}" />
 				<include name="${dependency4jarName}" />
 				<include name="${dependency5jarName}" />
+				<include name="${dependency6jarName}" />
+				<include name="${dependency7jarName}" />
 			</fileset>
 		</copy>
 		<zip destfile="${artifacts.dir}/jarexp.zip" basedir="${jarexp.dir}" />
