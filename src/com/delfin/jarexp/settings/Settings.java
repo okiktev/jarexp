@@ -102,6 +102,8 @@ public class Settings {
 
 	public static final int HISTORY_BUFFER_SIZE = 30;
 
+	public static final String LOCKER_FILE_NAME = "jefcbd";
+
 	private static File HOME_DIR;
 
 	private static DecompilerType decompilerType = DecompilerType.JDCORE;

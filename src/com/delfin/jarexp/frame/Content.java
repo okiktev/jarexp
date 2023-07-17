@@ -65,7 +65,6 @@ import com.delfin.jarexp.settings.ActionHistory;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.Executor;
-import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.ImgPanel;
 import com.delfin.jarexp.utils.Utils;
 import com.delfin.jarexp.utils.Zip;
@@ -130,6 +129,18 @@ public class Content extends JPanel {
 						showMessageDialog(frame, "Unknown result code: " + searchResult.line, "Error", ERROR_MESSAGE);
 						break;
 					}
+					if (searchResult.position == 1) {
+						String fullPath = null;
+						while (row != -1) {
+							SearchResult fileSearch = (SearchResult) tableModel.getValueAt(--row, 0);
+							if (fileSearch.position == -1) {
+								fullPath = fileSearch.line;
+								break;
+							}
+						}
+						jarTree.expandTreeLeaf(fullPath + '/' + searchResult.line);
+						break;
+					}
 					String fullPath = null;
 					while (row != -1) {
 						SearchResult fileSearch = (SearchResult) tableModel.getValueAt(--row, 0);
@@ -165,9 +176,17 @@ public class Content extends JPanel {
 				}
 				String pathToFile = sr.line;
 				String pathInArchive = null;
+				if (searchResult.position == 1) { // pe search result
+					pathToFile = sr.line + '/' + searchResult.line;
+				}
 				int idx = pathToFile.indexOf('!');
 				if (idx != -1) {
-					pathInArchive = pathToFile.substring(idx + 1, pathToFile.length());
+					if (pathInArchive == null) {						
+						pathInArchive = pathToFile.substring(idx + 1, pathToFile.length());
+						if (pathInArchive == null || pathInArchive.isEmpty()) {
+							pathInArchive = null;
+						}
+					}
 					pathToFile = pathToFile.substring(0, idx);
 				}
 				File fileToOpen = new File(pathToFile);
@@ -293,25 +312,21 @@ public class Content extends JPanel {
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
-				final File tmpDir = Settings.getJarexpTmpDir();
 				new Executor() {
 					@Override
 					protected void perform() {
 						statusBar.enableProgress("Exiting...");
-						FileUtils.delete(tmpDir);
+						try {							
+							new File(Settings.getJarexpTmpDir(), Settings.LOCKER_FILE_NAME).createNewFile();
+						} catch (IOException e) {
+							log.severe("Unable to set delete marker in " + Settings.getJarexpTmpDir());
+						}
 					}
 					@Override
 					protected void doFinally() {
 						statusBar.disableProgress();
 					}
 				}.execute();
-				long s = System.currentTimeMillis();
-				while (tmpDir.exists() && System.currentTimeMillis() - s < 30000) {
-					Utils.sleep(100);
-				}
-				if (tmpDir.exists()) {
-					log.severe("Couldn't delete folder " + tmpDir.getAbsolutePath() + " during 30 sec.");
-				}
 			}
 		});
 

@@ -1,14 +1,17 @@
 package com.delfin.jarexp.frame.search;
 
+import static java.util.Collections.singleton;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.jar.JarEntry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +24,7 @@ import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.utils.StringUtils;
 import com.delfin.jarexp.utils.Zip;
 import com.delfin.jarexp.win.exe.PE;
+
 
 class IconSearcher extends AbstractSearcher {
 
@@ -35,7 +39,7 @@ class IconSearcher extends AbstractSearcher {
 	@Override
 	public void search(final SearchDlg searchDlg) {
 		super.search(searchDlg);
-		
+
 		if (searchDlg.cbIconsInExe.isSelected()) {
 			searchResources.add(".exe");
 		}
@@ -47,7 +51,6 @@ class IconSearcher extends AbstractSearcher {
 			public void run() {
 				manageSearchHistory();
 				List<SearchResult> results = new ArrayList<SearchResult>();
-				searchResult = new TreeMap<String, List<SearchResult>>(searchResult);
 				long start = System.currentTimeMillis();
 				for (SearchEntries entry : searchEntries) {
 					fullSearchPath = entry.fullPath;
@@ -56,7 +59,6 @@ class IconSearcher extends AbstractSearcher {
 				}
 				long overall = System.currentTimeMillis() - start;
 
-				searchResult = new TreeMap<String, List<SearchResult>>(searchResult);
 				TableModel table = new FileContentSearchResultTableModel(searchResult, errors);
 				searchDlg.tResult.setModel(table);
 				String label = "Found " + searchResult.size() + " results with " + getHits(searchResult) + " hits for " + overall + "ms";
@@ -65,6 +67,7 @@ class IconSearcher extends AbstractSearcher {
 					label += " with " + size + " errors";
 				}
 				label += ':';
+
 				searchDlg.lbResult.setText(label);
 				searchDlg.btnResultToClipboard.setVisible(true);
 				searchDlg.btnResultToClipboard.setResult(table);
@@ -117,22 +120,32 @@ class IconSearcher extends AbstractSearcher {
 					return;
 				}
 				dlg.lbResult.setText("Searching..." + path);
-				String fileName = file.getName().toLowerCase();
+				String lowPath = path.toLowerCase();
 				for(String exe : searchResources) {
-					if (fileName.endsWith(exe)) {
+					if (lowPath.endsWith(exe)) {
 						try {
-							searchResult.put(path, iconNamesToSearchResults(PE.getIconNames(file)));
+							List<String> result = getIconsFromPe(jarFile.getInputStream(entry));
+							if (!result.isEmpty()) {
+								searchResult.put(parent + path, iconNamesToSearchResults(result));
+							}
 						} catch (Throwable t) {
 							handleError(t, path);
 						}
-						break;
 					}
 				}
 				if (isNeedSearchInArchive(path)) {
-					File dst = new File(Resources.createTmpDir(), fileName);
+					File dst = new File(Resources.createTmpDir(), path);
 					String fullPath = getFullPath(parent, path) + '!';
 					dst = Zip.unzip(fullPath, path, archive, dst);
 					search(fullPath, dst, null, dlg, null);
+				} else if (lowPath.endsWith(".ico")) {
+					String key = parent.isEmpty() ? "/" : parent;
+					List<SearchResult> res = searchResult.get(key);
+					if (res == null) {
+						res = new ArrayList<SearchResult>();
+						searchResult.put(key, res);
+					}
+					res.addAll(iconNamesToSearchResults(singleton(path)));
 				}
 			}
 
@@ -154,7 +167,7 @@ class IconSearcher extends AbstractSearcher {
 				for(String exe : searchResources) {
 					if (fileName.endsWith(exe)) {
 						try {
-							searchResult.put(file.getAbsolutePath(), iconNamesToSearchResults(PE.getIconNames(file)));
+							searchResult.put(file.getAbsolutePath(), iconNamesToSearchResults(getIconsFromPe(file)));
 						} catch (Throwable t) {
 							handleError(t, file.getAbsolutePath());
 						}
@@ -169,10 +182,25 @@ class IconSearcher extends AbstractSearcher {
 
 	}
 
-	private static List<SearchResult> iconNamesToSearchResults(List<String> iconNames) {
+	private static List<String> getIconsFromPe(File peFile) throws IOException {
+		return addIcoExt(PE.getIconNames(peFile));
+	}
+
+	private static List<String> getIconsFromPe(InputStream stream) throws IOException {
+		return addIcoExt(PE.getIconNames(stream));
+	}
+
+	private static List<String> addIcoExt(List<String> names) {
+		for (int i = 0; i < names.size(); ++i) {
+			names.set(i, names.get(i) + ".ico");
+		}
+		return names;
+	}
+
+	private static List<SearchResult> iconNamesToSearchResults(Collection<String> iconNames) {
 		List<SearchResult> res = new ArrayList<SearchResult>();
 		for (String icon : iconNames) {
-			res.add(new SearchResult(icon, 0));
+			res.add(new SearchResult(icon, 1));
 		}
 		return res;
 	}

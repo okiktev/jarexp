@@ -2,21 +2,27 @@ package com.delfin.jarexp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import com.delfin.jarexp.frame.Content;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.utils.FileUtils;
 import com.delfin.jarexp.utils.Zip;
 import com.delfin.jarexp.utils.Zip.TempFileCreator;
 
 public class Main {
 
 	private static final Logger log = Logger.getLogger(Main.class.getCanonicalName());
+
+	private static Executor executor = Executors.newSingleThreadExecutor();
 
 	public static void main(final String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -28,6 +34,7 @@ public class Main {
 					e.printStackTrace(System.err);
 					throw new RuntimeException("Unable to initiate logger", e);
 				}
+				executor.execute(new TempFoldersRemover());
 				Settings.initLookAndFeel();
 				Zip.setTempFileCreator(new TempFileCreator() {
 					@Override
@@ -77,6 +84,37 @@ public class Main {
 		System.err.println(msg);
 		log.warning(msg);
 		return null;
+	}
+
+	private static class TempFoldersRemover implements Runnable {
+
+		private final Pattern tmpDirPattern = Pattern.compile("\\d{13}");
+
+		@Override
+		public void run() {
+			File[] files = Settings.getAppDir().listFiles();
+			if (files == null) {
+				return;
+			}
+			for (File d : files) {
+				if (d.isDirectory() && tmpDirPattern.matcher(d.getName()).find()) {
+					File[] contents = d.listFiles();
+					if (contents != null) {
+						boolean canBeDeleted = false;
+						for (File f : contents) {
+							if (Settings.LOCKER_FILE_NAME.equals(f.getName())) {
+								canBeDeleted = true;
+								break;
+							}
+						}
+						if (canBeDeleted) {
+							FileUtils.delete(d);
+							log.info("Folder '" + d.getName() + "' has been removed.");
+						}
+					}
+				}
+			}
+		}
 	}
 
 }

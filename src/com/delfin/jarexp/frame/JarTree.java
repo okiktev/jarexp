@@ -480,8 +480,15 @@ class JarTree extends JTree {
 	void expandTreeLeaf(String fullPath) {
 		JarNode node = getRoot();
 		String [] items = fullPath.split("/");
+		String peStore = null;
 		for (int i = 0; i < items.length; ++i) {
-			String el = items[i];
+			String el = peStore;
+			if (peStore == null) {
+				el = items[i];
+			} else {
+				peStore = null;
+				i--;
+			}
 			if (el.isEmpty()) {
 				continue;
 			}
@@ -489,8 +496,8 @@ class JarTree extends JTree {
 				expandPath(new TreePath(node.getPath()));
 				Enumeration<?> children = node.children();
 				while(children.hasMoreElements()) {
-					JarNode child = (JarNode) children.nextElement();
-					if (child.name.equals(el)) {
+					Node child = (Node) children.nextElement();
+					if (child.getName().equals(el)) {
 						JarTreeClickSelection.setNodes(null);
 						TreePath path = new TreePath(child.getPath());
 						setSelectionPath(path);
@@ -504,6 +511,13 @@ class JarTree extends JTree {
 			if (el.charAt(el.length() - 1) == '!') {
 				el = el.replace("!", "");
 				isArchive = true;
+			} else {
+				int j = el.indexOf('!');
+				if (j != -1) {
+					peStore = el.substring(j + 1);
+					el = el.substring(0, j);
+					isArchive = true;
+				}
 			}
 			Enumeration<?> children = node.children();
 			while(children.hasMoreElements()) {
@@ -513,7 +527,8 @@ class JarTree extends JTree {
 						expandPath(new TreePath(child.getPath()));
 						while (true) {
 							Utils.sleep(50);
-							if (child.children().hasMoreElements() && !Settings.NAME_PLACEHOLDER.equals(((JarNode)child.getLastChild()).name)) {
+							if (child.children().hasMoreElements() 
+									&& !Settings.NAME_PLACEHOLDER.equals(((Node)child.getLastChild()).getName())) {
 								break;
 							}
 						}

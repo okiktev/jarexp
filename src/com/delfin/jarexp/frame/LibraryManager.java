@@ -33,6 +33,7 @@ public class LibraryManager {
 			Settings.JAREXP_HOST_URL + "/downloads/libraries/";
 
 	private static File libDir;
+	private static File tmpLibDir = new File(Settings.getJarexpTmpDir(), "lib");
 
 	private static Executor executor = Executors.newSingleThreadExecutor();
 
@@ -85,6 +86,7 @@ public class LibraryManager {
 						FileUtils.addJarToClasspath(new File(libDir, wintoolJarDep.fileName));
 					} catch (Exception e) {
 						log.log(Level.SEVERE, "Unable to download " + DependencyType.WINTOOLS, e);
+						processAccessNotGranted(e, getDependency(DependencyType.WINTOOLS), statusBar);
 					}
 					try {
 						Dependency decompilerDep = getDefaultDecompilerDependency(statusBar);
@@ -103,11 +105,27 @@ public class LibraryManager {
 				}
 			}
 
+			private void processAccessNotGranted(Throwable e, Dependency decompilerDep, StatusBar statusBar) {
+				while (true) {
+					if (e.getMessage().contains("The process cannot access the file because it is being used by another process")) {
+						break;
+					}
+					e = e.getCause();
+					if (e == null) {
+						return;
+					}
+				}
+				log.info("Downloading " + decompilerDep.fileName + " to " + tmpLibDir);
+				tmpLibDir.mkdirs();
+				check(tmpLibDir, decompilerDep, statusBar);
+				FileUtils.addJarToClasspath(new File(tmpLibDir, decompilerDep.fileName));
+			}
+
 			private void check(File libDir, Dependency jarDep, StatusBar statusBar) {
 				if (isNeedToDownload(jarDep)) {
 					statusBar.enableProgress("Downloading");
-					FileUtils.download(LIBRARIES_STORE_URL + jarDep.fileName
-							, new File(libDir, jarDep.fileName));
+					File dst = new File(libDir, jarDep.fileName);
+					FileUtils.download(LIBRARIES_STORE_URL + jarDep.fileName, dst);
 				}
 			}
 

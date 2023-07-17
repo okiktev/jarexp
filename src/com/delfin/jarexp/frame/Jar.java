@@ -22,6 +22,7 @@ public abstract class Jar {
 	private static final Logger log = Logger.getLogger(Jar.class.getCanonicalName());
 
 	protected final File file;
+	protected JarFile jarFile;
 
 	public Jar(File file) {
 		this.file = file;
@@ -32,7 +33,6 @@ public abstract class Jar {
 	}
 
 	public void bypass(JarBypassErrorAction errorAction) {
-		JarFile jarFile = null;
 		try {
 			jarFile = new JarFile(file);
 			Enumeration<JarEntry> entries = jarFile.entries();

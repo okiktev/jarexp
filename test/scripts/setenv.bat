@@ -14,6 +14,7 @@ set JAVA_HOME_16=E:\win\java\jdk-16.0.2
 set JAVA_HOME_17=E:\win\java\zulu17.30.15-ca-jdk17.0.1-win_x64
 set JAVA_HOME_18=E:\win\java\OpenJDK-18.0.1.1
 set JAVA_HOME_19=E:\win\java\jdk-19.0.1
+set JAVA_HOME_20=E:\win\java\jdk-20.0.1
 
 set JAREXP_DIR=E:\workspace\jarexp\build\artifacts\lib
 

@@ -41,7 +41,6 @@
 		<checksum file="${basedir}/lib/${dependency4jarName}" property="MD5.lib.procyon"/>
 		<checksum file="${basedir}/lib/${dependency5jarName}" property="MD5.lib.fernflower"/>
 		<checksum file="${basedir}/lib/${dependency6jarName}" property="MD5.zip.maven"/>
-		<checksum file="${basedir}/lib/${dependency7jarName}" property="MD5.lib.wintools"/>
 		<copy todir="${build.dir}/src">
 			<fileset dir="${src.dir}" >
 				<exclude name="**/FieldHelper.java"/>
@@ -79,6 +78,7 @@
 				<include name="com/delfin/jarexp/win/**" />
 			</fileset>
 		</jar>
+		<checksum file="${dependency7}" property="MD5.lib.wintools"/>
 	</target>
 
 	<target name="assembly" depends="wintoolJar">
@@ -417,8 +417,8 @@
 				<include name="${dependency4jarName}" />
 				<include name="${dependency5jarName}" />
 				<include name="${dependency6jarName}" />
-				<include name="${dependency7jarName}" />
 			</fileset>
+			<fileset file="${dependency7}" />
 		</copy>
 		<zip destfile="${artifacts.dir}/jarexp.zip" basedir="${jarexp.dir}" />
 	</target>

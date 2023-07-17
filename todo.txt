@@ -181,9 +181,14 @@ imp cmd open class in jar ... done .............................................
 bug open single class ... done ....................................................................20Jan2023
 bug doesn't recompile after decompiler was changed ... done .......................................20Jan2023
 imp open archive location in system explorer ... done .............................................20Jan2023
+imp rendering PE files and icons ... done .........................................................16Jul2023
+bug internal icon search doesn't work ... done ....................................................16Jul2023
+bug unable to open search result under java20 ... done ............................................16Jul2023
 
 
-imp rendering PE files and icons
+bug unable to open exe file from search icons
+
+
 bug error when click on search javadoc for single class
 bug open java page separately in the site
 bug check apache-maven.zip is not deployed
