@@ -312,21 +312,11 @@ public class Content extends JPanel {
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent windowEvent) {
-				new Executor() {
-					@Override
-					protected void perform() {
-						statusBar.enableProgress("Exiting...");
-						try {							
-							new File(Settings.getJarexpTmpDir(), Settings.LOCKER_FILE_NAME).createNewFile();
-						} catch (IOException e) {
-							log.severe("Unable to set delete marker in " + Settings.getJarexpTmpDir());
-						}
-					}
-					@Override
-					protected void doFinally() {
-						statusBar.disableProgress();
-					}
-				}.execute();
+				try {
+					new File(Settings.getJarexpTmpDir(), Settings.LOCKER_FILE_NAME).createNewFile();
+				} catch (IOException e) {
+					log.severe("Unable to set delete marker in " + Settings.getJarexpTmpDir());
+				}
 			}
 		});
 
