@@ -184,12 +184,11 @@ imp open archive location in system explorer ... done ..........................
 imp rendering PE files and icons ... done .........................................................16Jul2023
 bug internal icon search doesn't work ... done ....................................................16Jul2023
 bug unable to open search result under java20 ... done ............................................16Jul2023
-bug sumetimes temp folder is not deleted. marker file hasn't created while exiting ... done .......17Jul2023
+bug sumetimes temp folder is not deleted. marker file isn't created while exiting ... done ........17Jul2023
+bug opening ico from folders icon search ... done .................................................19Jul2023
 
 
-bug opening ico from folders icon search
 
-bug unable to open exe/arch file from search icons
 bug error when click on search javadoc for single class
 bug open java page separately in the site
 bug check apache-maven.zip is not deployed
@@ -199,6 +198,7 @@ bug check the licenses rendering
 bug open previous root after reloading archive
 imp image sizes on the icons view
 imp extract images from icon
+bug unable to open exe/arch file from search icons
 
 
 imp reduce hardcoded stuff like email, links and so on

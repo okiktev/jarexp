@@ -177,7 +177,12 @@ public class Content extends JPanel {
 				String pathToFile = sr.line;
 				String pathInArchive = null;
 				if (searchResult.position == 1) { // pe search result
-					pathToFile = sr.line + '/' + searchResult.line;
+					String pathToFileLow = pathToFile.toLowerCase();
+					if (pathToFileLow.endsWith(".exe") || pathToFileLow.endsWith(".dll")) {
+						pathToFile = sr.line + "!/" + searchResult.line;
+					} else {						
+						pathToFile = sr.line + '/' + searchResult.line;
+					}
 				}
 				int idx = pathToFile.indexOf('!');
 				if (idx != -1) {
