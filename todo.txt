@@ -186,10 +186,10 @@ bug internal icon search doesn't work ... done .................................
 bug unable to open search result under java20 ... done ............................................16Jul2023
 bug sumetimes temp folder is not deleted. marker file isn't created while exiting ... done ........17Jul2023
 bug opening ico from folders icon search ... done .................................................19Jul2023
+bug error when click on search javadoc for single class ... done ..................................19Jul2023
 
 
 
-bug error when click on search javadoc for single class
 bug open java page separately in the site
 bug check apache-maven.zip is not deployed
 bug check highlight error
@@ -199,6 +199,7 @@ bug open previous root after reloading archive
 imp image sizes on the icons view
 imp extract images from icon
 bug unable to open exe/arch file from search icons
+bug reset to parent when opening icon search result as a single exe/dll file
 
 
 imp reduce hardcoded stuff like email, links and so on

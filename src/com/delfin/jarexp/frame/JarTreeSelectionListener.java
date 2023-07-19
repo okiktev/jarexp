@@ -335,7 +335,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 								throw new JarexpException("Unable to read ico " + file, e);
 							}
 							contentView.addContent(new JScrollPane(pnl), node, statusBar);
-						} if (lowpath.endsWith(".exe") || lowpath.endsWith(".dll")) {
+						} else if (lowpath.endsWith(".exe") || lowpath.endsWith(".dll")) {
 							final RSyntaxTextArea textArea = new RSyntaxTextArea();
 							if (jarTree.isSingleFileLoaded()) {
 								try {

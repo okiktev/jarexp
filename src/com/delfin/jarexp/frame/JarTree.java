@@ -215,8 +215,16 @@ class JarTree extends JTree {
 					public void actionPerformed(ActionEvent e) {
 						if (Desktop.isDesktopSupported()) {
 							try {
+								String className = ((JarNode)obj).name;
+								int i = className.lastIndexOf('\\');
+								if (i == -1) {
+									className.lastIndexOf('/');
+								}
+								if (i != -1) {									
+									className = className.substring(i + 1, className.length());
+								}
 								Desktop.getDesktop().browse(new URI("https://www.google.com/search?q=" 
-										+ ((JarNode)obj).name.replace(".class", "") + "+javadoc"));
+										+ className.replace(".class", "") + "+javadoc"));
 							} catch (Exception ex) {
 								throw new JarexpException("Could not redirect to google search", ex);
 							}
