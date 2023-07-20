@@ -187,10 +187,10 @@ bug unable to open search result under java20 ... done .........................
 bug sumetimes temp folder is not deleted. marker file isn't created while exiting ... done ........17Jul2023
 bug opening ico from folders icon search ... done .................................................19Jul2023
 bug error when click on search javadoc for single class ... done ..................................19Jul2023
+bug open java page separately in the site ... done ................................................20Jul2023
 
 
 
-bug open java page separately in the site
 bug check apache-maven.zip is not deployed
 bug check highlight error
 imp move icon thumbnails to the common folder
