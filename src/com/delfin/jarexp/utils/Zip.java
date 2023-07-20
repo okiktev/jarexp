@@ -174,14 +174,21 @@ public class Zip {
 	}
 	
 	private static String readFile(ZipInputStream zipIn) throws IOException {
-		// BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+//		// BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+//		StringBuilder out = new StringBuilder();
+//		byte[] bytesIn = new byte[4096];
+//		while (zipIn.read(bytesIn) != -1) {
+//			out.append(new String(bytesIn));
+//			// bos.write(bytesIn, 0, read);
+//		}
+//		//bos.close();
+//		return out.toString();
+		
 		StringBuilder out = new StringBuilder();
-		byte[] bytesIn = new byte[4096];
-		while (zipIn.read(bytesIn) != -1) {
-			out.append(new String(bytesIn));
-			// bos.write(bytesIn, 0, read);
+		Scanner scanner = new Scanner(zipIn);
+		while (scanner.hasNextLine()) {
+			out.append(scanner.nextLine()).append('\n');
 		}
-		//bos.close();
 		return out.toString();
 	}
 	
