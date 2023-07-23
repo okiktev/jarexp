@@ -569,6 +569,12 @@ public class Content extends JPanel {
 
 				final JSplitPane pane = getSplitPane();
 				pane.setBorder(Settings.EMPTY_BORDER);
+				for (int i = 0; i < pane.getComponents().length; ++i) {
+					if (pane.getComponents()[i] instanceof ContentPanel) {
+						pane.remove(i);
+						i--;
+					}
+				}
 
 				Component treeView = pane.getLeftComponent();
 				treeView = new JScrollPane(jarTree);
