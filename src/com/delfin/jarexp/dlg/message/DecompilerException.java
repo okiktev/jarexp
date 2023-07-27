@@ -37,7 +37,7 @@ import com.delfin.jarexp.utils.Utils;
 class DecompilerException extends Exception {
 
 	private static final long serialVersionUID = -7017111429925382606L;
-	
+
 	private final int width = 500;
 
 	private final int height = 250;
@@ -78,7 +78,7 @@ class DecompilerException extends Exception {
 			rbFernflower.setActive(false);
 			rbFernflower.setEnabled(false);
 		}
-		
+
 		switch (Settings.getDecompilerType()) {
 		case PROCYON:
 			rbProcyon.setEnabled(false);
@@ -123,7 +123,7 @@ class DecompilerException extends Exception {
 		add(buttonPanel,    new GridBagConstraints(0, 6, 2, 1, 0, 0.01, SOUTHEAST, NONE, zeroInsets, 0, 0));
 
 		pane.setVisible(false);
-		
+
 		if (JAVA_MAJOR_VER < 7) {
 			remove(rbJdCore);
 			remove(rbProcyon);

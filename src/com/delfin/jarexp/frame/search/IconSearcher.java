@@ -126,7 +126,7 @@ class IconSearcher extends AbstractSearcher {
 						try {
 							List<String> result = getIconsFromPe(jarFile.getInputStream(entry));
 							if (!result.isEmpty()) {
-								searchResult.put(parent + path, iconNamesToSearchResults(result));
+								searchResult.put(parent + '/' + path, iconNamesToSearchResults(result));
 							}
 						} catch (Throwable t) {
 							handleError(t, path);

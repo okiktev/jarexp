@@ -66,6 +66,7 @@ import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.Executor;
 import com.delfin.jarexp.utils.ImgPanel;
+import com.delfin.jarexp.utils.StringUtils;
 import com.delfin.jarexp.utils.Utils;
 import com.delfin.jarexp.utils.Zip;
 import com.delfin.jarexp.utils.Zip.StreamProcessor;
@@ -185,11 +186,13 @@ public class Content extends JPanel {
 					}
 				}
 				int idx = pathToFile.indexOf('!');
-				if (idx != -1) {
+				if (idx >= 0) {
 					if (pathInArchive == null) {						
 						pathInArchive = pathToFile.substring(idx + 1, pathToFile.length());
 						if (pathInArchive == null || pathInArchive.isEmpty()) {
 							pathInArchive = null;
+						} else if (StringUtils.endsWith(pathInArchive, "!")) {
+							pathInArchive = pathInArchive.substring(0, pathInArchive.length() - 1);
 						}
 					}
 					pathToFile = pathToFile.substring(0, idx);
