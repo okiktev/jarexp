@@ -192,6 +192,7 @@ bug check the licenses rendering ... done ......................................
 bug open previous root after reloading archive ... done ...........................................23Jul2023
 bug check apache-maven.zip is not deployed ... done ...............................................25Jul2023
 bug unable to open exe/arch file from search icons ... done .......................................27Jul2023
+bug improved jarexp preview rendering on the site ... done ........................................30Jul2023
 
 
 

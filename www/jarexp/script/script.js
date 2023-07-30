@@ -23,13 +23,12 @@ placeFooter = function () {
 		footer.style.display = 'none';
 		notfooter.style.height = right.offsetHeight;
 	}
-	
+
 	var downloads=document.getElementById('downloads');
-	
 	if (downloads.offsetHeight + 40 + slides.offsetHeight > right.offsetHeight) {
 		slides.style.height = right.offsetHeight - downloads.offsetHeight - 40;
 	} else {
-		slides.style.height = 435;
+		slides.style.height = downloads.offsetWidth/1.67
 	}
 }
 
