@@ -187,7 +187,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 								InputStream is = new ByteArrayInputStream(PE.getIcon(node.parent.origArch, node.name.replace(".ico", "")));
 								try {
 									for (BufferedImage icon : Ico.read(is)) {
-										pnl.add(new ImgPanel(icon));
+										pnl.add(new IconPanel(icon));
 									}
 								} finally {
 									is.close();
@@ -202,7 +202,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 									InputStream is = new ByteArrayInputStream(PE.getIcon(stream, node.name.replace(".ico", "")));
 									try {
 										for (BufferedImage icon : Ico.read(is)) {
-											pnl.add(new ImgPanel(icon));
+											pnl.add(new IconPanel(icon));
 										}
 									} finally {
 										is.close();
@@ -319,14 +319,14 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							try {
 								if (jarTree.isSingleFileLoaded()) {
 									for (BufferedImage icon : Ico.read(file)) {
-										pnl.add(new ImgPanel(icon));
+										pnl.add(new IconPanel(icon));
 									}
 								} else {								
 									Zip.stream(node.getTempArchive(), node.path, new StreamProcessor() {
 										@Override
 										public void process(InputStream stream) throws IOException {
 											for (BufferedImage icon : Ico.read(stream)) {
-												pnl.add(new ImgPanel(icon));
+												pnl.add(new IconPanel(icon));
 											}
 										}
 									});
