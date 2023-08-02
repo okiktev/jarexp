@@ -171,6 +171,7 @@ bug able to select other decompiler for java6 when decompiling error ... done ..
 bug sometimes temp folders are not being deleted ... done .........................................24Nov2022
 bug default methods are not visible in jar tree ... done ..........................................24Nov2022
 bug icon has been created right in folder where jar located ... done ..............................28Nov2022
+imp change loading ico from file to input stream ... done .........................................28Nov2022
 bug class method is not marked if switching from other file ... done ..............................08Dec2022
 bug error while unpacking downloaded zip ... done .................................................13Dec2022
 bug wrong open dir after reordering folder content in table ... done ..............................13Dec2022
@@ -205,33 +206,31 @@ bug root / is not opened in the icons search
 imp disable all elements on the search window while searching
 
 
-imp reduce hardcoded stuff like email, links and so on
 imp command console
 imp new rsta for new JVMs
-imp digest protect for jarexp
+imp byte code decompiling
+imp progress bar to search
+imp pause button to search
+imp graph dependencies
+imp mark edited tab somehow
+imp add discard button to save dialog confirmation
+imp settings functional
+imp linux easy download
+imp copy buttons on decompiled class
 
+imp reduce hardcoded stuff like email, links and so on
+imp digest protect for jarexp
 imp licenses to server ? (saving 24Kb) 
 imp refactor DecompilierMenuItems
-imp byte code decompiling
 imp kotlin lib support
-imp graph dependencies
-imp linux easy download
-imp mark edited tab somehow
 bug saving files when digest specified
-imp add discard button to save dialog confirmation
-imp copy buttons on decompiled class
-imp settings functional
 imp pdf recognizing
-
 
 imp javadoc handler
 imp get all depended classes in the jar
 imp ribbon
 imp when delete file clear preview and context panel
 imp all option dialogs should be custom
-imp progress bar to search
-imp pause button to search
-imp change loading ico from file to input stream
 imp toLower for path when initiate nodes
 imp localization
 imp read chm files?
