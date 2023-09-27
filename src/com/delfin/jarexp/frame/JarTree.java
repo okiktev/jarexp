@@ -183,11 +183,21 @@ class JarTree extends JTree {
 				if (path == null) {
 					return;
 				}
+				Resources resources = Resources.getInstance();
 				final Object obj = path.getLastPathComponent();
+				if (obj instanceof PeNode) {
+					JarNodeMenuItem extNode = new JarNodeMenuItem("Extract", path);
+					extNode.setIcon(resources.getExtIcon());
+					extNode.addActionListener(extractActionListener);
+					JPopupMenu popupMenu = new JPopupMenu();
+					popupMenu.add(extNode);
+					popupMenu.show(JarTree.this, e.getX(), e.getY());
+					JarTreeClickSelection.setNodes(null);
+					return;
+				}
 				if (!(obj instanceof JarNode)) {
 					return;
 				}
-				Resources resources = Resources.getInstance();
 				JarNodeMenuItem deleteNode = new JarNodeMenuItem("Delete", path);
 				deleteNode.setIcon(resources.getDelIcon());
 				deleteNode.addActionListener(deleteActionListener);

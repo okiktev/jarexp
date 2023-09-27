@@ -196,8 +196,9 @@ bug unable to open exe/arch file from search icons ... done ....................
 bug improved jarexp preview rendering on the site ... done ........................................30Jul2023
 imp image sizes on the icons view ... done ........................................................02Aug2023
 imp extract images from icon ... done .............................................................27Sep2023
+imp extract icon from store (exe, dll) ... done ...................................................27Sep2023
 
-imp extract icon from store (exe, dll)
+
 bug decompiles are not switched when single class loaded
 bug methods are not parsed when annotation is used
 bug check highlight error
