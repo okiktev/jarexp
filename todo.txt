@@ -197,6 +197,7 @@ bug improved jarexp preview rendering on the site ... done .....................
 imp image sizes on the icons view ... done ........................................................02Aug2023
 imp extract images from icon ... done .............................................................27Sep2023
 imp extract icon from store (exe, dll) ... done ...................................................27Sep2023
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 21_dec_2023
 
 
 bug unable to switch on find icons radio button when searching inside PE
