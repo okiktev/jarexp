@@ -1,0 +1,9 @@
+Package: jarexp
+Version: @JAREXP_VERSION@
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: delfin dsite@bk.ru
+Installed-Size: @DEB_PKG_SIZE@
+Description: The Jar Explorer allows to browse content of Java library files known as JARs
+ To see more details navigate at http://dst.in.ua/jarexp

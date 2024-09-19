@@ -21,24 +21,13 @@ or
 
 </div></div>
 
-<!--donate form -->
-<form action="https://www.paypal.com/donate" method="post" target="_top">
-<input type="hidden" name="hosted_button_id" value="QGL8WNZB2F7AA" />
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-<img alt="" border="0" src="https://www.paypal.com/en_UA/i/scr/pixel.gif" width="1" height="1" />
-</form>
+<?php include 'content/donate.htm' ?>
 
 <div class="clr"></div>
 
 <div class="dlbtns">
-<div class="dbtn">
-<a class="dwbtn" href="downloads/@DOWNLOAD_WIN_ARCHIVE@">Click to Windows download</a>
-<div><a href="downloads/@DOWNLOAD_WIN_FULL_ARCHIVE@">Full binaries</a></div>
-</div>
-<div class="dbtn">
-<a class="dlbtn" href="downloads/@DOWNLOAD_LIN_ARCHIVE@">Click to Linux download</a>
-<div><a href="downloads/@DOWNLOAD_LIN_FULL_ARCHIVE@">Full binaries</a></div>
-</div>
+<div class="dbtn"><a class="dwbtn" id="winDownload" >Click to Windows download</a></div>
+<div class="dbtn"><a class="dlbtn" id="linDownload" >Click to Linux download</a></div>
 <div class="clr"></div>
 </div>
 
@@ -46,4 +35,51 @@ or
 
 
 </div>
+
+
+
+
+<div id="winDownloadModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3></h3>
+    <div style="float:left"><?php include 'content/donate.htm' ?></div>
+    <div style="padding-left:170px">
+      <a class="dwbtn" href="downloads/@DOWNLOAD_WIN_ARCHIVE@">Download Jar Explorer</a>
+	  <?php include $root_cont.'download_info_box.htm' ?>
+   	  <a href="downloads/@DOWNLOAD_WIN_FULL_ARCHIVE@">Download Jar Explorer With Dependencies</a>
+    </div>
+  </div>
+</div>
+
+
+<div id="linDownloadModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3></h3>
+    <div style="float:left"><?php include 'content/donate.htm' ?></div>
+    <div style="padding-left:170px">
+      <a class="dwbtn" href="downloads/@DOWNLOAD_LIN_ARCHIVE@">Download Jar Explorer</a>
+      <div class="deb-info">
+		<div class="deb-text">
+		  <div>
+		    <img src="img/logo_debian.png" class="deb-logo" />
+		    <b>Installing on Debian Linux family hosts</b>
+		    <img src="img/logo_mint.png" title="Linux Mint" />
+		    <img src="img/logo_ubuntu.png" title="Ubuntu" />
+		    <p style="padding-bottom:10px" >Perform following command in terminal:</p>
+		    <code>wget -O /tmp/jarexp_amd64.deb http://dst.in.ua/jarexp/downloads/jarexp_amd64.deb && sudo dpkg -i /tmp/jarexp_amd64.deb</code>
+		    <p style="padding-top:10px !important">Afterward type <code>jarexp</code> to run Jar Explorer</p>
+		  </div>
+	  	</div>
+	  </div>
+	  <div class="clr"></div>
+	  <?php include $root_cont.'download_info_box.htm' ?>
+   	  <a href="downloads/@DOWNLOAD_LIN_FULL_ARCHIVE@">Download Jar Explorer With Dependencies</a>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript"><?php include 'script/download_dlgs.js' ?></script>
 

@@ -252,7 +252,7 @@
 		</exec>
 
 		<waitfor maxwait="30" maxwaitunit="second">
-		    <available file="${artifacts.dir}/Jar Explorer.exe"/>
+			<available file="${artifacts.dir}/Jar Explorer.exe"/>
 		</waitfor>
 		<delete file="${artifacts.dir}/jarexp.xml" />
 		<property name="win.archive.name" value="JarExplorer.${full.version}.zip"/>
@@ -308,7 +308,7 @@
 		</exec>
 
 		<waitfor maxwait="90" maxwaitunit="second">
-		    <available file="${full.pack.dir}/Jar Explorer.exe"/>
+			<available file="${full.pack.dir}/Jar Explorer.exe"/>
 		</waitfor>
 		<sleep milliseconds="10000"/>
 		<delete file="${full.pack.dir}/jarexp.xml" />
@@ -332,6 +332,45 @@
 
 		<move file="${full.pack.dir}/${win.full.archive.name}" todir="${artifacts.dir}" />
 		<move file="${full.pack.dir}/${lin.full.archive.name}" todir="${artifacts.dir}" />
+	</target>
+
+	<target name="debPkg" depends="fullPack" >
+		<property name="debpkg.dir" value="${artifacts.dir}/debpkg" />
+		<delete dir="${debpkg.dir}" file="${debpkg.dir}" />
+		<copy todir="${artifacts.dir}/debpkg" >  
+		    <fileset dir="${build.exe.dir}/debpkg" includes="**/*"/>
+		    <filterset>
+		        <filter token="JARNAME" value="jar-explorer-${full.version}.jar" />
+		    </filterset>
+		</copy>
+		<copy todir="${debpkg.dir}/package_root/usr/share/jarexp">
+			<fileset dir="${artifacts.dir}/lib" />
+		</copy>
+		<tar destfile="${debpkg.dir}/data.tar.gz" longfile="gnu" compression="gzip" >
+			<tarfileset dir="${debpkg.dir}/package_root" prefix="." filemode="777" />
+		</tar>
+		<delete dir="${debpkg.dir}/package_root" />
+		<length file="${debpkg.dir}/data.tar.gz" property="pkg.size.bytes"/>
+		<script language="javascript">
+		<![CDATA[
+			var size_bytes = project.getProperty("pkg.size.bytes");
+			var size_kbytes = Math.round((size_bytes / 1024) * Math.pow(10,2)) / Math.pow(10,2);
+			project.setNewProperty("pkg.size.kbytes", size_kbytes);
+		]]>
+		</script>
+		<replace file="${debpkg.dir}/control" token="@JAREXP_VERSION@" value="${full.version}" />
+		<replace file="${debpkg.dir}/control" token="@DEB_PKG_SIZE@" value="${pkg.size.kbytes}" />
+		<tar destfile="${debpkg.dir}/control.tar.gz" longfile="gnu" compression="gzip"  >
+			<tarfileset dir="${debpkg.dir}" prefix="." filemode="777" >
+				<include name="control" />
+			</tarfileset>
+		</tar>
+		<delete file="${debpkg.dir}/control" />
+	    <exec executable="${cygwin.home}/bin/ar" dir="${debpkg.dir}" failonerror="true" osfamily="windows">
+	      <arg line="rcs ${deb.pkg.name} debian-binary control.tar.gz data.tar.gz"/>
+	    </exec>
+		<move file="${debpkg.dir}/${deb.pkg.name}" todir="${artifacts.dir}" />
+		<delete dir="${debpkg.dir}" />
 	</target>
 
 	<target name="site">
@@ -405,6 +444,7 @@
 				<include name="${win.full.archive.name}" />
 				<include name="${lin.archive.name}" />
 				<include name="${lin.full.archive.name}" />
+				<include name="${deb.pkg.name}" />
 			</fileset>
 		</copy>
 		<property name="libraries.dir" value="${jarexp.dir}/downloads/libraries"/>

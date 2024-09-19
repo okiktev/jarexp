@@ -143,7 +143,7 @@ imp min/max buttons for search dlgs ... done ...................................
 imp clear search content when new search has been started ... done ................................15May2022
 imp clear search results if nothing found ... done ................................................15May2022
 imp added compiler icon to content search ... done ................................................15May2022
-$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 19_may_2021
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 19_may_2022
 bug with processes in java 6 ... done .............................................................04Jun2022
 imp render class default icon if not associated in OS ... done ....................................04Jun2022
 imp list of class structure ... done ..............................................................18Jun2022
@@ -198,18 +198,20 @@ imp image sizes on the icons view ... done .....................................
 imp extract images from icon ... done .............................................................27Sep2023
 imp extract icon from store (exe, dll) ... done ...................................................27Sep2023
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 21_dec_2023
+imp linux easy download ... done ..................................................................19Sep2024
 
 
+imp update decompilers
+imp popup when no internet connection
 bug unable to switch on find icons radio button when searching inside PE
 bug decompiles are not switched when single class loaded
 bug methods are not parsed when annotation is used
 bug check highlight error
-imp move icon thumbnails to the common folder
 bug reset to parent when opening icon search result as a single exe/dll file
 bug root / is not opened in the icons search
+
 imp disable all elements on the search window while searching
-
-
+imp move icon thumbnails to the common folder
 imp command console
 imp new rsta for new JVMs
 imp byte code decompiling
@@ -219,7 +221,6 @@ imp graph dependencies
 imp mark edited tab somehow
 imp add discard button to save dialog confirmation
 imp settings functional
-imp linux easy download
 imp copy buttons on decompiled class
 
 imp reduce hardcoded stuff like email, links and so on
@@ -264,7 +265,7 @@ Caused by: java.lang.ArrayIndexOutOfBoundsException: 0 >= 0
 
 
 
-Exception in thread "AWT-EventQueue-0" java.lang.NumberFormatException: For input string: "1 00"
+Exception in thread "AWT-EventQueue-0" java.lang.NumberFormatException: For input string: "1ï¿½00"
 	at java.base/jdk.internal.math.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:2054)
 	at java.base/jdk.internal.math.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
 	at java.base/java.lang.Double.parseDouble(Double.java:651)
