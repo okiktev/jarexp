@@ -20,6 +20,7 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.delfin.jarexp.exception.SourceConnectionException;
 import com.delfin.jarexp.frame.resources.Resources;
 
 class Exception extends JDialog {
@@ -58,9 +59,15 @@ class Exception extends JDialog {
 		pane.setPreferredSize(new Dimension(width, stHeight));
 		pane.setBorder(emptyBoder);
 
+		String detailsMsg = "";
+		Throwable cause = e.getCause();
+		if (cause instanceof SourceConnectionException) {
+		    detailsMsg = "<br/>No internet connection<br/>Make sure your mashine is online or use 'Full Pack Jar Explorer' binaries from http://dst.in.ua/jarexp to avoid any offline issues";
+		}
+
 		final JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.add(getIconLabel(), BorderLayout.WEST);
-		topPanel.add(new JLabel("<html>" + errMsg + "</html>"));
+		topPanel.add(new JLabel("<html>" + errMsg + detailsMsg + "</html>"));
 
 		add(topPanel);
 
@@ -68,7 +75,9 @@ class Exception extends JDialog {
 		final JButton viewButton = new JButton("View Error");
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		buttonPanel.add(okButton);
-		buttonPanel.add(viewButton);
+		if (!(cause instanceof SourceConnectionException)) {
+		    buttonPanel.add(viewButton);
+		}
 		add(buttonPanel, BorderLayout.SOUTH);
 
 		okButton.addActionListener(new ActionListener() {

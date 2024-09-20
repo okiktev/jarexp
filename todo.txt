@@ -199,10 +199,10 @@ imp extract images from icon ... done ..........................................
 imp extract icon from store (exe, dll) ... done ...................................................27Sep2023
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 21_dec_2023
 imp linux easy download ... done ..................................................................19Sep2024
+imp popup when no internet connection... done .....................................................20Sep2024
 
 
 imp update decompilers
-imp popup when no internet connection
 bug unable to switch on find icons radio button when searching inside PE
 bug decompiles are not switched when single class loaded
 bug methods are not parsed when annotation is used

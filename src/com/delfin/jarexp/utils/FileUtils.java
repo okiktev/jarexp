@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
@@ -24,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.delfin.jarexp.exception.JarexpException;
+import com.delfin.jarexp.exception.SourceConnectionException;
 import com.delfin.jarexp.settings.Settings;
 import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.Cmd.Result;
@@ -453,7 +455,11 @@ public class FileUtils {
 			}.dumpTo(tmp);
 			copy(tmp, dst);
 		} catch (Exception e) {
-			throw new JarexpException("An error occurred while downloading file " + from + " to " + dst, e);
+		    String errMsg = "An error occurred while downloading file " + from + " to " + dst;
+		    if (e instanceof UnknownHostException && "dst.in.ua".equals(e.getMessage())) {
+		        throw new SourceConnectionException(errMsg, e);
+		    }
+			throw new JarexpException(errMsg, e);
 		}
 	}
 
