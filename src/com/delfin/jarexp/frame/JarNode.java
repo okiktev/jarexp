@@ -75,6 +75,8 @@ class JarNode extends Node {
 
 	boolean isDirectory;
 
+	boolean isLoaded;
+
 	private Boolean isArchive;
 
 	private Boolean isClass;

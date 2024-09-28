@@ -65,6 +65,7 @@ class JTabbedContentPane extends JTabbedPane {
 				for (Iterator<TabComponent> it = tabContent.iterator(); it.hasNext();) {
 					TabComponent tab = it.next();
 					if (fullPath.equals(tab.fullPath)) {
+						((JarNode) tab.node).isLoaded = false;
 						if (tab.isEdited) {
 							tab.saveChanges();
 						}

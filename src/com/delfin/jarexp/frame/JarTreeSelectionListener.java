@@ -264,6 +264,9 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							}
 						});
 					} else {
+						if (node.isLoaded) {
+							return;
+						}
 						statusBar.enableProgress("Loading...");
 						statusBar.setPath(node.getFullPath());
 						statusBar.setCompiledVersion("");
@@ -278,7 +281,6 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							file = new File(node.origArch.getParent(), node.path);
 							lowPath = node.path.toLowerCase();
 						}
-
 						if (lowPath.endsWith(".class")) {
 							statusBar.enableProgress("Decompiling...");
 							Result decompiled = decompile(node);
@@ -299,6 +301,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 							try {
 								fillClassStructure(node, Analyzer.analyze(decompiled.content));
+								node.isLoaded = true;
 							} catch (Exception e) {
 								log.log(Level.SEVERE, "Unable to grab class structure information for " + node.name, e);
 							}

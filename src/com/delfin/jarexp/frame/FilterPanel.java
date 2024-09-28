@@ -222,7 +222,9 @@ class FilterPanel extends JPanel {
 		int extentHeight = viewport.getExtentSize().height;
 		int y = Math.max(0, r.y - (extentHeight - r.height) / 2);
 		y = Math.min(y, viewport.getViewSize().height - extentHeight);
+		viewport.setVisible(false);
 		viewport.setViewPosition(new Point(0, y));
+		viewport.setVisible(true);
 	}
 
 	private static void doCenterAlignForJavaLess9(RSyntaxTextArea area, Rectangle r) {
