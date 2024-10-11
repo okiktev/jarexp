@@ -503,14 +503,31 @@ public abstract class SearchDlg extends JFrame {
 	private void makeVisibleHide() {
 		rbClass.setEnabled(true);
 		cbInAllSubArchives.setEnabled(true);
+		cbIconsInExe.setEnabled(true);
+		cbIconsInDll.setEnabled(true);
+		rbInFiles.setEnabled(true);
 		if (searchEntries.size() == 1) {
 			SearchEntries entry = searchEntries.iterator().next();
-			String path = entry.path == null || entry.path.isEmpty() ? entry.archive.getName() : entry.path;
-			if (!entry.isDirectory && !Zip.isArchive(path.toLowerCase(), true)) {
+			String epath = entry.path;
+			String path = (epath == null || epath.isEmpty() ? entry.archive.getName() : epath).toLowerCase();
+			if (!entry.isDirectory && !Zip.isArchive(path, true)) {
 				rbClass.setEnabled(false);
 				cbInAllSubArchives.setEnabled(false);
 				rbInFiles.setSelected(true);
 				isFindClass = false;
+			}
+			if (path.endsWith(".exe") || path.endsWith(".dll")) {
+				isFindClass = null;
+				rbInFiles.setSelected(false);
+				rbInFiles.setEnabled(false);
+				rbIcons.setSelected(true);
+				cbInAllSubArchives.setEnabled(false);
+				cbInAllSubArchives.setSelected(true);
+				boolean isExe = path.endsWith(".exe");
+				cbIconsInExe.setEnabled(false);
+				cbIconsInExe.setSelected(isExe);
+				cbIconsInDll.setEnabled(false);
+				cbIconsInDll.setSelected(!isExe);
 			}
 		}
 		lbFileFilter.setVisible(isFindClass != null && !isFindClass);

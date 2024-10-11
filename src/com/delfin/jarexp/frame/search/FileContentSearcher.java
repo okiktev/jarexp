@@ -282,7 +282,7 @@ class FileContentSearcher extends AbstractSearcher {
 		}
 		for (String ext : ignores) {
 			if (fileName.endsWith(ext)) {
-				return true;
+				return false;
 			}
 		}
 		return nonIgnores.isEmpty();

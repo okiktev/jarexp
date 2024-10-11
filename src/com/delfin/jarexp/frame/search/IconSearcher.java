@@ -98,10 +98,10 @@ class IconSearcher extends AbstractSearcher {
 			return;
 		}
 		Jar searcher;
-		if (searchRoot.isDirectory()) {
-			searcher = prepareDirectorySearch(searchRoot, dlg);
-		} else {
+		if (Zip.isArchive(searchRoot.getName(), true)) {
 			searcher = prepareArchiveSearch(parent, searchRoot, dlg, pathInJar);
+		} else {
+			searcher = prepareDirectorySearch(searchRoot, dlg);
 		}
 		searcher.bypass();
 	}
