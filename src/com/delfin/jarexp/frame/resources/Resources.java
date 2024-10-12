@@ -365,6 +365,10 @@ public class Resources {
 		return peIcons.put(fullPath, icon);
 	}
 
+	public void clearPeIcons() {
+		peIcons.clear();
+	}
+
 	private static Image getImage(String fileName, String errorMsg) {
 		Image res = images.get(fileName);
 		if (res == null) {

@@ -144,6 +144,13 @@ class ContentPanel extends JPanel {
 			this.name = node.getName();
 			this.node = node;
 			this.isDirectory = isDirectory;
+			this.node.tab = this;
+		}
+
+		void close() {
+			Component comp = tabbedPane.getSelectedComponent();
+			JTabbedContentPane tabPanel = (JTabbedContentPane) comp.getParent();
+			tabPanel.closeTab(fullPath);
 		}
 
 		void saveChanges() {

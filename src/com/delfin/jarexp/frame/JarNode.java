@@ -25,6 +25,7 @@ import javax.swing.tree.TreePath;
 import com.delfin.jarexp.analyzer.IJavaItem;
 import com.delfin.jarexp.analyzer.IJavaItem.Position;
 import com.delfin.jarexp.exception.JarexpException;
+import com.delfin.jarexp.frame.ContentPanel.TabComponent;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.settings.Version;
 import com.delfin.jarexp.utils.Enumerator;
@@ -39,6 +40,16 @@ import com.delfin.jarexp.win.icon.Ico;
 abstract class Node extends DefaultMutableTreeNode {
 
 	private static final long serialVersionUID = -8073373592062367648L;
+
+    boolean isShouldUpdate;
+    TabComponent tab;
+
+    void closeTab() {
+        if (tab != null) {
+            tab.close();
+            tab = null;
+        }
+    }
 
 	abstract String getName();
 	abstract String getFullPath();

@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -22,8 +23,6 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
@@ -31,6 +30,8 @@ import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -40,20 +41,21 @@ import javax.swing.tree.TreeSelectionModel;
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.Content.SearchResultMouseAdapter;
 import com.delfin.jarexp.frame.JarNode.ClassItemNode;
-import com.delfin.jarexp.frame.JarNode.PeNode;
 import com.delfin.jarexp.frame.JarNode.JarNodeMenuItem;
+import com.delfin.jarexp.frame.JarNode.PeNode;
 import com.delfin.jarexp.frame.resources.CropIconsBugResolver;
 import com.delfin.jarexp.frame.resources.Resources;
 import com.delfin.jarexp.frame.search.SearchDlg;
 import com.delfin.jarexp.frame.search.SearchDlg.SearchEntries;
 import com.delfin.jarexp.settings.Settings;
+import com.delfin.jarexp.utils.StreamHandler;
 import com.delfin.jarexp.utils.StringUtils;
 import com.delfin.jarexp.utils.Utils;
+import com.delfin.jarexp.utils.Zip;
+import com.delfin.jarexp.utils.Zip.StreamProcessor;
 import com.delfin.jarexp.win.exe.PE;
 
 class JarTree extends JTree {
-
-	private static final Logger log = Logger.getLogger(JarTree.class.getCanonicalName());
 
     private class JarTreeCellRenderer extends DefaultTreeCellRenderer {
 
@@ -397,28 +399,27 @@ class JarTree extends JTree {
 		final File tmpArch = new File(Resources.createTmpDir(), fileName);
 		root = new JarNode(origArch.getAbsolutePath(), "", tmpArch, origArch, false);
 
-		String fname = fileName.toLowerCase();
+		final String fname = fileName.toLowerCase();
 		if (fname.endsWith(".class") || fname.endsWith(".exe") || fname.endsWith(".dll") || fname.endsWith(".ico")) {
 			isSingleFileLoaded = true;
 			if (fname.endsWith(".exe") || fname.endsWith(".dll")) {
-				InputStream stream = null;
-				try {
-					stream = new FileInputStream(origArch);
-					for (String iname : PE.getIconNames(stream)) {
-						root.add(new PeNode(root, iname + ".ico"));
+				new StreamHandler() {
+					@Override protected InputStream stream() throws FileNotFoundException {
+						return new FileInputStream(origArch);
 					}
-					root.path = fname;
-				} catch (Exception e) {
-					throw new JarexpException("An error occurred while parsing ico file " + origArch, e);
-				} finally {
-					if (stream != null) {
-						try {
-							stream.close();
-						} catch (IOException e) {
-							log.log(Level.WARNING, "Couldn't close stream to " + origArch, e);
+					@Override protected void doAction(InputStream stream) throws IOException {
+						for (String iname : PE.getIconNames(stream)) {
+							root.add(new PeNode(root, iname + ".ico"));
 						}
+						root.path = fname;
 					}
-				}
+					@Override protected String errorMsg() {
+						return "An error occurred while parsing ico file " + origArch;
+					}
+					@Override protected String warnMsg() {
+						return "Couldn't close stream to " + origArch;
+					}
+				};
 			}
 		} else {
 			new Jar(origArch) {
@@ -429,6 +430,47 @@ class JarTree extends JTree {
 			}.bypass();
 		}
 		setModel(model = new DefaultTreeModel(root, false));
+		model.addTreeModelListener(new TreeModelListener() {
+			@Override
+			/**
+			 * Handle a case when node child was replaced by new the same file with different content
+			 */
+			public void treeStructureChanged(TreeModelEvent e) {
+				Object[] path = e.getPath();
+				Node node = (Node) path[path.length - 1];
+				if (!node.isShouldUpdate || !(node instanceof JarNode)) {
+					node.isShouldUpdate = false;
+					return;
+				}
+				final JarNode jarNode = (JarNode)node;
+				String name = jarNode.name.toLowerCase();
+				if (jarNode.isArchive()) {
+					jarNode.removeAllChildren();
+					jarNode.add(new JarNode("", Settings.NAME_PLACEHOLDER, null, null, false));
+				} else if (name.endsWith(".exe") || name.endsWith(".dll")) {
+					jarNode.removeAllChildren();
+					Resources.getInstance().clearPeIcons();
+					Zip.stream(jarNode.getTempArchive(), jarNode.path, new StreamProcessor() {
+						@Override
+						public void process(InputStream stream) throws IOException {
+							for (String iconName : PE.getIconNames(stream)) {
+								jarNode.add(new PeNode(jarNode, iconName + ".ico"));
+							}
+						}
+					});
+				}
+				node.isShouldUpdate = false;
+			}
+			@Override
+			public void treeNodesRemoved(TreeModelEvent e) {
+			}
+			@Override
+			public void treeNodesInserted(TreeModelEvent e) {
+			}
+			@Override
+			public void treeNodesChanged(TreeModelEvent e) {
+			}
+		});
 	}
 
 	boolean isSingleFileLoaded() {

@@ -69,7 +69,7 @@ class ClassFileIcon {
 		return icon;
 	}
 
-	public static BufferedImage convertToBufferedImage(Image img) {
+	private static BufferedImage convertToBufferedImage(Image img) {
 		BufferedImage res = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = res.createGraphics();
 		g.drawImage(img, 0, 0, null);

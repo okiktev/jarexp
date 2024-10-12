@@ -8,6 +8,7 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -94,6 +95,7 @@ class JarTreeDropTargetListener implements DropTargetListener {
 					statusBar.enableProgress("Packing...");
 					jarTree.setPacking(true);
 					packIntoJar(node, droppedFiles);
+					updateReplacedNodes(node, droppedFiles, jarTree);
 					jarTree.update(node);
 				}
 				@Override
@@ -108,6 +110,23 @@ class JarTreeDropTargetListener implements DropTargetListener {
 			dtde.dropComplete(true);
 			jarTree.setDragging(false);
 			jarTree.setPacking(false);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static void updateReplacedNodes(JarNode node, List<File> droppedFiles, JarTree jarTree) {
+		for (File file : droppedFiles) {
+			Enumeration<Node> children = node.children();
+			while (children.hasMoreElements()) {
+				Node child = children.nextElement();
+				if (child.getName().equals(file.getName())) {
+					child.isShouldUpdate = true;
+					closeAllTabsFor(child);
+					node.closeTab();
+					jarTree.update(child);
+					break;
+				}
+			}
 		}
 	}
 
@@ -160,6 +179,15 @@ class JarTreeDropTargetListener implements DropTargetListener {
 
 	private JarNode getNode(DropTargetDropEvent dtde) {
 		return jarTree.getNodeByLocation(dtde.getLocation());
+	}
+
+	@SuppressWarnings("unchecked")
+	private static void closeAllTabsFor(Node node) {
+		node.closeTab();
+		Enumeration<Node> children = node.children();
+		while (children.hasMoreElements()) {
+			closeAllTabsFor(children.nextElement());
+		}
 	}
 
 }

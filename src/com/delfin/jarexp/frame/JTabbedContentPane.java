@@ -60,46 +60,7 @@ class JTabbedContentPane extends JTabbedPane {
 		this.closeTabListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String fullPath = ((JTabbedContentPane.CloseButton) e.getSource()).fullPath;
-				String previousSelected = getPreviousSelected();
-				for (Iterator<TabComponent> it = tabContent.iterator(); it.hasNext();) {
-					TabComponent tab = it.next();
-					if (fullPath.equals(tab.fullPath)) {
-						if (tab.node instanceof JarNode) {
-							((JarNode) tab.node).isLoaded = false;
-						}
-						if (tab.isEdited) {
-							tab.saveChanges();
-						}
-						if (tab.node.getName().toLowerCase().endsWith(".class")) {
-							tab.node.removeAllChildren();
-							jarTree.update(tab.node);
-						}
-						tab.node.setSelectedChild(null);
-						it.remove();
-						break;
-					}
-				}
-				for (int i = 0; i < getTabCount(); ++i) {
-					if (previousSelected.equals(getToolTipTextAt(i))) {
-						setSelectedIndex(i);
-						break;
-					}
-				}
-				for (int i = 0; i < getTabCount(); ++i) {
-					if (fullPath.equals(getToolTipTextAt(i))) {
-						remove(i);
-						removeFromSelection(fullPath);
-						break;
-					}
-				}
-				if (tabContent.isEmpty()) {
-					jarTree.statusBar.empty();
-					contentPanel.removeAll();
-					contentPanel.repaint();
-					JarTreeClickSelection.setNodes(null);
-					jarTree.clearSelection();
-				}
+				closeTab(((JTabbedContentPane.CloseButton) e.getSource()).fullPath);
 			}
 		};
 		addChangeListener(new ChangeListener() {
@@ -149,6 +110,48 @@ class JTabbedContentPane extends JTabbedPane {
 			}
 		});
 		this.contentPanel = contentPanel;
+	}
+
+	void closeTab(String fullPath) {
+		String previousSelected = getPreviousSelected();
+		for (Iterator<TabComponent> it = tabContent.iterator(); it.hasNext();) {
+			TabComponent tab = it.next();
+			if (fullPath.equals(tab.fullPath)) {
+				if (tab.node instanceof JarNode) {
+					((JarNode) tab.node).isLoaded = false;
+				}
+				if (tab.isEdited) {
+					tab.saveChanges();
+				}
+				if (tab.node.getName().toLowerCase().endsWith(".class")) {
+					tab.node.removeAllChildren();
+					jarTree.update(tab.node);
+				}
+				tab.node.setSelectedChild(null);
+				it.remove();
+				break;
+			}
+		}
+		for (int i = 0; i < getTabCount(); ++i) {
+			if (previousSelected.equals(getToolTipTextAt(i))) {
+				setSelectedIndex(i);
+				break;
+			}
+		}
+		for (int i = 0; i < getTabCount(); ++i) {
+			if (fullPath.equals(getToolTipTextAt(i))) {
+				remove(i);
+				removeFromSelection(fullPath);
+				break;
+			}
+		}
+		if (tabContent.isEmpty()) {
+			jarTree.statusBar.empty();
+			contentPanel.removeAll();
+			contentPanel.repaint();
+			JarTreeClickSelection.setNodes(null);
+			jarTree.clearSelection();
+		}
 	}
 
 	TabComponent getSelectedTabComponent(String fullPath) {
