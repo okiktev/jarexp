@@ -581,21 +581,25 @@ class JarTree extends JTree {
 			}
 			Enumeration<?> children = node.children();
 			while(children.hasMoreElements()) {
-				JarNode child = (JarNode) children.nextElement();
-				if (child.name.equals(el)) {
-					if (isArchive) {
-						expandPath(new TreePath(child.getPath()));
-						while (true) {
-							Utils.sleep(50);
-							if (child.children().hasMoreElements() 
-									&& !Settings.NAME_PLACEHOLDER.equals(((Node)child.getLastChild()).getName())) {
-								break;
-							}
-						}
-					}
-					node = child;
-					break;
-				}
+			    Object obj = children.nextElement();
+			    if (!(obj instanceof JarNode)) {
+			        continue;
+			    }
+                JarNode child = (JarNode) children.nextElement();
+                if (child.name.equals(el)) {
+                    if (isArchive) {
+                        expandPath(new TreePath(child.getPath()));
+                        while (true) {
+                            Utils.sleep(50);
+                            if (child.children().hasMoreElements() 
+                                    && !Settings.NAME_PLACEHOLDER.equals(((Node)child.getLastChild()).getName())) {
+                                break;
+                            }
+                        }
+                    }
+                    node = child;
+                    break;
+                }
 			}
 		}
 	}

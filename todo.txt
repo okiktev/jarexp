@@ -206,9 +206,9 @@ bug check highlight error ... done .............................................
 bug unable to switch on find icons radio button when searching inside PE ... done .................11Oct2024
 bug root / is not opened in the icons search ... not a bug ........................................11Oct2024
 bug archive is not updated in the tree after replacing ... done ...................................12Oct2024
+bug reset to parent when opening icon search result as a single exe/dll file ... done .............12Oct2024
 
 
-bug reset to parent when opening icon search result as a single exe/dll file
 bug methods are not parsed when annotation is used
 
 imp disable all elements on the search window while searching
