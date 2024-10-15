@@ -24,10 +24,10 @@ public class Analyzer {
 	}
 
 	private static final Pattern class_interface_Ptrn = Pattern.compile(
-			"(public|private)*[^A-Za-z](class|interface|enum)\\s+([A-Za-z0-9$_]+?[ ]?)([\\s]|$|<)+(.*)", Pattern.MULTILINE);
+			"(public|private|)*[^A-Za-z](class|interface|enum|record)\\s+([A-Za-z0-9$_()]+?[ ]?)([\\s]|$|<)+(.*)", Pattern.MULTILINE);
 
 	private static final Pattern method_Ptrn = Pattern.compile(
-			"((public|final|protected|abstract|private|static|synchronized|\\s|=|})*)(\\s<([A-Za-z\\s])*>\\s)*([A-Za-z0-9\\.]*(<[\\s\\.,A-Za-z0-9<>\\?\\[\\]]*>)*[\\.\\?\\[\\]]*)\\s+(([$A-Za-z0-9]*)\\s*\\(([A-Za-z$_0-9,\\.<>\\[\\]\\?\\s]*)\\))(.*)", Pattern.MULTILINE);
+			"((public|final|protected|abstract|private|static|synchronized|\\s|=|})*)(\\s<([A-Za-z\\s])*>\\s)*([A-Za-z0-9\\.]*(<[\\s\\.,A-Za-z0-9<>\\?\\[\\]]*>)*[\\.\\?\\[\\]]*)\\s+(([$A-Za-z0-9]*)\\s*\\(([A-Za-z@$_0-9,\\.<>\\[\\]\\?\\s]*)\\))(.*)", Pattern.MULTILINE);
 
 	public static List<IJavaItem> analyze(String content) {
 		List<IJavaItem> res = new ArrayList<IJavaItem>(2);
@@ -46,11 +46,16 @@ public class Analyzer {
 			Position position = new Position(content.indexOf(entire), entire.length());
 			if ("class".equals(classMatcher.group(2))) {
 				res.add(new JavaClass(classMatcher.group(3), position));
+			} else if ("record".equals(classMatcher.group(2))) {
+			    res.add(new JavaRecord(getRecordName(classMatcher.group(3), content), position));
 			} else if ("enum".equals(classMatcher.group(2))) {
 				res.add(new JavaEnum(classMatcher.group(3), position));				
 			} else {
 				res.add(new JavaInterface(classMatcher.group(3), position));
 			}
+		}
+		if (res.isEmpty()) {
+		    return Collections.emptyList();
 		}
 
 		IJavaItem previousHolder = getHolder(res, null, 0, content);
@@ -58,6 +63,9 @@ public class Analyzer {
 		List<IJavaItem> methods = new ArrayList<IJavaItem>(5);
 		Matcher methodMatcher = method_Ptrn.matcher(content);
 		while (methodMatcher.find()) {
+		    if ("record".equals(methodMatcher.group(5))) {
+		        continue;
+		    }
 			String entire = methodMatcher.group(0);
 			int methodPosition = content.indexOf(entire);
 
@@ -146,7 +154,13 @@ public class Analyzer {
 		return res;
 	}
 
-	private static boolean isNotParams(String paramsGroup) {
+	private static String getRecordName(String startName, String content) {
+	    int s = content.indexOf(startName);
+	    int e = content.indexOf('{', s + 1);
+	    return content.substring(s, e).trim();
+    }
+
+    private static boolean isNotParams(String paramsGroup) {
 		paramsGroup = paramsGroup.trim();
 		if (paramsGroup.isEmpty()) {
 			return false;

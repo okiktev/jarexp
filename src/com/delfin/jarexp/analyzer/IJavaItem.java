@@ -16,7 +16,7 @@ public interface IJavaItem {
 	}
 
 	enum TYPE {
-		CLASS, INTERFACE, METHOD, ENUM;
+		CLASS, INTERFACE, RECORD, METHOD, ENUM;
 	};
 
 	TYPE getType();

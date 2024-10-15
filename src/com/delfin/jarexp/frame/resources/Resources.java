@@ -281,6 +281,10 @@ public class Resources {
 		return getIcon("r_class.png", "Unable to load java item class icon from class path");
 	}
 
+    public Icon getJavaRecordIcon() {
+        return getIcon("r_rec.png", "Unable to load java item record icon from class path");
+    }
+
 	public Icon getJavaInterfaceIcon() {
 		return getIcon("r_int.png", "Unable to load java item interface icon from class path");
 	}
