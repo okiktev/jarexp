@@ -118,7 +118,7 @@ public abstract class DuplicatesDlg extends JFrame {
 				JFileChooser chooser = new JFileChooser();
 				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				chooser.setDialogTitle("Select archive or directory to search duplicates");
-				FileFilter filter = new FileNameExtensionFilter("Jar Files (*.jar,*.war,*.ear,*.zip,*.apk)", "jar", "war", "ear", "zip", "apk");
+				FileFilter filter = new FileNameExtensionFilter("Jar Files (*.jar,*.war,*.ear,*.zip,*.apk,*.arr)", "jar", "war", "ear", "zip", "apk", "arr");
 				chooser.addChoosableFileFilter(filter);
 				chooser.setFileFilter(filter);
 

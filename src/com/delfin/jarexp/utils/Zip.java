@@ -490,7 +490,7 @@ public class Zip {
 			path = path.toLowerCase();
 		}
 		return path.endsWith(".jar") || path.endsWith(".war") || path.endsWith(".ear") || path.endsWith(".zip")
-				|| path.endsWith(".apk");
+				|| path.endsWith(".apk") || path.endsWith(".aar");
 	}
 
 	public static boolean isArchive(String path) {

@@ -211,6 +211,7 @@ bug methods are not parsed when annotation is used ... done ....................
 imp support parsing of record items ... done ......................................................15Oct2024
 imp when delete file clear preview and context panel ... done .....................................19Oct2024
 imp disable all elements on the search window while searching ... done ............................19Oct2024
+imp added supporting aar ... done .................................................................19Oct2024
 
 
 imp command console

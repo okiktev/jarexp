@@ -339,7 +339,7 @@ public class Content extends JPanel {
 				JFileChooser chooser = new JFileChooser();
 				chooser.setFileSelectionMode(JFileChooser.OPEN_DIALOG);
 				chooser.setDialogTitle("Select jar file to open");
-				FileFilter filter = new FileNameExtensionFilter("Jar Files (*.jar,*.war,*.ear,*.zip,*.apk)", "jar", "war", "ear", "zip", "apk");
+				FileFilter filter = new FileNameExtensionFilter("Jar Files (*.jar,*.war,*.ear,*.zip,*.apk,*.aar)", "jar", "war", "ear", "zip", "apk", "aar");
 				chooser.addChoosableFileFilter(filter);
 				chooser.addChoosableFileFilter(new FileNameExtensionFilter("Class Files (*.class)", "class"));
 				chooser.setFileFilter(filter);

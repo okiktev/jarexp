@@ -315,7 +315,7 @@ public abstract class SearchDlg extends JFrame {
 				JFileChooser chooser = new JFileChooser();
 				chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				chooser.setDialogTitle("Select archive or directory to search");
-				FileFilter filter = new FileNameExtensionFilter("Jar Files (*.jar,*.war,*.ear,*.zip,*.apk)", "jar", "war", "ear", "zip", "apk");
+				FileFilter filter = new FileNameExtensionFilter("Jar Files (*.jar,*.war,*.ear,*.zip,*.apk,*.aar)", "jar", "war", "ear", "zip", "apk", "aar");
 				chooser.addChoosableFileFilter(filter);
 				chooser.setFileFilter(filter);
 
