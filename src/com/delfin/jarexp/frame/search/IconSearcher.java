@@ -49,6 +49,7 @@ class IconSearcher extends AbstractSearcher {
 		final Thread search = new Thread(new Runnable() {
 			@Override
 			public void run() {
+			    searchDlg.enableUxComponent(false);
 				manageSearchHistory();
 				List<SearchResult> results = new ArrayList<SearchResult>();
 				long start = System.currentTimeMillis();
@@ -73,6 +74,7 @@ class IconSearcher extends AbstractSearcher {
 				searchDlg.btnResultToClipboard.setResult(table);
 				searchDlg.btnResultToFile.setVisible(true);
 				searchDlg.btnResultToFile.setResult(table);
+				searchDlg.enableUxComponent(true);
 			}
 
 			private int getHits(Map<String, List<SearchResult>> result) {

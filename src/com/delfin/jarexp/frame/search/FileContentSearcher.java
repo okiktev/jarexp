@@ -69,6 +69,7 @@ class FileContentSearcher extends AbstractSearcher {
 		final Thread search = new Thread(new Runnable() {
 			@Override
 			public void run() {
+			    searchDlg.enableUxComponent(false);
 				manageSearchHistory();
 				long start = System.currentTimeMillis();
 				for (SearchEntries entry : searchEntries) {
@@ -91,6 +92,7 @@ class FileContentSearcher extends AbstractSearcher {
 				searchDlg.btnResultToClipboard.setResult(table);
 				searchDlg.btnResultToFile.setVisible(true);
 				searchDlg.btnResultToFile.setResult(table);
+				searchDlg.enableUxComponent(true);
 			}
 
 			private int getHits(Map<String, List<SearchResult>> result) {

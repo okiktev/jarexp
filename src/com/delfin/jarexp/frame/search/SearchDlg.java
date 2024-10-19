@@ -161,7 +161,9 @@ public abstract class SearchDlg extends JFrame {
 	protected ImgBtn btnResultToClipboard = new ImgButton("Copy search result to clipboard", Resources.getInstance().getCopyIcon());
 	protected JScrollPane spResult = new JScrollPane(tResult);
 	private JLabel lbFileFilter = new JLabel("File Filter:");
-	protected JTextField tfFileFilter = new JTextField("!.png,!.jpeg,!.jpg,!.bmp,!.gif,!.ico,!.exe");
+	protected JTextField tfFileFilter = new JTextField("!.png,!.jpeg,!.jpg,!.bmp,!.gif,!.ico,!.exe,!.dll");
+
+	private List<UxComponent> uxComponents = new ArrayList<UxComponent>();
 
 	@SuppressWarnings("rawtypes")
 	JComboBox cbDecompiler = new ComboBox();
@@ -243,6 +245,22 @@ public abstract class SearchDlg extends JFrame {
 				new GridBagConstraints(2, 5, 1, 0, 0, 0, NORTH, NONE, ZERO_PADDING, 0, 0));
 
 		add(spResult, new GridBagConstraints(0, 6, 3, 1, 1, 1, NORTH, BOTH, insets, 0, 0));
+
+		uxComponents.add(new UxComponent(tfSearchIn));
+		uxComponents.add(new UxComponent(btnChangePlace));
+		uxComponents.add(new UxComponent(rbClass));
+		uxComponents.add(new UxComponent(rbInFiles));
+		uxComponents.add(new UxComponent(cbDecompiler));
+		uxComponents.add(new UxComponent(rbIcons));
+		uxComponents.add(new UxComponent(cbMatchCase));
+		uxComponents.add(new UxComponent(cbInAllSubArchives));
+		uxComponents.add(new UxComponent(tfFileFilter));
+		uxComponents.add(new UxComponent(cbFind));
+		uxComponents.add(new UxComponent(cbIconsInExe));
+		uxComponents.add(new UxComponent(cbIconsInDll));
+		uxComponents.add(new UxComponent(btnFind));
+		uxComponents.add(new UxComponent(btnResultToFile));
+		uxComponents.add(new UxComponent(btnResultToClipboard));
 	}
 
 	private void initLocation() {
@@ -549,6 +567,17 @@ public abstract class SearchDlg extends JFrame {
 		return panel;
 	}
 
+    void enableUxComponent(boolean isEnabled) {
+        for (UxComponent c : uxComponents) {
+            if (isEnabled) {
+                c.component.setEnabled(c.isEnabled);
+            } else {
+                c.isEnabled = c.component.isEnabled();
+                c.component.setEnabled(false);
+            }
+        }
+    }
+
 	private static class IconListRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = -363503412229224693L;
@@ -609,6 +638,14 @@ public abstract class SearchDlg extends JFrame {
 			return ZERO_PADDING;
 		}
 	}
+
+    private static class UxComponent {
+        boolean isEnabled;
+        final JComponent component;
+        UxComponent(JComponent component) {
+            this.component = component;
+        }
+    }
 
 	public static void main(String[] args) {
 		String sysLookFeel = UIManager.getSystemLookAndFeelClassName();
