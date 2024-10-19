@@ -11,6 +11,7 @@ import java.security.CodeSigner;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
@@ -48,6 +49,15 @@ abstract class Node extends DefaultMutableTreeNode {
         if (tab != null) {
             tab.close();
             tab = null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static void closeAllTabsFor(Node node) {
+        node.closeTab();
+        Enumeration<Node> children = node.children();
+        while (children.hasMoreElements()) {
+            closeAllTabsFor(children.nextElement());
         }
     }
 

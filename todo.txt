@@ -209,11 +209,12 @@ bug archive is not updated in the tree after replacing ... done ................
 bug reset to parent when opening icon search result as a single exe/dll file ... done .............12Oct2024
 bug methods are not parsed when annotation is used ... done .......................................15Oct2024
 imp support parsing of record items ... done ......................................................15Oct2024
+imp when delete file clear preview and context panel ... done .....................................19Oct2024
 
 
+imp command console
 imp disable all elements on the search window while searching
 imp move icon thumbnails to the common folder
-imp command console
 imp new rsta for new JVMs
 imp byte code decompiling
 imp progress bar to search
@@ -235,7 +236,6 @@ imp pdf recognizing
 imp javadoc handler
 imp get all depended classes in the jar
 imp ribbon
-imp when delete file clear preview and context panel
 imp all option dialogs should be custom
 imp toLower for path when initiate nodes
 imp localization

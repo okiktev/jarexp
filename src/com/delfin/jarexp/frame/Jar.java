@@ -133,6 +133,7 @@ public abstract class Jar {
 	                files.add(arc.getCurrentArchive());
 	                currNode = arc;
 	            }
+	            node.closeTab();
 		    }
 
 			if (withCopy) {

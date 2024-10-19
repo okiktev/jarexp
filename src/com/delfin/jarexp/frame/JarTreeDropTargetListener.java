@@ -121,7 +121,7 @@ class JarTreeDropTargetListener implements DropTargetListener {
 				Node child = children.nextElement();
 				if (child.getName().equals(file.getName())) {
 					child.isShouldUpdate = true;
-					closeAllTabsFor(child);
+					Node.closeAllTabsFor(child);
 					node.closeTab();
 					jarTree.update(child);
 					break;
@@ -179,15 +179,6 @@ class JarTreeDropTargetListener implements DropTargetListener {
 
 	private JarNode getNode(DropTargetDropEvent dtde) {
 		return jarTree.getNodeByLocation(dtde.getLocation());
-	}
-
-	@SuppressWarnings("unchecked")
-	private static void closeAllTabsFor(Node node) {
-		node.closeTab();
-		Enumeration<Node> children = node.children();
-		while (children.hasMoreElements()) {
-			closeAllTabsFor(children.nextElement());
-		}
 	}
 
 }

@@ -35,6 +35,7 @@ class JarTreeDeleteNodeListener extends PopupMenuListener {
                 List<JarNode> nodes = getNodes();
                 delFromJar(nodes);
                 for (JarNode node : nodes) {
+                    Node.closeAllTabsFor(node);
                     TreeNode parent = node.getParent();
                     jarTree.remove(node);
                     jarTree.update(parent);
