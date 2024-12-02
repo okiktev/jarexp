@@ -6,6 +6,8 @@ import java.util.jar.JarEntry;
 
 import com.delfin.jarexp.exception.JarexpException;
 import com.delfin.jarexp.frame.Jar;
+import com.delfin.jarexp.utils.FileUtils;
+import com.delfin.jarexp.utils.FileUtils.BypassCfg;
 
 public abstract class Directory extends Jar {
 
@@ -24,32 +26,31 @@ public abstract class Directory extends Jar {
 	}
 
 	@Override
-	public void bypass(JarBypassErrorAction errorAction) {
-		try {
-			bypass(file);
-		} catch (Exception e) {
-			if (errorAction == null) {
-				throw new JarexpException("An error occurred while bypassing directory " + file, e);
-			}
-			RuntimeException toThrow = errorAction.apply(e);
-			if (toThrow != null) {
-				throw new RuntimeException(toThrow);
-			}
-		}
-	}
-
-	private void bypass(File file) throws IOException {
-		if (file.isFile()) {
-			process(file);
-		} else {
-			File[] files = file.listFiles();
-			if (files != null) {
-				for (File f : files) {
-					bypass(f);
-				}
-			}
-		}
+	public void bypass(final JarBypassErrorAction errorAction) {
+        try {
+            FileUtils.bypass(new BypassCfg(file) {
+                @Override
+                protected void visitFile(File file) throws IOException {
+                    process(file);
+                }
+                @Override
+                protected void handleError(Exception error) {
+                    if (errorAction != null) {
+                        errorAction.apply(error);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            if (errorAction == null) {
+                throw new JarexpException("An error occurred while bypassing directory " + file, e);
+            }
+            RuntimeException toThrow = errorAction.apply(e);
+            if (toThrow != null) {
+                throw new RuntimeException(toThrow);
+            }
+        }
 	}
 
 	protected abstract void process(File file) throws IOException;
+
 }

@@ -104,6 +104,8 @@ public class Settings {
 
 	public static final String LOCKER_FILE_NAME = "jefcbd";
 
+    public static final int SEARCH_PROGRESS_THREADS_NUMBER = 5;
+
 	private static File HOME_DIR;
 
 	private static DecompilerType decompilerType = DecompilerType.JDCORE;

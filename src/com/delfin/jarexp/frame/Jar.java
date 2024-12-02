@@ -33,6 +33,9 @@ public abstract class Jar {
 	}
 
 	public void bypass(JarBypassErrorAction errorAction) {
+	    if (file == null || file.length() == 0) {
+	        return;
+	    }
 		try {
 			jarFile = new JarFile(file);
 			Enumeration<JarEntry> entries = jarFile.entries();

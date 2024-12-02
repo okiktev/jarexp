@@ -21,6 +21,7 @@ import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import java.util.EnumSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -250,8 +251,127 @@ public class FileUtils {
 		} else {
 			copyFile(src, dst);
 		}
-
 	}
+
+    public static void bypass(BypassCfg bypassCfg) {
+        (Version.JAVA_MAJOR_VER > 6 ? new Java7FileBypasser(bypassCfg) : new Java6FileBypasser(bypassCfg)).bypass();
+    }
+
+    public static class BypassCfg {
+
+        private final File dir;
+
+        public BypassCfg(File dir) {
+            this.dir = dir;
+        }
+
+        protected void visitFile(File file) throws IOException {
+
+        }
+
+        protected void visitDirectory(File dir) {
+
+        }
+
+        protected void handleError(Exception error) {
+
+        }
+
+    }
+
+    private static abstract class AbstractFileBypasser {
+
+        protected final BypassCfg bypassCfg;
+
+        AbstractFileBypasser(BypassCfg bypassCfg) {
+            this.bypassCfg = bypassCfg;
+        }
+
+        abstract void bypass();
+
+    }
+
+    private static class Java7FileBypasser extends AbstractFileBypasser {
+
+        Java7FileBypasser(BypassCfg bypassCfg) {
+            super(bypassCfg);
+        }
+
+        void bypass() {
+            File dir = bypassCfg.dir;
+            if (dir.isFile()) {
+                return;
+            }
+            try {
+                java.nio.file.Files.walkFileTree(
+                        java.nio.file.Paths.get(dir.getAbsolutePath()),
+                        EnumSet.of(java.nio.file.FileVisitOption.FOLLOW_LINKS),
+                        Integer.MAX_VALUE,
+                        new java.nio.file.SimpleFileVisitor<java.nio.file.Path>() {
+                    @Override
+                    public java.nio.file.FileVisitResult visitFile(java.nio.file.Path path, java.nio.file.attribute.BasicFileAttributes attrs) throws IOException {
+                        if (Thread.currentThread().isInterrupted()) {
+                            return java.nio.file.FileVisitResult.TERMINATE;
+                        }
+                        bypassCfg.visitFile(path.toFile());
+                        return java.nio.file.FileVisitResult.CONTINUE;
+                    }
+                    @Override
+                    public java.nio.file.FileVisitResult preVisitDirectory(java.nio.file.Path dir, java.nio.file.attribute.BasicFileAttributes attrs) throws IOException {
+                        if (Thread.currentThread().isInterrupted()) {
+                            return java.nio.file.FileVisitResult.TERMINATE;
+                        }
+                        bypassCfg.visitDirectory(dir.toFile());
+                        return java.nio.file.FileVisitResult.CONTINUE;
+                    }
+                    @Override
+                    public java.nio.file.FileVisitResult visitFileFailed(java.nio.file.Path path, IOException e) {
+                        if (Thread.currentThread().isInterrupted()) {
+                            return java.nio.file.FileVisitResult.TERMINATE;
+                        }
+                        bypassCfg.handleError(e);
+                        return java.nio.file.FileVisitResult.CONTINUE;
+                    }
+                });
+            } catch (IOException e) {
+                throw new JarexpException("Unexpected error while bypassing " + dir, e);
+            }
+        }
+    }
+
+    private static class Java6FileBypasser extends AbstractFileBypasser {
+
+        Java6FileBypasser(BypassCfg bypassCfg) {
+            super(bypassCfg);
+        }
+
+        void bypass() {
+            bypass(bypassCfg.dir, bypassCfg);
+        }
+
+        private void bypass(File file, BypassCfg bypassCfg) {
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
+            if (file.isFile()) {
+                try {
+                    bypassCfg.visitFile(file);
+                } catch (Exception e) {
+                    bypassCfg.handleError(e);
+                }
+                return;
+            }
+            bypassCfg.visitDirectory(file);
+            File[] files = file.listFiles();
+            if (files == null) {
+                return;
+            }
+            for (File f : files) {
+                bypass(f, bypassCfg);
+            }
+        }
+
+    }
 
 	/**
 	 * <a href="https://www.journaldev.com/861/java-copy-file">Java copy file</a>

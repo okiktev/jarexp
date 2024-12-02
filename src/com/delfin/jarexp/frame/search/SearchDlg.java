@@ -6,6 +6,8 @@ import static java.awt.GridBagConstraints.EAST;
 import static java.awt.GridBagConstraints.NONE;
 import static java.awt.GridBagConstraints.NORTH;
 import static java.awt.GridBagConstraints.WEST;
+import static java.awt.GridBagConstraints.SOUTH;
+import static java.awt.GridBagConstraints.HORIZONTAL;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 
@@ -45,6 +47,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -78,6 +81,7 @@ public abstract class SearchDlg extends JFrame {
 
 	private static final Insets CHECKBOX_MARGIN = new Insets(-1, 0, -3 ,0);
 	private static final Insets ZERO_PADDING = new Insets(0, 0, 0, 0);
+	private static final Dimension PROGRESS_DIM = new Dimension(100, 10);
 
 	public static class SearchEntries implements Iterable<SearchEntries> {
 
@@ -136,7 +140,7 @@ public abstract class SearchDlg extends JFrame {
 
 	}
 
-	private static final Dimension DLG_DIM = new Dimension(Settings.DLG_DIM.width + 100, Settings.DLG_DIM.height);
+	private static final Dimension DLG_DIM = new Dimension(Settings.DLG_DIM.width + 120, Settings.DLG_DIM.height);
 
 	public SearchEntries searchEntries;
 
@@ -145,6 +149,8 @@ public abstract class SearchDlg extends JFrame {
 	private JButton btnChangePlace = new JButton("Browse");
 	protected JCheckBox cbMatchCase = new CheckBox("Match case");
 	protected JCheckBox cbInAllSubArchives = new CheckBox("In all sub-archives");
+	protected JCheckBox cbToDisk = new CheckBox("Cache to disk");
+	protected JCheckBox cbProgressBar = new CheckBox("Progress bar");
 	protected JLabel lbResult = new JLabel("Result");
 	private JLabel lbFind = new JLabel("Find what:");
 	private JLabel lbIconsFind = new JLabel("Find in:");
@@ -162,6 +168,7 @@ public abstract class SearchDlg extends JFrame {
 	protected JScrollPane spResult = new JScrollPane(tResult);
 	private JLabel lbFileFilter = new JLabel("File Filter:");
 	protected JTextField tfFileFilter = new JTextField("!.png,!.jpeg,!.jpg,!.bmp,!.gif,!.ico,!.exe,!.dll");
+	private JProgressBar progressBar = new JProgressBar();
 
 	private List<UxComponent> uxComponents = new ArrayList<UxComponent>();
 
@@ -215,36 +222,37 @@ public abstract class SearchDlg extends JFrame {
 
 	private void alignComponents() {
 		setLayout(new GridBagLayout());
-		Insets insets = new Insets(0, 0, 0, 0);
 
 		add(lbSearchIn, 	new GridBagConstraints(0, 0, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 0, 0), 0, 0));
 		add(tfSearchIn, 	new GridBagConstraints(1, 0, 1, 1, 1, 0, NORTH, BOTH, new Insets(5, 5, 0, 0), 0, 0));
 		add(btnChangePlace, new GridBagConstraints(2, 0, 1, 1, 0, 0, WEST, NONE, new Insets(5, 5, 0, 5), 0, 0));
 
-		add(group(rbClass),      new GridBagConstraints(0, 1, 1, 1, 0, 0, WEST, NONE, insets, 0, 0));
+		add(group(rbClass), new GridBagConstraints(0, 1, 1, 1, 0, 0, WEST, NONE, ZERO_PADDING, 0, 0));
 
 		add(group(Version.JAVA_MAJOR_VER >= 7 
 				? new JComponent[] {rbInFiles, cbDecompiler, rbIcons} 
-				: new JComponent[] {rbInFiles, rbIcons} )
-			, new GridBagConstraints(1, 1, 2, 1, 0, 0, WEST, NONE, insets, 0, 0));
+				: new JComponent[] {rbInFiles, rbIcons} ),
+			                new GridBagConstraints(1, 1, 2, 1, 0, 0, WEST, NONE, ZERO_PADDING, 0, 0));
 
+		add(group(cbMatchCase, cbInAllSubArchives, cbToDisk, cbProgressBar),
+		                    new GridBagConstraints(0, 2, 3, 1, 0, 0, WEST, NONE, ZERO_PADDING, 0, 0));
 
-		add(group(cbMatchCase, cbInAllSubArchives),      new GridBagConstraints(0, 2, 3, 1, 0, 0, WEST, NONE, insets, 0, 0));
+		add(lbFileFilter,   new GridBagConstraints(0, 3, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 0, 0), 0, 0));
+		add(tfFileFilter,   new GridBagConstraints(1, 3, 2, 1, 0, 0, NORTH, BOTH, new Insets(0, 5, 5, 5), 0, 0));
 
-		add(lbFileFilter,       new GridBagConstraints(0, 3, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 0, 0), 0, 0));
-		add(tfFileFilter,       new GridBagConstraints(1, 3, 2, 1, 0, 0, NORTH, BOTH, new Insets(0, 5, 5, 5), 0, 0));
+		add(lbFind,         new GridBagConstraints(0, 4, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 0, 0), 0, 0));		
+		add(lbIconsFind,    new GridBagConstraints(0, 4, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 0, 0), 0, 0));		
+		add(cbFind,         new GridBagConstraints(1, 4, 1, 1, 1, 0, NORTH, BOTH, new Insets(0, 5, 0, 0), 0, 0));
+		add(pIconsIn,       new GridBagConstraints(1, 4, 1, 1, 1, 0, WEST, NONE, ZERO_PADDING, 0, 0));
+		add(btnFind,        new GridBagConstraints(2, 4, 1, 1, 0, 0, WEST, NONE, new Insets(0, 5, 0, 5), 0, 0));
 
-		add(lbFind, new GridBagConstraints(0, 4, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 0, 0), 0, 0));		
-		add(lbIconsFind, new GridBagConstraints(0, 4, 1, 1, 0, 0, EAST, NONE, new Insets(5, 0, 0, 0), 0, 0));		
-		add(cbFind, new GridBagConstraints(1, 4, 1, 1, 1, 0, NORTH, BOTH, new Insets(0, 5, 0, 0), 0, 0));
-		add(pIconsIn, new GridBagConstraints(1, 4, 1, 1, 1, 0, WEST, NONE, insets, 0, 0));
-		add(btnFind, new GridBagConstraints(2, 4, 1, 1, 0, 0, WEST, NONE, new Insets(0, 5, 0, 5), 0, 0));
-
-		add(lbResult,             new GridBagConstraints(0, 5, 2, 1, 1, 0, WEST, NONE, new Insets(5, 5, 5, 0), 0, 0));
+		add(lbResult,       new GridBagConstraints(0, 5, 2, 1, 1, 0, WEST, NONE, new Insets(5, 5, 5, 0), 0, 0));
 		add(group(btnResultToFile, btnResultToClipboard),
-				new GridBagConstraints(2, 5, 1, 0, 0, 0, NORTH, NONE, ZERO_PADDING, 0, 0));
+				            new GridBagConstraints(2, 5, 1, 0, 0, 0, NORTH, NONE, ZERO_PADDING, 0, 0));
 
-		add(spResult, new GridBagConstraints(0, 6, 3, 1, 1, 1, NORTH, BOTH, insets, 0, 0));
+		add(spResult,       new GridBagConstraints(0, 6, 3, 1, 1, 1, NORTH, BOTH, ZERO_PADDING, 0, 0));
+
+		add(progressBar,    new GridBagConstraints(0, 7, 3, 1, 0, 0, SOUTH, HORIZONTAL, ZERO_PADDING, 0, 0));
 
 		uxComponents.add(new UxComponent(tfSearchIn));
 		uxComponents.add(new UxComponent(btnChangePlace));
@@ -254,6 +262,8 @@ public abstract class SearchDlg extends JFrame {
 		uxComponents.add(new UxComponent(rbIcons));
 		uxComponents.add(new UxComponent(cbMatchCase));
 		uxComponents.add(new UxComponent(cbInAllSubArchives));
+		uxComponents.add(new UxComponent(cbToDisk));
+		uxComponents.add(new UxComponent(cbProgressBar));
 		uxComponents.add(new UxComponent(tfFileFilter));
 		uxComponents.add(new UxComponent(cbFind));
 		uxComponents.add(new UxComponent(cbIconsInExe));
@@ -283,6 +293,8 @@ public abstract class SearchDlg extends JFrame {
 		cbDecompiler.setFont(DLG_TEXT_FONT);
 		cbMatchCase.setFont(DLG_TEXT_FONT);
 		cbInAllSubArchives.setFont(DLG_TEXT_FONT);
+		cbToDisk.setFont(DLG_TEXT_FONT);
+		cbProgressBar.setFont(DLG_TEXT_FONT);
 		lbFileFilter.setFont(DLG_TEXT_FONT);
 		tfFileFilter.setFont(DLG_TEXT_FONT);
 		lbFind.setFont(DLG_TEXT_FONT);
@@ -308,6 +320,17 @@ public abstract class SearchDlg extends JFrame {
 
 		btnResultToFile.setContentAreaFilled(false);
 		btnResultToClipboard.setContentAreaFilled(false);
+		
+		cbProgressBar.setSelected(true);
+
+        progressBar.setPreferredSize(PROGRESS_DIM);
+        progressBar.setMaximumSize(PROGRESS_DIM);
+        progressBar.setMinimumSize(PROGRESS_DIM);
+        progressBar.setBorderPainted(false);
+        progressBar.setBorder(Settings.EMPTY_BORDER);
+        progressBar.setVisible(false);
+        progressBar.setStringPainted(true);
+        progressBar.setString("");
 
 		btnChangePlace.addActionListener(new ActionListener() {
 			@Override
@@ -346,6 +369,12 @@ public abstract class SearchDlg extends JFrame {
 
 		cbInAllSubArchives.setMnemonic(KeyEvent.VK_A);
 		cbInAllSubArchives.addChangeListener(setFocusOnInput);
+		
+	    cbToDisk.setMnemonic(KeyEvent.VK_D);
+	    cbToDisk.addChangeListener(setFocusOnInput);
+
+	    cbProgressBar.setMnemonic(KeyEvent.VK_P);
+	    cbProgressBar.addChangeListener(setFocusOnInput);
 
 		btnFind.setMnemonic(KeyEvent.VK_ENTER);
 		btnFind.addActionListener(new OnFindBtnClickListener(this));
@@ -551,6 +580,9 @@ public abstract class SearchDlg extends JFrame {
 		lbFileFilter.setVisible(isFindClass != null && !isFindClass);
 		tfFileFilter.setVisible(isFindClass != null && !isFindClass);
 		cbDecompiler.setVisible(isFindClass != null && !isFindClass);
+        cbToDisk.setVisible(isFindClass != null && isFindClass);
+        cbProgressBar.setVisible(isFindClass != null && isFindClass);
+        cbProgressBar.setSelected(isFindClass != null && isFindClass);
 		cbMatchCase.setVisible(isFindClass != null);
 		cbFind.setVisible(isFindClass != null);
 		pIconsIn.setVisible(isFindClass == null);
@@ -571,11 +603,26 @@ public abstract class SearchDlg extends JFrame {
         for (UxComponent c : uxComponents) {
             if (isEnabled) {
                 c.component.setEnabled(c.isEnabled);
+                progressBar.setVisible(false);
+                progressBar.setValue(0);
             } else {
                 c.isEnabled = c.component.isEnabled();
                 c.component.setEnabled(false);
+                progressBar.setVisible(cbProgressBar.isSelected());
+                progressCalculate(false);
             }
         }
+    }
+
+    void refreshProgress(int current, int overall) {
+        int val = overall == 0 ? 0 : (current * 100 / overall);
+        if (val != progressBar.getValue()) {
+            progressBar.setValue(val);
+        }
+    }
+
+    void progressCalculate(boolean isFinished) {
+        progressBar.setForeground(isFinished ? Color.green : Color.blue);
     }
 
 	private static class IconListRenderer extends DefaultListCellRenderer {

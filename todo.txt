@@ -212,13 +212,14 @@ imp support parsing of record items ... done ...................................
 imp when delete file clear preview and context panel ... done .....................................19Oct2024
 imp disable all elements on the search window while searching ... done ............................19Oct2024
 imp added supporting aar ... done .................................................................19Oct2024
+imp progress bar to search for file searching ... done ............................................02Dec2024
 
 
+imp progress bar to search for file content searching
 imp command console
 imp move icon thumbnails to the common folder
 imp new rsta for new JVMs
 imp byte code decompiling
-imp progress bar to search
 imp pause button to search
 imp graph dependencies
 imp mark edited tab somehow
@@ -230,7 +231,6 @@ imp reduce hardcoded stuff like email, links and so on
 imp digest protect for jarexp
 imp licenses to server ? (saving 24Kb) 
 imp refactor DecompilierMenuItems
-imp kotlin lib support
 bug saving files when digest specified
 imp pdf recognizing
 

@@ -2,12 +2,15 @@ package com.delfin.jarexp.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -25,6 +28,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import com.delfin.jarexp.exception.JarexpException;
+import com.delfin.jarexp.settings.Version;
+
 
 public class Zip {
 	
@@ -497,6 +502,10 @@ public class Zip {
 		return isArchive(path, false);
 	}
 
+	public static boolean isArchive(File file) {
+	    return isArchive(file.getName(), false);
+	}
+
 	public static File getUnpacked(String fullName) {
 		return unpacked.get(fullName);
 	}
@@ -527,5 +536,87 @@ public class Zip {
 	public interface StreamProcessor {
 		void process(InputStream stream) throws IOException;
 	}
+
+    public static void bypass(File archive, BypassAction bypassAction) {
+        ZipFile zip = null;
+        try {
+            if (Version.JAVA_MAJOR_VER >= 7) {
+                zip = new ZipFile(archive, Charset.forName("Cp866"));
+            } else {
+                zip = new ZipFile(archive);
+            }
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry e = entries.nextElement();
+                if (!e.isDirectory()) {
+                    bypassAction.process(zip, e);
+                }
+            }
+        } catch (IOException e) {
+            throw new JarexpException("Error while bypassing '" + archive, e);
+        } finally {
+            if (zip != null) {
+                try {
+                    zip.close();
+                } catch (IOException e) {
+                    log.log(Level.WARNING, "Couldn't close zip file " + archive, e);
+                }
+            }
+        }
+    }
+
+    public static interface BypassAction {
+        void process(ZipFile zipFile, ZipEntry zipEntry) throws IOException;
+    }
+
+    public static interface BypassRecursivelyAction {
+        void process(ZipEntry zipEntry, String fullPath) throws IOException;
+        void error(ZipEntry zipEntry, Exception error);
+    }
+
+    public static void bypass(ZipInputStream stream, String fullPath, BypassRecursivelyAction action) throws IOException {
+        try {
+            ZipEntry entry;
+            while ((entry = stream.getNextEntry()) != null) {
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                try {
+                    String entryName = entry.getName();
+                    if (!Zip.isArchive(entryName)) {
+                        action.process(entry, fullPath);
+                    } else {
+                        byte[] zipData = readArchive(stream);
+                        ZipInputStream nestedStream = new ZipInputStream(new ByteArrayInputStream(zipData));
+                        try {
+                            if (fullPath != null && fullPath.charAt(fullPath.length() - 1) != '/') {
+                                fullPath += '/';
+                            }
+                            bypass(nestedStream, fullPath + entryName + '!', action);
+                        } catch (Exception e) {
+                            action.error(entry, e);
+                        } finally {
+                            nestedStream.close();
+                        }
+                    }
+                    stream.closeEntry();
+                } catch (Exception e) {
+                    action.error(entry, e);
+                }
+            } 
+        } catch (Exception e ) {
+            action.error(null, e);
+        }
+    }
+
+    private static byte[] readArchive(ZipInputStream stream) throws IOException {
+        byte[] buffer = new byte[1024];
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int len;
+        while ((len = stream.read(buffer)) > 0) {
+            baos.write(buffer, 0, len);
+        }
+        return baos.toByteArray();
+    }
 
 }
