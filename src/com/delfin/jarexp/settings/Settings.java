@@ -74,7 +74,7 @@ public class Settings {
 		}
 	}
 
-	public static final String JAREXP_HOST_URL = "http://dst.in.ua/jarexp";
+	public static final String JAREXP_HOST_URL = "https://dst.in.ua/jarexp";
 
 	public final static String NAME_PLACEHOLDER = ".$placehoder|\\";
 

@@ -54,18 +54,29 @@ public class FileUtils {
 	private static abstract class Stream {
 
 		private final InputStream is;
+		private final boolean isUrl;
 
 		Stream(InputStream is) {
 			this.is = is;
+			isUrl = false;
 		}
 
-		void dumpTo(File dst) throws IOException {
+        Stream(InputStream is, boolean isUrl) {
+            this.is = is;
+            this.isUrl = isUrl;
+        }
+
+        void dumpTo(File dst) throws IOException {
 			OutputStream os = null;
 			try {
 				os = new FileOutputStream(dst);
 				byte[] buffer = new byte[BUFFER_SIZE];
 				int length;
+				boolean isCheckMoved = !isUrl;
 				while ((length = is.read(buffer, 0, BUFFER_SIZE)) != -1) {
+				    if (!isCheckMoved) {
+				        isCheckMoved = checkIfMoved(buffer);
+				    }
 					os.write(buffer, 0, length);
 				}
 			} finally {
@@ -86,7 +97,21 @@ public class FileUtils {
 			}
 		}
 
-		protected abstract String pathToSourceForError();
+		private boolean checkIfMoved(byte[] buffer) {
+		    if (buffer == null) {
+		        return true;
+		    }
+		    String response = new String(buffer);
+		    if (response == null || response.isEmpty()) {
+		        return true;
+		    }
+		    if (response.contains("301 Moved Permanently")) {
+		        throw new MovedPermanently();
+		    }
+            return true;
+        }
+
+        protected abstract String pathToSourceForError();
 
 	}
 
@@ -567,12 +592,24 @@ public class FileUtils {
 	public static void download(final String from, File dst) {
 		try {
 			File tmp = File.createTempFile("jarexp", "download", Settings.getJarexpTmpDir());
-			new Stream(new BufferedInputStream(new URL(from).openStream())) {
-				@Override
-				protected String pathToSourceForError() {
-					return "Unable to close input stream for " + from;
-				}
-			}.dumpTo(tmp);
+			try {
+	            new Stream(new BufferedInputStream(new URL(from).openStream()), true) {
+	                @Override
+	                protected String pathToSourceForError() {
+	                    return "Unable to close input stream for " + from;
+	                }
+	            }.dumpTo(tmp);
+			} catch (MovedPermanently e) {
+			    final String fromFallback = from.startsWith("http://")
+			            ? from.replaceAll("http://", "https://")
+			            : from.replaceAll("https://", "http://");
+			    new Stream(new BufferedInputStream(new URL(fromFallback).openStream()), true) {
+			        @Override
+                    protected String pathToSourceForError() {
+			            return "Unable to close input stream for " + fromFallback;
+                    }
+                }.dumpTo(tmp);
+			}
 			copy(tmp, dst);
 		} catch (Exception e) {
 		    String errMsg = "An error occurred while downloading file " + from + " to " + dst;
@@ -620,6 +657,12 @@ public class FileUtils {
 		} catch (Exception e) {
 			throw new JarexpException("Unable to add jar " + jar + " to classpath", e);
 		}
+	}
+
+	private static class MovedPermanently extends RuntimeException {
+
+        private static final long serialVersionUID = -8029151337010240295L;
+
 	}
 
 }

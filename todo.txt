@@ -213,6 +213,7 @@ imp when delete file clear preview and context panel ... done ..................
 imp disable all elements on the search window while searching ... done ............................19Oct2024
 imp added supporting aar ... done .................................................................19Oct2024
 imp progress bar to search for file searching ... done ............................................02Dec2024
+imp support https ... done ........................................................................04Dec2024
 
 
 imp progress bar to search for file content searching

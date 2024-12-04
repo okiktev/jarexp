@@ -22,6 +22,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.delfin.jarexp.exception.SourceConnectionException;
 import com.delfin.jarexp.frame.resources.Resources;
+import com.delfin.jarexp.settings.Settings;
 
 class Exception extends JDialog {
 
@@ -62,7 +63,7 @@ class Exception extends JDialog {
 		String detailsMsg = "";
 		Throwable cause = e.getCause();
 		if (cause instanceof SourceConnectionException) {
-		    detailsMsg = "<br/>No internet connection<br/>Make sure your mashine is online or use 'Full Pack Jar Explorer' binaries from http://dst.in.ua/jarexp to avoid any offline issues";
+		    detailsMsg = "<br/>No internet connection<br/>Make sure your mashine is online or use 'Full Pack Jar Explorer' binaries from " + Settings.JAREXP_HOST_URL +  " to avoid any offline issues";
 		}
 
 		final JPanel topPanel = new JPanel(new BorderLayout());

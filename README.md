@@ -1,4 +1,4 @@
 # jarexp
 Jar Files Explorer
 
-More details here http://dst.in.ua/jarexp
+More details here https://dst.in.ua/jarexp
