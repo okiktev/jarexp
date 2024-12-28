@@ -94,6 +94,16 @@ class Version {
 		// 11 (11) 55.0
 		// 12 (12) 56.0
 		// 13 (13) 57.0
+	    // 14 (14) 58.0
+	    // 15 (15) 59.0
+	    // 16 (16) 60.0
+	    // 17 (17) 61.0
+	    // 18 (18) 62.0
+	    // 19 (19) 63.0
+	    // 20 (20) 64.0
+	    // 21 (21) 65.0
+	    // 22 (22) 66.0
+	    // 23 (23) 67.0
 
 		switch (major) {
 		case 45:
@@ -132,6 +142,16 @@ class Version {
 			return "17";
 		case 62:
 			return "18";
+		case 63:
+		    return "19";
+		case 64:
+		    return "20";
+		case 65:
+		    return "21";
+		case 66:
+		    return "22";
+		case 67:
+		    return "23";
 		default:
 			log.warning("Unknown version of compiled file. Major " + major + ". Minor " + minor);
 			return "~";

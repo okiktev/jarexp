@@ -215,9 +215,10 @@ imp added supporting aar ... done ..............................................
 imp progress bar to search for file searching ... done ............................................02Dec2024
 imp support https ... done ........................................................................04Dec2024
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 21_dec_2024
+imp update java versions list ... done ............................................................27Dec2024
+bug class file is not updated if decompiler changed ... done ......................................28Dec2024
 
 
-imp update java versions list
 imp progress bar to search for file content searching
 imp command console
 imp move icon thumbnails to the common folder

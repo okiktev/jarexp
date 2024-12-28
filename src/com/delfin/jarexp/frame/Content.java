@@ -549,6 +549,7 @@ public class Content extends JPanel {
 		if (node == null) {
 			return;
 		}
+		node.isLoaded = false;
 		statusBar.disableProgress();
 		jarTree.isNotDraw = true;
 		jarTree.clearSelection();

@@ -264,7 +264,7 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 							}
 						});
 					} else {
-						if (node.isLoaded) {
+						if (node.isLoaded && jarTree.isSingleFileLoaded()) {
 							return;
 						}
 						statusBar.enableProgress("Loading...");
@@ -301,7 +301,9 @@ class JarTreeSelectionListener implements TreeSelectionListener {
 
 							try {
 								fillClassStructure(node, Analyzer.analyze(decompiled.content));
-								node.isLoaded = true;
+								if (jarTree.isSingleFileLoaded()) {							    
+								    node.isLoaded = true;
+								}
 							} catch (Exception e) {
 								log.log(Level.SEVERE, "Unable to grab class structure information for " + node.name, e);
 							}

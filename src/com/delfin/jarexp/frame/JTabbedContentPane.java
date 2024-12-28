@@ -104,7 +104,6 @@ class JTabbedContentPane extends JTabbedPane {
 						} else {
 							jarTree.statusBar.setDecompiler(Settings.getDecompilerType());
 						}
-						setSelectedIndex(indx);
 					}
 				}
 			}
@@ -117,7 +116,7 @@ class JTabbedContentPane extends JTabbedPane {
 		for (Iterator<TabComponent> it = tabContent.iterator(); it.hasNext();) {
 			TabComponent tab = it.next();
 			if (fullPath.equals(tab.fullPath)) {
-				if (tab.node instanceof JarNode) {
+				if (tab.node instanceof JarNode && jarTree.isSingleFileLoaded()) {
 					((JarNode) tab.node).isLoaded = false;
 				}
 				if (tab.isEdited) {
@@ -193,7 +192,6 @@ class JTabbedContentPane extends JTabbedPane {
 				}
 			}
 		}
-
 		super.addTab(title, icon, component, tip);
 		setTabComponentAt(getTabCount() - 1, new TabHeader(title, icon, tip));
 	}
@@ -246,9 +244,9 @@ class JTabbedContentPane extends JTabbedPane {
 			for (int i = 0; i < getTabCount(); ++i) {
 				if (content.fullPath.equals(getToolTipTextAt(i))) {
 					if (!content.equals(existent)) {
-						remove(i);
 						existent.overwrite(content);
 						insertTab(existent.name, getIconFor(existent), existent.content, existent.fullPath, i);
+						remove(i + 1);
 					}
 					setSelectedIndex(i);
 					break;
