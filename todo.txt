@@ -217,6 +217,8 @@ imp support https ... done .....................................................
 $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 21_dec_2024
 imp update java versions list ... done ............................................................27Dec2024
 bug class file is not updated if decompiler changed ... done ......................................28Dec2024
+$$$$$$$$$$$$$$$$$$$$$$$$$$ sited 30_dec_2024
+bug fixed site download rendering in ubuntu ... done ..............................................30Dec2024
 
 
 imp progress bar to search for file content searching
