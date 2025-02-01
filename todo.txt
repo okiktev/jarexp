@@ -221,6 +221,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$ sited 30_dec_2024
 bug fixed site download rendering in ubuntu ... done ..............................................30Dec2024
 
 
+imp classes depends analyzer
+imp get all depended classes in the jar
+imp win-regedit
 imp progress bar to search for file content searching
 imp command console
 imp move icon thumbnails to the common folder
@@ -241,7 +244,6 @@ bug saving files when digest specified
 imp pdf recognizing
 
 imp javadoc handler
-imp get all depended classes in the jar
 imp ribbon
 imp all option dialogs should be custom
 imp toLower for path when initiate nodes
